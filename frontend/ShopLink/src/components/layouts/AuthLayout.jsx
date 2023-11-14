@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import authBackgroundImage from "../assets/images/auth-background-image.jpg";
+import authBackgroundImage from "../../assets/images/authBackgroundImage.png";
 import shopLinkLogo from "../../assets/images/ShopLinkLogo.png";
 import { Link } from "react-router-dom";
 
@@ -34,7 +34,7 @@ const AuthLayout = ({ children, title }) => {
               <div className="flex items-center justify-center p-3 ">
                 <Link
                   to="#"
-                  className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500 text-[#3A856E]"
+                  className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500 text-[#4682B4]"
                 >
                   Forgot password?
                 </Link>
@@ -46,7 +46,7 @@ const AuthLayout = ({ children, title }) => {
                 : "Already have an account?"}
               <Link
                 to={title === "Sign in" ? "/signup" : "/signin"}
-                className="ml-1 font-medium text-[#3A856E] hover:underline dark:text-[#3A856E]"
+                className="ml-1 font-medium text-[#4682B4] hover:underline dark:text-[#4682B4]"
               >
                 {title === "Sign in" ? "Sign Up" : "Sign In"}
               </Link>
