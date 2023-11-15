@@ -1,10 +1,9 @@
-// App.js
 import React, { useState } from 'react';
 import Fields from '../components/Fields/Fields';
 import SkillInput from '../components/Fields/SkillInput';
 import Button from '../components/Buttons/Button';
 import FileInput from '../components/Fields/FileInput';
-const App = () => {
+const ApplyforJob = () => {
   const [cvOption, setCvOption] = useState(null);
   const [email, setEmail] = useState("");
   const [skills, setSkills] = useState('');
@@ -100,4 +99,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default ApplyforJob;

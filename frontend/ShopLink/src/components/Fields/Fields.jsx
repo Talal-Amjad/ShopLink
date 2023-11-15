@@ -1,17 +1,17 @@
 import PropTypes from "prop-types";
+
 const Fields = ({
   label,
   type,
   value,
   placeholder = null,
   handleChange,
- 
 }) => {
-    const handleInputKeyDown = (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault(); // Prevent the default Enter key behavior
-      }
-    };
+  const handleInputKeyDown = (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault(); // Prevent the default Enter key behavior
+    }
+  };
 
   const commonInputClass =
     "w-full p-2 border border-gray-300 rounded-md outline-none bg-gray-200 placeholder:text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500";
@@ -23,7 +23,17 @@ const Fields = ({
           {label}
         </label>
       </div>
-     
+
+      {type === "textarea" ? (
+        <textarea
+          value={value}
+          placeholder={placeholder}
+          onChange={handleChange}
+          className={`${commonInputClass}`}
+          onKeyDown={handleInputKeyDown}
+          rows={4} // Set rows to 4 for textarea
+        />
+      ) : (
         <input
           type={type}
           value={value}
@@ -32,7 +42,7 @@ const Fields = ({
           className={`${commonInputClass}`}
           onKeyDown={handleInputKeyDown}
         />
-      
+      )}
     </div>
   );
 };
