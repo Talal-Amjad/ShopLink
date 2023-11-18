@@ -3,6 +3,7 @@ import SignInPage from "./pages/SignInPage";
 import SignUpPage from "./pages/SignUpPage"
 import ApplyfoJob from "./pages/ApplyforJob"
 import PostJob from "./pages/PostJob";
+import ManagerDashboardLayout from "./components/layouts/BranchManager/managerDashboardLayout";
 function App() {
  
 
@@ -14,6 +15,7 @@ function App() {
         <Route path="/signin" element={<SignInPage/>} />
         <Route path="/applyforjob" element={<ApplyfoJob/>}/>
         <Route path="/postjob" element={<PostJob/>}/>
+        <Route path="/manager" element={<ManagerDashboardLayout/>}/>
       </Routes>
       </BrowserRouter>
       
