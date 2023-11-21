@@ -34,7 +34,8 @@ const User=sequelize.define("user",
       allowNull: false,
       defaultValue: 'user',
     },
-    
+    verificationCode: DataTypes.STRING,
+    isVerified: DataTypes.BOOLEAN
   }
 );
 

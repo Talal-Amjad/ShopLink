@@ -4,6 +4,7 @@ import SignUpPage from "./pages/SignUpPage"
 import ApplyfoJob from "./pages/ApplyforJob"
 import PostJob from "./pages/PostJob";
 import ManagerDashboardLayout from "./components/layouts/BranchManager/managerDashboardLayout";
+import EmailVerification from "./pages/EmailVerificaion";
 function App() {
  
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/signin" element={<SignInPage/>} />
         <Route path="/applyforjob" element={<ApplyfoJob/>}/>
         <Route path="/postjob" element={<PostJob/>}/>
+        <Route path="/emailverification" element={<EmailVerification/>}/>
         <Route path="/manager" element={<ManagerDashboardLayout><PostJob/></ManagerDashboardLayout>}/>
       </Routes>
       </BrowserRouter>

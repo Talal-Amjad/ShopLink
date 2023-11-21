@@ -5,7 +5,7 @@ const { authenticateToken } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 router.post('/signup', authController.signUp);
-
+router.post('/verify', authController.verifyUser)
 router.post('/signin', authController.signIn);
 
 router.get('/protected', authenticateToken, (req, res) => {
