@@ -15,7 +15,7 @@ function App() {
         <Route path="/signin" element={<SignInPage/>} />
         <Route path="/applyforjob" element={<ApplyfoJob/>}/>
         <Route path="/postjob" element={<PostJob/>}/>
-        <Route path="/manager" element={<ManagerDashboardLayout/>}/>
+        <Route path="/manager" element={<ManagerDashboardLayout><PostJob/></ManagerDashboardLayout>}/>
       </Routes>
       </BrowserRouter>
       

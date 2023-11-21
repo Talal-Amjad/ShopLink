@@ -16,8 +16,13 @@ const SignUpPage = () => {
         </div>
         <Fields label="User Name" type="text"  placeholder="JhonDoe123"/>
         <Fields label="Email" type="email"  placeholder="example@gmail.com"/>
-        <Fields label="Org Name" type="text"  placeholder="Organization"/>
+       
         <Fields
+          label="Confirm Password"
+          type="password"
+          placeholder="Password"
+        />
+         <Fields
           label="Password"
           type="password"
           placeholder="Password"

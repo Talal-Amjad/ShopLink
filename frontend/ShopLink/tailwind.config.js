@@ -6,7 +6,10 @@ export default {
       colors: {
         "background-gray": "#F2F4F4",
         primary: " #4682B4",
-      }
+      },
+      fontFamily: {
+        manrope: ["Manrope", "sans-serif"],
+      },
     },
   },
   plugins: [],
