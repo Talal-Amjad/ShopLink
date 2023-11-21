@@ -33,9 +33,16 @@ exports.signUp = async (req, res) => {
     res.status(201).json({ token, successMsg: "User Created!" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      // Sequelize unique constraint violation (e.g., username or email already exists)
+      res.status(400).json({ error: 'User with this username or email already exists' });
+    } else {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   }
 };
+
 
 // Sign in
 exports.signIn = async (req, res) => {
