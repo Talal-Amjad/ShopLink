@@ -17,7 +17,7 @@ const PostJob = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen flex justify-center items-center  dark:bg-gray-900">
-      <div className="bg-white p-8 rounded shadow-md w-96 m-5  dark:bg-gray-700 ">
+      <div className="bg-white p-8 rounded shadow-md w-full md:ml-[160px] md:mr-[160px]  dark:bg-gray-700 ">
         <form onSubmit={handleSubmit}>
             <h1 className="text-lg font-bold   dark:text-gray-400">Post Job Details</h1>
         <Fields
