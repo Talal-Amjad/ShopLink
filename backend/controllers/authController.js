@@ -3,6 +3,8 @@ const bcrypt = require('bcrypt');
 const { sequelize } = require('../config/dbConfig');
 const User = require('../models/user');
 const JWT_SECRET=process.env.JWT_SECRET;
+const {sendVerificationEmail} = require('../config/transporter')
+const crypto = require('crypto');
 
 
 
@@ -13,36 +15,59 @@ const generateToken = (user) => {
 };
 
 // Sign up
+let temporaryUsers = {};
 exports.signUp = async (req, res) => {
   try {
-    const { firstname, lastname, username, email, password, role } = req.body;
+    const verificationCode = crypto.randomBytes(3).toString('hex').toUpperCase();
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-    const newUser = await User.create({
-      firstname,
-      lastname,
-      username,
-      email,
+    temporaryUsers[verificationCode] = {
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      username: req.body.username,
+      email: req.body.email,
       password: hashedPassword,
-      role,
-    });
+      role: req.body.role,
+    };
 
-    const token = generateToken(newUser);
+    await sendVerificationEmail(req.body.email, verificationCode);
 
-    res.status(201).json({ token, successMsg: "User Created!" });
+    res.status(200).json({ successMsg: 'Verification code sent to email.' });
   } catch (error) {
-    console.error(error);
-
-    if (error.name === 'SequelizeUniqueConstraintError') {
-      // Sequelize unique constraint violation (e.g., username or email already exists)
-      res.status(400).json({ error: 'User with this username or email already exists' });
-    } else {
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
+    console.error('Error in signUpUser:', error);
+    res.status(500).send(error.message);
   }
 };
 
+
+exports.verifyUser = async (req, res) => {
+    try {
+
+      console.log('Request Body:', req.body);
+
+      const { verificationCode } = req.body;
+      const tempUser = temporaryUsers[verificationCode];
+        console.log(verificationCode);
+        console.log('Temp User:', tempUser);
+
+        if (!tempUser) {
+            return res.status(400).json({ErrorMsg: 'Invalid verification code'});
+        }
+
+        const newUser = await User.create({
+            ...tempUser,
+            isVerified: true
+        });
+
+        delete temporaryUsers[verificationCode];
+
+        res.status(200).json({successMsg: 'User verified and registered successfully'});
+    } catch (error) {
+        console.error("Error in verifyUser: ", error);
+        res.status(500).send(error.message);
+    }
+};
 
 // Sign in
 exports.signIn = async (req, res) => {
