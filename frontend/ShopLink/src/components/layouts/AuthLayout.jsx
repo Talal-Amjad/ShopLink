@@ -5,13 +5,9 @@ import { Link } from "react-router-dom";
 
 const AuthLayout = ({ children, title }) => {
   return (
-    <div className="min-h-screen flex bg-black">
+    <div className="min-h-screen flex bg-primary text-[20px]">
       <div className="hidden md:flex w-1/2 hidden:overflow ">
-        <img
-          src={authBackgroundImage}
-          alt="BackgroundImage"
-          className="w-full h-full object-cover"
-        />
+      
       </div>
       <div className="flex-1 flex flex-col justify-start items-center relative bg-background-gray p-6 md:py-10 md:flex md:w-1/2 dark:bg-gray-900 overflow-y-auto">
         <div className="flex justify-center items-center h-24 mb-4">

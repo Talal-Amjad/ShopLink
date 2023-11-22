@@ -4,12 +4,12 @@ import { CgFileDocument } from "react-icons/cg";
 import { FiUsers } from "react-icons/fi";
 import PropTypes from "prop-types";
 
-const Sidebar = ({ sidebarVisible }) => {
+const OwnerBar = ({ sidebarVisible }) => {
   const { pathname } = useLocation();
   const sidebarOptions = [
     {
       id: 1,
-      name: "Post Job",
+      name: "Approve Job",
       icon: <MdOutlineDashboard size={24} />,
       path: "/",
     },
@@ -48,7 +48,7 @@ const Sidebar = ({ sidebarVisible }) => {
                 <div>{option.icon}</div>
                 <NavLink
                   to={option.path || "#"}
-                  className="flex w-full justify-between"
+                  className="flex w-full lg:text-[18px]  justify-between"
                 >
                   {option.name}
                 </NavLink>
@@ -62,8 +62,8 @@ const Sidebar = ({ sidebarVisible }) => {
   );
 };
 
-Sidebar.propTypes = {
+OwnerBar.propTypes = {
   sidebarVisible: PropTypes.bool.isRequired,
 };
 
-export default Sidebar;
+export default OwnerBar;

@@ -1,9 +1,9 @@
 import PropTypes from "prop-types";
 import Header from "../../Headers/Header";
 import useSidebar from "../../../hooks/useSidebar";
-import Sidebar from "../../sidebar/ManagerBar/sideBar";
+import Sidebar from "../../sidebar/ShopOwnerBar/OwnerBar";
 
-const DashboardLayout = ({ children }) => {
+const ownerDashboardLayout = ({ children }) => {
   const [sidebarVisible, toggleSidebar] = useSidebar();
   return (
     <div className="min-h-screen max-w-screen overflow-x-hidden">
@@ -16,8 +16,8 @@ const DashboardLayout = ({ children }) => {
   );
 };
 
-DashboardLayout.propTypes = {
+ownerDashboardLayout.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default DashboardLayout;
+export default ownerDashboardLayout;
