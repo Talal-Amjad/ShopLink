@@ -4,6 +4,7 @@ import SignUpPage from "./pages/SignUpPage"
 import ApplyfoJob from "./pages/ApplyforJob"
 import PostJob from "./pages/PostJob";
 import ManagerDashboardLayout from "./components/layouts/BranchManager/managerDashboardLayout";
+import OwnerDashboardLayout from "./components/layouts/ShopOwner/ownerDashboardLayout";
 import EmailVerification from "./pages/EmailVerificaion";
 function App() {
  
@@ -18,6 +19,7 @@ function App() {
         <Route path="/postjob" element={<PostJob/>}/>
         <Route path="/emailverification" element={<EmailVerification/>}/>
         <Route path="/manager" element={<ManagerDashboardLayout><PostJob/></ManagerDashboardLayout>}/>
+        <Route path="/owner" element={<OwnerDashboardLayout></OwnerDashboardLayout>}></Route>
       </Routes>
       </BrowserRouter>
       

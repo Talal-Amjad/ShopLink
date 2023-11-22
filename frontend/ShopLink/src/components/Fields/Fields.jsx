@@ -19,7 +19,7 @@ const Fields = ({
   return (
     <div className="mb-3">
       <div className="mb-2">
-        <label className="text-sm text-center dark:text-gray-400">
+        <label className="text-[18px] text-center dark:text-gray-400">
           {label}
         </label>
       </div>
