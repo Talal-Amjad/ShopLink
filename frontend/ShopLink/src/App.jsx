@@ -18,7 +18,7 @@ function App() {
         <Route path="/applyforjob" element={<ApplyfoJob/>}/>
         <Route path="/postjob" element={<PostJob/>}/>
         <Route path="/emailverification" element={<EmailVerification/>}/>
-        <Route path="/manager" element={<ManagerDashboardLayout><PostJob/></ManagerDashboardLayout>}/>
+        <Route path="/manager" element={<ManagerDashboardLayout/>}/>
         <Route path="/owner" element={<OwnerDashboardLayout></OwnerDashboardLayout>}></Route>
       </Routes>
       </BrowserRouter>
