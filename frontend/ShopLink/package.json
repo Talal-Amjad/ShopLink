@@ -11,6 +11,7 @@
   },
   "proxy": "http://127.0.0.1:8000",
   "dependencies": {
+    "@react-oauth/google": "^0.12.1",
     "axios": "^1.6.2",
     "cors": "^2.8.5",
     "react": "^18.2.0",

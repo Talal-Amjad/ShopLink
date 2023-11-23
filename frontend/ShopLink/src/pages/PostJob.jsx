@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Fields from '../components/Fields/Fields';
 import Button from '../components/Buttons/Button';
 import FileInput from '../components/Fields/FileInput';
+import ManagerDashnoardLayout from "../components/layouts/BranchManager/managerDashboardLayout"
 const PostJob = () => {
   
   const [jobTitile, setjobTitle] = useState("");
@@ -16,8 +17,9 @@ const PostJob = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen flex justify-center items-center  dark:bg-gray-900">
-      <div className="bg-white p-8 rounded shadow-md w-full md:ml-[160px] md:mr-[160px]  dark:bg-gray-700 ">
+    <ManagerDashnoardLayout>  
+       <div className="bg-gray-100 min-h-screen flex justify-center items-center  dark:bg-gray-700">
+      <div className="bg-white p-8 rounded shadow-md w-[700px] dark:bg-gray-900 ">
         <form onSubmit={handleSubmit}>
             <h1 className="text-lg font-bold   dark:text-gray-400">Post Job Details</h1>
         <Fields
@@ -53,6 +55,8 @@ const PostJob = () => {
         </form>
       </div>
     </div>
+  </ManagerDashnoardLayout>
+ 
   );
 };
 
