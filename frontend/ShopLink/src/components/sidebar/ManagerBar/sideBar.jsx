@@ -16,13 +16,13 @@ const Sidebar = ({ sidebarVisible }) => {
     {
       id: 2,
       name: "Sales Insights",
-      path: "/",
+      path: "/manager",
       icon: <CgFileDocument size={24} />,
     },
     {
       id: 3,
       name: "View All Applicants",
-      path: "/",
+      path: "/viewallapplicants",
       icon: <FiUsers size={24} />,
     },
   ];

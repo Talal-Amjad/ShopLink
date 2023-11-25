@@ -1,9 +1,8 @@
-// App.js
 import React, { useState } from 'react';
-import Fields from '../components/Fields/Fields';
-import Button from '../components/Buttons/Button';
-import FileInput from '../components/Fields/FileInput';
-import ManagerDashnoardLayout from "../components/layouts/BranchManager/managerDashboardLayout"
+import Fields from '../../components/Fields/Fields';
+import Button from '../../components/Buttons/Button';
+import FileInput from '../../components/Fields/FileInput';
+import ManagerDashnoardLayout from "../../components/layouts/BranchManager/managerDashboardLayout"
 const PostJob = () => {
   
   const [jobTitile, setjobTitle] = useState("");
