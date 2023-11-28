@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-.bgForm{
-    background-color: #ECF0F3;
-  }
-
   table {
     border-collapse: separate;
     border-spacing: 0;
