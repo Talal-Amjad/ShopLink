@@ -7,6 +7,7 @@ import ManagerDashboardLayout from "./components/layouts/BranchManager/managerDa
 import OwnerDashboardLayout from "./components/layouts/ShopOwner/ownerDashboardLayout";
 import EmailVerification from "./pages/EmailVerificaion";
 import ViewAllApplicants from "./pages/BranchManager/ViewAllApplicants";
+import VerifyCode from "./pages/ForgotPassword/VerifyCode";
 function App() {
  
 
@@ -22,6 +23,7 @@ function App() {
         <Route path="/manager" element={<ManagerDashboardLayout/>}/>
         <Route path="/owner" element={<OwnerDashboardLayout></OwnerDashboardLayout>}></Route>
         <Route path="/viewallapplicants" element={<ViewAllApplicants></ViewAllApplicants>}></Route>
+        <Route path="/verifycode" element={<VerifyCode></VerifyCode>}></Route>
       </Routes>
       </BrowserRouter>
       

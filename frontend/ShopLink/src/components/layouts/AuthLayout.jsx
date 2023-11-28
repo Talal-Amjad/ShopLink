@@ -2,8 +2,15 @@ import PropTypes from "prop-types";
 import authBackgroundImage from "../../assets/images/authBackgroundImage.png";
 import shopLinkLogo from "../../assets/images/ShopLinkLogo.png";
 import { Link } from "react-router-dom";
+import useModal from "../../hooks/useModal";
+import Button from "../Buttons/Button";
+import VerifyEmail from "../../pages/ForgotPassword/verifyEmail";
 
 const AuthLayout = ({ children, title }) => {
+  const [isOpen, toggleModal] = useModal();
+  const handleforgotClick = () => {
+    toggleModal();
+  };
   return (
     <div className="min-h-screen flex bg-primary text-[20px]">
      <div className="hidden md:flex w-1/2 overflow-hidden h-screen">
@@ -33,9 +40,10 @@ const AuthLayout = ({ children, title }) => {
             {title === "Sign in" && (
               <div className="flex items-center justify-center p-3 ">
                 <Link
-                  to="#"
+                  onClick={handleforgotClick}
                   className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500 text-[#4682B4]"
                 >
+                 
                   Forgot password?
                 </Link>
               </div>
@@ -54,6 +62,7 @@ const AuthLayout = ({ children, title }) => {
           </div>
         </div>
       </div>
+      {isOpen && <VerifyEmail isOpen={isOpen} onClose={toggleModal} />}
     </div>
   );
 };

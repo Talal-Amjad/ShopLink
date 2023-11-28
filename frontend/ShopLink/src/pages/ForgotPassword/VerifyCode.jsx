@@ -1,31 +1,16 @@
 import React, { useState } from "react";
 import {useNavigate } from "react-router-dom";
-import axios from "./../axios";
+import useModal from "../../hooks/useModal";
+import UpdatePassword from "./UpdatePassword";
 
-
-function EmailVerification() {
+function VerifyCode() {
   const navigate = useNavigate();
   const [verificationCode, setVerificationCode] = useState("");
+  const [isOpen, toggleModal] = useModal();
 
-  const handleVerify = async () => {
-    try {
-      const response = await axios.post("/verify", {verificationCode});
-      if (response.status === 200) {
-        console.log(response);
-        alert(response.data.successMsg);
-          navigate("/signin");
-      }
-    } catch (error) {
-      console.log(error.response.data.ErrorMsg);
-      alert(error.response.data.ErrorMsg);
-    }
-  };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (verificationCode !== "") {
-      handleVerify();
-    }
+    toggleModal();
   };
 
 
@@ -51,7 +36,7 @@ function EmailVerification() {
           onChange={(e) => {
             setVerificationCode(e.target.value);
           }}
-          className="outline-none px-2 py-1 w-[70%] mb-2 border-b-2 border-r-2 border-gray-400 dark:bg-gray-700 dark:text-gray-300"
+          className="outline-none px-2 py-1 w-[70%] mb-2 border-b-2 border-r-2 border-gray-400 dark:bg-gray-700 dark:text-gray300"
         />
         <button
           className="bg-primary w-32 py-1 cursor-pointer text-white m-2 hover:bg-primary duration-200 ease-in-out rounded-sm"
@@ -69,8 +54,9 @@ function EmailVerification() {
           </button>
         </p>
       </div>
+      {isOpen && <UpdatePassword isOpen={isOpen} onClose={toggleModal} />}
     </div>
   );
 }
 
-export default EmailVerification;
+export default VerifyCode;
