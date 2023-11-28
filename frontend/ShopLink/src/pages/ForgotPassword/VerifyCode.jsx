@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import {useNavigate } from "react-router-dom";
-
-
+import useModal from "../../hooks/useModal";
+import UpdatePassword from "./UpdatePassword";
 
 function VerifyCode() {
   const navigate = useNavigate();
   const [verificationCode, setVerificationCode] = useState("");
+  const [isOpen, toggleModal] = useModal();
 
-  const handleSubmit = (e) => {};
+
+  const handleSubmit = (e) => {
+    toggleModal();
+  };
 
 
 
@@ -50,6 +54,7 @@ function VerifyCode() {
           </button>
         </p>
       </div>
+      {isOpen && <UpdatePassword isOpen={isOpen} onClose={toggleModal} />}
     </div>
   );
 }
