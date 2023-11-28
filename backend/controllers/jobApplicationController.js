@@ -16,6 +16,7 @@ exports.JobApplicationfunction = async (req, res) => {
     const status='pending'
     const jobVacancyID='cs123'
 
+
     const newApplication = await JobApplication.create({
         username,
         applythrough,
@@ -23,6 +24,8 @@ exports.JobApplicationfunction = async (req, res) => {
         skills,
         status,
         jobVacancyID
+
+      
     });
 
     res.status(200).json({successMsg: 'Application Submitted Successfully'});

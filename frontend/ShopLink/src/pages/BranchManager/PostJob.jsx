@@ -5,6 +5,7 @@ import FileInput from '../../components/Fields/FileInput';
 import ManagerDashnoardLayout from "../../components/layouts/BranchManager/managerDashboardLayout"
 const PostJob = () => {
   
+
   const [jobID, setjobID] = useState("");
   const [jobTitile, setjobTitle] = useState("");
   const [salary, setSalary] = useState('');
@@ -22,6 +23,7 @@ const PostJob = () => {
       <div className="bg-white p-8 rounded shadow-md w-[700px] dark:bg-gray-900 ">
         <form onSubmit={handleSubmit}>
             <h1 className="text-lg font-bold   dark:text-gray-400">Post Job Details</h1>
+
             <Fields
           label="Job ID"
           type="text"
@@ -29,6 +31,7 @@ const PostJob = () => {
           value={jobID}
           handleChange={(e) => setjobID(e.target.value)}
         />
+
         <Fields
           label="Job Title"
           type="text"

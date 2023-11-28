@@ -2,6 +2,7 @@ const express = require('express');
 const authController = require('../controllers/authController');
 const JobApplicationController=require('../controllers/jobApplicationController');
 const postJobController=require('../controllers/postJobController');
+
 const { authenticateToken } = require('../middleware/authMiddleware');
 
 const router = express.Router();

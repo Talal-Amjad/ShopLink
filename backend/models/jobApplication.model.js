@@ -21,10 +21,12 @@ const JobApplication = sequelize.define("JobApplication", {
     status: {
         type: DataTypes.STRING,
         allowNull: false
+
     },
     jobVacancyID: {
         type: DataTypes.STRING,
         allowNull: false
+
     }
 });
 
