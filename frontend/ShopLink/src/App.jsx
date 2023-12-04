@@ -8,6 +8,7 @@ import OwnerDashboardLayout from "./components/layouts/ShopOwner/ownerDashboardL
 import EmailVerification from "./pages/EmailVerificaion";
 import ViewAllApplicants from "./pages/BranchManager/ViewAllApplicants";
 import VerifyCode from "./pages/ForgotPassword/VerifyCode";
+import LandingPage from "./pages/LandingPage";
 function App() {
  
 
@@ -15,6 +16,7 @@ function App() {
     <>
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<LandingPage/>} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/signin" element={<SignInPage/>} />
         <Route path="/applyforjob" element={<ApplyfoJob/>}/>
