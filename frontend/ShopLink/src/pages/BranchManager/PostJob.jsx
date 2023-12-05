@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Fields from '../../components/Fields/Fields';
 import Button from '../../components/Buttons/Button';
-import FileInput from '../../components/Fields/FileInput';
+
 import ManagerDashnoardLayout from "../../components/layouts/BranchManager/managerDashboardLayout"
 const PostJob = () => {
   
@@ -20,7 +20,7 @@ const PostJob = () => {
   return (
     <ManagerDashnoardLayout>  
        <div className="bg-gray-100 min-h-screen flex justify-center items-center  dark:bg-gray-700">
-      <div className="bg-white p-8 rounded shadow-md w-[700px] dark:bg-gray-900 ">
+      <div className="bg-white p-8 rounded shadow-md w-[700px] dark:bg-gray-900 mt-6 mb-6">
         <form onSubmit={handleSubmit}>
             <h1 className="text-lg font-bold   dark:text-gray-400">Post Job Details</h1>
 
@@ -59,8 +59,7 @@ const PostJob = () => {
           value={date}
           handleChange={(e) =>  setDate(e.target.value)}
         />
-           <FileInput label="Upload Job Ad" height={200} />
-
+           
           <Button text="Post Job" type="submit" />
         </form>
       </div>

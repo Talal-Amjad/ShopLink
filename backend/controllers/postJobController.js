@@ -14,7 +14,6 @@ exports.postJobControllers = async (req, res) => {
      
     } = req.body;
 
-  const  jobPoster="Job Ad";
   const status="pending";
 
     const newJobVacancy = await JobVacancy.create({
@@ -23,7 +22,6 @@ exports.postJobControllers = async (req, res) => {
         expectedSalary, 
         jobDiscription, 
         lastDate,
-        jobPoster,
         status
     });
 
