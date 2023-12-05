@@ -36,4 +36,4 @@ sequelize.sync().then(() => {
     console.error('Unable to create Job Vacancy table: ', error);
 });
 
-module.exports = JobVacancy;
+module.exports = {JobVacancy};

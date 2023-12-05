@@ -1,4 +1,4 @@
-const  JobVacancy  = require('../models/postJobVacancy.model');
+const  {JobVacancy}  = require('../models/JobVacancy.model');
 const { sequelize } = require('../config/dbConfig');
 
 
