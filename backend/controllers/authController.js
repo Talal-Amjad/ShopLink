@@ -88,6 +88,7 @@ exports.signIn = async (req, res) => {
 
     const token = generateToken(user);
 
+    
     res.status(200).json({ token, successMsg: 'User Found' });
   } catch (error) {
     console.error(error);

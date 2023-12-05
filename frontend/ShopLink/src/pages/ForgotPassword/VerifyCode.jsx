@@ -1,25 +1,35 @@
 import React, { useState } from "react";
-import {useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useModal from "../../hooks/useModal";
 import UpdatePassword from "./UpdatePassword";
+import axios from "../../axios";
 
 function VerifyCode() {
   const navigate = useNavigate();
   const [verificationCode, setVerificationCode] = useState("");
   const [isOpen, toggleModal] = useModal();
 
-
-  const handleSubmit = (e) => {
-    toggleModal();
+  const handleSubmit = async () => {
+    try {
+     
+      await axios.post("/verify_email_encoded_pass", {
+        verificationCode,
+      });
+      alert("Verification successful!");
+      toggleModal();
+    } catch (error) {
+      console.error("Error during code verification:", error.message);
+      
+    }
   };
 
-
+  const handleResendCode = async () => {};
 
   return (
     <div className="bg-white dark:bg-gray-700 flex flex-col flex-wrap justify-center items-center max-w-screen h-screen overflow-hidden">
       <div
         style={{}}
-        className="md:w-[450px] bg-[#ECF0F3]  dark:bg-gray-900 bg-transparent  dark:text-gray-300 flex flex-col p-5 flex-wrap h-96  rounded-xl items-center"
+        className="md:w-[450px] bg-gray-600  dark:bg-gray-900 bg-transparent  dark:text-gray-300 flex flex-col p-5 flex-wrap h-96  rounded-xl items-center"
       >
         <h1 className="text-700 font-bold text-xl p-5 mb-5">
           Verify Your Account
@@ -47,8 +57,9 @@ function VerifyCode() {
         <p className="mt-6 text-gray-500">
           Not Received?
           <button
-            className=" px-2 duration-200 font-bold text-black hover:text-gray-500"
-            type="submit"
+            className="px-2 duration-200 font-bold text-black hover:text-gray-500"
+            type="button"
+            onClick={handleResendCode}
           >
             Resend Code
           </button>

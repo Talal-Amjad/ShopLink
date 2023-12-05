@@ -1,10 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { sequelize } = require('../config/dbConfig');
 const User = require('../models/user');
-const JWT_SECRET=process.env.JWT_SECRET;
 const {sendVerificationEmail} = require('../config/transporter')
 const crypto = require('crypto');
-
+const bcrypt = require('bcrypt');
 
 
 let temp_forget_pass = 0;
@@ -51,49 +50,37 @@ const verify_forgetpass = async (req, res) => {
   }
 };
 
-
-const change_password = async(req, res) => {
-  try{
-
+const change_password = async (req, res) => {
+  try {
+    console.log(req.body.pass);
+    const hashedPassword = await bcrypt.hash(req.body.pass, 10);
+    console.log(hashedPassword);
     if (!isVerified) {
-      return res.status(403).send('canot update the password');
+      return res.status(403).send('Cannot update the password');
     }
 
-    await sequelize
-    .sync()
-    .then(async() => {
-     await User.update(
-        {
-          password: req.body.pass,
-        },
-        {
-          where: { email: temp_forgetpass_email }
-        }
-      )
-        .then((data) => {
-          if(!data)
-          {
-            res.send(new errorHandler("Email do not exist " , 404))
-          }
-          else{
-          console.log("Successfully updated record.");
-          res.status(200).send("data updated");
-          }
-        })
-        .catch((error) => {
-          console.error("Failed to update record : ", error);
-          res.status(500).send(error.message);
-        });
-    })
-    .catch((error) => {
-      console.error("Failed to connect table : ", error);
-      res.status(500).send(error.message);
-    });
-  }catch{
-    console.error("Failed to update record : ", error);
+
+    const updatedUser = await User.update(
+      {
+        password: hashedPassword,
+      },
+      {
+        where: { email: temp_forgetpass_email },
+      }
+    );
+
+    if (updatedUser[0] === 0) {
+      return res.status(404).send(new errorHandler('Email does not exist', 404));
+    }
+
+    console.log('Successfully updated record.');
+    res.status(200).send('Data updated');
+  } catch (error) {
+    console.error('Failed to update record:', error);
     res.status(500).send(error.message);
   }
 };
+
 
 module.exports = {
     verify_forget_Password_email,
