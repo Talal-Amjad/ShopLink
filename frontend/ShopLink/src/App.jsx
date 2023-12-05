@@ -9,6 +9,7 @@ import EmailVerification from "./pages/EmailVerificaion";
 import ViewAllApplicants from "./pages/BranchManager/ViewAllApplicants";
 import VerifyCode from "./pages/ForgotPassword/VerifyCode";
 import LandingPage from "./pages/LandingPage";
+import Jobs from "./pages/Jobs";
 function App() {
  
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/owner" element={<OwnerDashboardLayout></OwnerDashboardLayout>}></Route>
         <Route path="/viewallapplicants" element={<ViewAllApplicants></ViewAllApplicants>}></Route>
         <Route path="/verifycode" element={<VerifyCode></VerifyCode>}></Route>
+        <Route path="/jobs" element={<Jobs/>}></Route>
       </Routes>
       </BrowserRouter>
       
