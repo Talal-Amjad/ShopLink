@@ -25,14 +25,16 @@ function FileInput({ label, height }) {
   };
 
   // Function to handle the "Change File" button click
-  const handleChangeFileClick = () => {
+  const handleChangeFileClick = (e) => {
+    e.preventDefault();
+  
     // Trigger a click on the hidden file input
     const fileInput = document.getElementById("fileInput");
     if (fileInput) {
       fileInput.click();
     }
   };
-
+  
   const dashedHeightStyle = {
     height: `${height}px`,
   };
@@ -44,6 +46,7 @@ function FileInput({ label, height }) {
         <input
           type="file"
           id="fileInput"
+          name="cv"
           style={{ display: "none" }}
           onChange={handleFileChange}
         />

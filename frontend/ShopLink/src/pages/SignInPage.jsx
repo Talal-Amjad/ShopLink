@@ -29,7 +29,8 @@ const SignInPage = () => {
       try {
         const response = await axios.post("/signin", { username, password });
         const message = response.data.successMsg;
-        console.log(message);
+        console.log(response);
+        localStorage.setItem('token', response.data.token);
         if (message == "User Found") {
           navigate("/manager");
         }

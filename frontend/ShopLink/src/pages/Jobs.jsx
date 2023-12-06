@@ -36,9 +36,12 @@ const Jobs = () => {
   };
 
   const handleApplyClick = (job) => {
-    console.log(`Applied for ${job.title}`);
-    navigate('/applyforjob');
+    console.log(`Applied for ${job.jobTitle} (Job ID: ${job.jobVacancyID})`);
+    
+    // Use navigate to send both job title and job ID to /applyforjob
+    navigate(`/applyforjob/${job.jobVacancyID}/${encodeURIComponent(job.jobTitle)}`);
   };
+  
 
   const visibleJobs = jobs.filter((job) => shouldShowJob(job));
 

@@ -3,9 +3,7 @@ const { sequelize, DataTypes } = require('../config/dbConfig');
 const JobApplication = sequelize.define("JobApplication", {
     username: {
         type: DataTypes.STRING,
-        primaryKey: true,
         allowNull: false,
-        unique: true,
     },
     applythrough: {
         type: DataTypes.STRING,
@@ -24,6 +22,11 @@ const JobApplication = sequelize.define("JobApplication", {
 
     },
     jobVacancyID: {
+        type: DataTypes.STRING,
+        allowNull: false
+
+    },
+    jobTitle: {
         type: DataTypes.STRING,
         allowNull: false
 

@@ -11,7 +11,7 @@ const router = express.Router();
 router.post('/signup', authController.signUp);
 router.post('/verify', authController.verifyUser)
 router.post('/signin', authController.signIn);
-router.post('/apply',JobApplicationController.JobApplicationfunction);
+router.post('/apply', JobApplicationController.uploadDocument);
 router.post('/postjob',postJobController.postJobControllers);
 router.post('/verif_foretpass_email', forgetpass.verify_forget_Password_email)
 router.post('/verify_email_encoded_pass', forgetpass.verify_forgetpass)
