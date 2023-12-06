@@ -9,7 +9,7 @@ const crypto = require('crypto');
 
 
 const generateToken = (user) => {
-  return jwt.sign({ id: user.id, username: user.username, role: user.role },JWT_SECRET , {
+  return jwt.sign({username: user.username, role: user.role,email:user.email },JWT_SECRET , {
     expiresIn: '1h',
   });
 };
@@ -87,8 +87,9 @@ exports.signIn = async (req, res) => {
     }
 
     const token = generateToken(user);
+    const decodeToken=jwt.verify(token,process.env.JWT_SECRET);
+    console.log("Token Info: ",decodeToken);
 
-    
     res.status(200).json({ token, successMsg: 'User Found' });
   } catch (error) {
     console.error(error);
