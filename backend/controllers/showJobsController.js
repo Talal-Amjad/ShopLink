@@ -5,7 +5,7 @@ exports.getAllJobs = async (req, res) => {
   try {
     const pendingJobs = await JobVacancy.findAll({
       where: {
-        status: 'pending',
+        status: 'approve',
       },
     });
 

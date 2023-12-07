@@ -10,6 +10,7 @@ import ViewAllApplicants from "./pages/BranchManager/ViewAllApplicants";
 import VerifyCode from "./pages/ForgotPassword/VerifyCode";
 import LandingPage from "./pages/LandingPage";
 import Jobs from "./pages/Jobs";
+import ApproveJobs from "./pages/ShopOwner/ApproveJobs";
 function App() {
  
 
@@ -24,10 +25,11 @@ function App() {
         <Route path="/postjob" element={<PostJob/>}/>
         <Route path="/emailverification" element={<EmailVerification/>}/>
         <Route path="/manager" element={<ManagerDashboardLayout/>}/>
-        <Route path="/owner" element={<OwnerDashboardLayout></OwnerDashboardLayout>}></Route>
+        <Route path="/owner" element={<OwnerDashboardLayout/>}></Route>
         <Route path="/viewallapplicants" element={<ViewAllApplicants></ViewAllApplicants>}></Route>
         <Route path="/verifycode" element={<VerifyCode></VerifyCode>}></Route>
         <Route path="/jobs" element={<Jobs/>}></Route>
+        <Route path="approvejob" element={<ApproveJobs></ApproveJobs>}></Route>
       </Routes>
       </BrowserRouter>
       
