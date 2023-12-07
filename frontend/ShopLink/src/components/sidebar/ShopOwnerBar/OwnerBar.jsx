@@ -11,12 +11,12 @@ const OwnerBar = ({ sidebarVisible }) => {
       id: 1,
       name: "Approve Job",
       icon: <MdOutlineDashboard size={24} />,
-      path: "/",
+      path: "/approvejob",
     },
     {
       id: 2,
       name: "Sales Insights",
-      path: "/",
+      path: "/owner",
       icon: <CgFileDocument size={24} />,
     },
     {

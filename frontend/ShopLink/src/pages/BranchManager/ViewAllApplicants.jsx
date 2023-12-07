@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FiMoreVertical } from 'react-icons/fi';
+import axios from '../../axios';
 import Table from '../../components/Table/Table';
 import ManagerDashboradLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
 
-// Function for action
 const Actions = ({ menuItems }) => {
   return (
     <div className="absolute w-[126px] bg-white rounded text-sm right-0 mt-2 max-w-xs transition-all duration-[400ms] dark:bg-gray-900 dark:text-gray-400">
@@ -20,30 +20,38 @@ const Actions = ({ menuItems }) => {
   );
 };
 
-// Table Body dummy data
-const tableData = [
-  { employee: 'John Doe', email: 'abc@gmail.com', contact: '+923316030683', role: 'HR Manager' },
-  // ... (other rows)
-];
 export default function ViewAllApplicants() {
-  const [showMenuArray, setShowMenuArray] = useState(
-    Array(tableData.length).fill(false)
-  );
+  const [showMenuArray, setShowMenuArray] = useState([]);
+  const [applicants, setApplicants] = useState([]);
 
-  const handleEdit = () => {
-    // Implement handleEdit functionality
+  useEffect(() => {
+    // Fetch data from the server using Axios
+    axios.get('/applicants')
+      .then(response => {
+        console.log('Data fetched successfully:', response.data);
+        setApplicants(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+        // Handle error as needed
+      });
+  }, []);
+  
+  const handleSelect = () => {
+    // Implement handleSelect functionality
   };
 
-  const handleRemove = () => {
-    // Implement handleRemove functionality
+  const handleReject = () => {
+    // Implement handleReject functionality
   };
 
   const handleCancel = () => {
-    setShowMenuArray(Array(tableData.length).fill(false));
+    setShowMenuArray(Array(applicants.length).fill(false));
   };
+
   const actionMenuItems = [
-    { label: "Edit", onClick: handleEdit },
-    { label: "Remove", onClick: handleRemove },
+    { label: "select", onClick: handleSelect },
+    { label: "reject", onClick: handleReject },
     { label: "Cancel", onClick: handleCancel },
   ];
 
@@ -54,28 +62,22 @@ export default function ViewAllApplicants() {
     setShowMenuArray(updatedShowMenuArray);
   };
 
-  // Table header data
-  const headerData = ['Employee', 'Email', 'Contact', 'Role', 'Action'];
-
-  
+  const headerData = ['Username', 'Apply Through', 'CV', 'Job ID', 'Job Title', 'Actions'];
 
   return (
     <ManagerDashboradLayout>
       <Table
         headerData={headerData}
-        tableData={tableData.map((row, index) => [
+        tableData={applicants.map((applicants, index) => [
           <div className="flex items-center">
-            <div className="rounded h-8 w-8 flex items-center justify-center mr-2 bg-[#AEC84554] text-[#AEC845]">
-              {row.employee.charAt(0)}
-              {row.employee.split(' ')[1].charAt(0)}
-            </div>
             <div>
-              <div>{row.employee}</div>
+              <div>{applicants.username}</div>
             </div>
           </div>,
-          row.email,
-          row.contact,
-          row.role,
+          applicants.applythrough,
+          applicants.cv,
+          applicants.jobVacancyID,
+          applicants.jobTitle,
           <>
             <div
               className="flex justify-center cursor-pointer"
