@@ -34,7 +34,7 @@ function EmailVerification() {
     <div className="bg-white dark:bg-gray-700 flex flex-col flex-wrap justify-center items-center max-w-screen h-screen overflow-hidden">
       <div
         style={{}}
-        className="md:w-[450px] bg-#ECF0F3  dark:bg-gray-900 bg-transparent  dark:text-gray-300 flex flex-col p-5 flex-wrap h-96  rounded-xl items-center"
+        className="md:w-[450px] bg-[#c9cece]  dark:bg-gray-900 bg-transparent  dark:text-gray-300 flex flex-col p-5 flex-wrap h-96  rounded-xl items-center"
       >
         <h1 className="text-700 font-bold text-xl p-5 mb-5">
           Verify Your Account

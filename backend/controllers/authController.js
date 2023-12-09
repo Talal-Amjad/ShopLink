@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const { sequelize } = require('../config/dbConfig');
+const  {sequelize, Op}  = require('../config/dbConfig');
 const User = require('../models/user');
 const JWT_SECRET=process.env.JWT_SECRET;
 const {sendVerificationEmail} = require('../config/transporter')
@@ -18,8 +18,23 @@ const generateToken = (user) => {
 let temporaryUsers = {};
 exports.signUp = async (req, res) => {
   try {
-    const verificationCode = crypto.randomBytes(3).toString('hex').toUpperCase();
+    const existingUser = await User.findOne({
+      where: {
+        [Op.or]: [{ username: req.body.username }, { email: req.body.email }],
+      },
+    });
 
+    if (existingUser) {
+      let errorMsg = "";
+      if (existingUser.username === req.body.username) {
+        errorMsg = "Username is already registered.";
+      } else {
+        errorMsg = "Email is already registered.";
+      }
+      return res.status(400).json({ error: errorMsg });
+    }
+
+    const verificationCode = crypto.randomBytes(3).toString('hex').toUpperCase();
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     temporaryUsers[verificationCode] = {
@@ -89,8 +104,10 @@ exports.signIn = async (req, res) => {
     const token = generateToken(user);
     const decodeToken=jwt.verify(token,process.env.JWT_SECRET);
     console.log("Token Info: ",decodeToken);
+    console.log("Role : ",decodeToken.role);
+    const role=decodeToken.role;
 
-    res.status(200).json({ token, successMsg: 'User Found' });
+    res.status(200).json({ role, token, successMsg: 'User Found' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });

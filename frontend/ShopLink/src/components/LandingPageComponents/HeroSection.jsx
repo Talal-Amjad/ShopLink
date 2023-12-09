@@ -6,7 +6,7 @@ export default function HeroSection() {
 
     <div
         className="w-auto px-4 sm:px-6 lg:px-8 flex gap-3 lg:flex-justify lg:flex flex-col lg:flex-row">
-        <div className="sm:text-center lg:text-left">
+        <div className="sm:text-center lg:text-left md:mt-16">
             <h1 className="text-4xl tracking-tight font-extrabold text-gray-800 sm:text-5xl md:text-6xl">
                 <span className="block xl:inline"> Transforming </span>
                 <span className="block text-indigo-600 xl:inline"> Shop Management</span>
@@ -27,7 +27,7 @@ export default function HeroSection() {
             </div>
         </div>
         <div className="lg:inset-y-0 lg:right-0 lg:w-1/2 my-4">
-            <img className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://images.unsplash.com/photo-1551434678-e076c223a692?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2850&q=80" alt="Picture"/>
+            <img className="h-56 w-full object-cover sm:h-72 md:h-96 lg:w-full lg:h-full" src="https://bootstrapmade.com/demo/templates/FlexStart/assets/img/hero-img.png" alt="Picture"/>
         </div>
       
     </div>
@@ -35,3 +35,4 @@ export default function HeroSection() {
 </section>
   )
 }
+

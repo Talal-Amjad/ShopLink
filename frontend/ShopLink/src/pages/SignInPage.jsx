@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import AuthLayout from "../components/layouts/AuthLayout";
 import { useNavigate } from "react-router-dom";
 import Fields from "../components/Fields/Fields";
@@ -6,14 +8,45 @@ import Button from "../components/Buttons/Button";
 import axios from "./../axios";
 import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 
-
+const SignInSchema = Yup.object().shape({
+  username: Yup.string().required("Username is required"),
+  password: Yup.string().required("Password is required"),
+});
 
 const SignInPage = () => {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showError, setShowError] = useState(false);
 
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      password: "",
+    },
+    validationSchema: SignInSchema,
+    onSubmit: async (values) => {
+      try {
+        const response = await axios.post("/signin", values);
+        const message = response.data.successMsg;
+        const role = response.data.role;
+
+        if (message === "User Found") {
+          localStorage.setItem("token", response.data.token);
+          if (role === "user") {
+            navigate("/jobs");
+          } else if (role === "manager") {
+            navigate("/manager");
+          } else if (role === "owner") {
+            navigate("/owner");
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        setError(error.response?.data?.error || "An error occurred");
+        setShowError(true);
+      }
+    },
+  });
 
   const handleOauthLogin = async (credentialResponse) => {
     console.log(credentialResponse);
@@ -21,63 +54,66 @@ const SignInPage = () => {
     console.log(oauthToken);
   };
 
-  //When the API is available we will use Yup and formik for validation.
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (username && password) {
-      try {
-        const response = await axios.post("/signin", { username, password });
-        const message = response.data.successMsg;
-        console.log(message);
-        if (message == "User Found") {
-          navigate("/manager");
-        }
-      } catch (error) {
-        console.log(error);
-        alert(error.response.data.error);
-        setError(error.response.data.error);
-        return;
-      }
-    } else {
-      setError("All fields are required");
-      return;
+  useEffect(() => {
+    let timer;
+    if (showError) {
+      timer = setTimeout(() => {
+        setShowError(false);
+        setError("");
+      }, 5000);
     }
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [showError]);
+
+  const closeError = () => {
+    setShowError(false);
+    setError("");
   };
 
   return (
     <AuthLayout title="Sign in">
-      <form className="md:space-y-1" onSubmit={handleSubmit}>
+      {showError && (
+        <div className="bg-red-500 text-white p-3 my-5 flex items-center justify-between">
+          <span>{error}</span>
+          <button onClick={closeError}>&times;</button>
+        </div>
+      )}
+      <form className="md:space-y-1" onSubmit={formik.handleSubmit}>
         <Fields
-          label="username"
+          label="Username"
           type="text"
           name="username"
           placeholder="example@gmail.com"
-          value={username}
-          handleChange={(e) => setUsername(e.target.value)}
+          value={formik.values.username}
+          handleBlur={formik.handleBlur}
+          handleChange={formik.handleChange}
+          error={formik.touched.username && formik.errors.username}
         />
-
         <Fields
-          label="password"
+          label="Password"
           type="password"
-          name="password"
-          placeholder="&#9679;&#9679;&#9679;&#9679;&#9679;"
-          value={password}
-          handleChange={(e) => setPassword(e.target.value)}
+          name="password" 
+          placeholder="********"
+          value={formik.values.password}
+          handleBlur={formik.handleBlur}
+          handleChange={formik.handleChange}
+          error={formik.touched.password && formik.errors.password}
         />
 
-        {error && <small className="text-red-500 p-0 m-0">{error}</small>}
         <div>
-          <Button type="submit" text="Continue" onClick={handleSubmit} />
+          <Button type="submit" text="Continue" />
         </div>
-        <div class="flex items-center justify-center dark:bg-gray-800">
-          <GoogleOAuthProvider clientId="361413209393-0ljmclk0444d05j5soep99ugj62uh1qj.apps.googleusercontent.com">
+        <div className="flex items-center justify-center dark:bg-gray-800">
+          <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
             <GoogleLogin
               onSuccess={handleOauthLogin}
               onError={() => {
-                console.log("Login Failed");
+                setError("Google login failed");
+                setShowError(true);
               }}
-              cookiePolicy="single_host_origin"
             />
           </GoogleOAuthProvider>
         </div>

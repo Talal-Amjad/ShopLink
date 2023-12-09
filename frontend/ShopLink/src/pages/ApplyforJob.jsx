@@ -3,7 +3,8 @@ import axios from '../axios';
 import SkillInput from '../components/Fields/SkillInput';
 import Button from '../components/Buttons/Button';
 import { useParams } from 'react-router-dom';
-
+import UserLayout from '../components/layouts/User/UserLayout';
+import UserNavBar from '../components/Navbar/UserNavBar';
 const ApplyforJob = () => {
   const { jobVacancyID, jobTitle } = useParams();
 
@@ -35,9 +36,12 @@ const ApplyforJob = () => {
         formData.append('cv', file);
       }
 
+      const token = localStorage.getItem('token');
+      console.log(token);
+
       const response = await axios.post('/apply', formData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -49,6 +53,8 @@ const ApplyforJob = () => {
   };
 
   return (
+    <UserLayout UserLayout>
+      <UserNavBar/>
     <div className="bg-gray-100 min-h-screen flex justify-center items-center dark:bg-gray-900">
       <div className="bg-white p-8 rounded shadow-md w-96 m-5 dark:bg-gray-700">
         <form onSubmit={handleSubmit} encType='multipart/form-data'>
@@ -104,6 +110,7 @@ const ApplyforJob = () => {
         </form>
       </div>
     </div>
+    </UserLayout>
   );
 };
 
