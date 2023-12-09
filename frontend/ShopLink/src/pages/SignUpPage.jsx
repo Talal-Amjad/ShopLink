@@ -1,106 +1,154 @@
-  import Button from "../components/Buttons/Button";
-  import Fields from "../components/Fields/Fields";
-  import AuthLayout from "../components/layouts/AuthLayout";
-  import { useNavigate } from "react-router-dom";
-  import { useState } from "react";
-  import axios from './../axios'
+import { useState, useEffect } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import AuthLayout from "../components/layouts/AuthLayout";
+import { useNavigate } from "react-router-dom";
+import Fields from "../components/Fields/Fields";
+import Button from "../components/Buttons/Button";
+import axios from "./../axios";
 
+const SignUpPage = () => {
+  const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [showError, setShowError] = useState(false);
 
-  const SignUpPage = () => {
+  const validationSchema = Yup.object().shape({
+    firstName: Yup.string().min(3, "First name must be at least 3 characters").required("First name is required"),
+    lastName: Yup.string().min(3, "Last name must be at least 3 characters").required("Last name is required"),
+    username: Yup.string().min(5, "Username must be at least 5 characters").required("Username is required"),
+    email: Yup.string().email("Invalid email address").matches(/@gmail.com$/, "Email must be a Gmail address").required("Email is required"),
+    password: Yup.string().min(8, "Password must be at least 8 characters").matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character").required("Password is required"),
+    confirmPassword: Yup.string().oneOf([Yup.ref("password"), null], "Passwords must match").required("Confirm password is required"),
+  });
 
-    const navigate = useNavigate();
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [email, setEmail] = useState("");
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [role, setRole] = useState("user");
-    const [error, setError] = useState("");
-
-
-    //When the API is available we will use Yup and formik for validation.
-
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      
-      if (username && password && confirmPassword && email && lastName && firstName) {
-        if (password === confirmPassword) {
-          try {
-            const response = await axios.post('/signup', {
-              firstname: firstName,
-              lastname: lastName,
-              username,
-              email,
-              password,
-              role: role,
-            });
-    
-            const message = response.data.successMsg;
-            console.log(message);
-              navigate("/emailverification");
-          } catch (error) {
-            console.log(error);
-            alert(error.response.data.error );
-            setError(error.response.data.error);
-            return;
-          }
-        } else {
-          setError("Password and Confirm not the same");
-        }
-      } else {
-        setError('All fields are required');
-        return;
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      username: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "user",
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        const response = await axios.post("/signup", values);
+        const message = response.data.successMsg;
+        console.log(message);
+        navigate("/emailverification");
+      } catch (error) {
+        console.log(error);
+        handleSignUpError(error);
       }
-    };
-    
+    },
+  });
 
+  const handleSignUpError = (error) => {
+    const errorMessage = error.response?.data?.error || "An error occurred";
+    setError(errorMessage);
+    setShowError(true);
 
-
-    return (
-      <AuthLayout title="Sign Up">
-        <form onSubmit={handleSubmit}>
-          <div className="flex justify-between w-full gap-x-2">
-            <div className="w-1/2">
-              <Fields label="First Name" type="text" name="firstname"  placeholder="Jhon" value={firstName}
-              handleChange={(e) => setFirstName(e.target.value)} />
-            </div>
-            <div className="w-1/2">
-              <Fields label="Last Name" type="text" name="lastname"  placeholder="Doe" value={lastName}
-              handleChange={(e) => setLastName(e.target.value)}/>
-            </div>
-          </div>
-          <Fields label="User Name" type="text" name="username" placeholder="JhonDoe123" value={username}
-          handleChange={(e) => setUsername(e.target.value)}/>
-          <Fields label="Email" type="email" name="email" placeholder="example@gmail.com" value={email}
-          handleChange={(e) => setEmail(e.target.value)}/>
-          <Fields
-            label="Password"
-            type="password"
-            placeholder="Password"
-            value={password}
-            name="password"
-            handleChange={(e) => setPassword(e.target.value)}
-          />
-          <Fields
-            label="Confirm Password"
-            type="password"
-            placeholder="Password"
-            value={confirmPassword}
-            handleChange={(e) => setConfirmPassword(e.target.value)}
-          />
-          <div>
-            <Button text="Create account" type="submit" />
-          </div>
-          <div class="flex items-center justify-center dark:bg-gray-800">
-            <button class="px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
-                <img class="w-6 h-6" src="https://www.svgrepo.com/show/475656/google-color.svg" loading="lazy" alt="google logo"/>
-                <span>Login with Google</span>
-            </button>
-                </div>
-        </form>
-      </AuthLayout>
-    );
+    setTimeout(() => {
+      setShowError(false);
+      setError("");
+    }, 5000);
   };
 
-  export default SignUpPage;
+  return (
+    <AuthLayout title="Sign Up">
+      {showError && (
+        <div className="bg-red-500 text-white p-3 my-5 flex items-center justify-between">
+          <span>{error}</span>
+          <button onClick={() => setShowError(false)}>&times;</button>
+        </div>
+      )}
+      <form onSubmit={formik.handleSubmit}>
+        <div className="flex justify-between w-full gap-x-2">
+          <div className="w-1/2">
+            <Fields
+              label="First Name"
+              type="text"
+              name="firstName"
+              placeholder="Jhon"
+              value={formik.values.firstName}
+              handleBlur={formik.handleBlur}
+              handleChange={formik.handleChange}
+              error={formik.touched.firstName && formik.errors.firstName}
+            />
+          </div>
+          <div className="w-1/2">
+            <Fields
+              label="Last Name"
+              type="text"
+              name="lastName"
+              placeholder="Doe"
+              value={formik.values.lastName}
+              handleBlur={formik.handleBlur}
+              handleChange={formik.handleChange}
+              error={formik.touched.lastName && formik.errors.lastName}
+            />
+          </div>
+        </div>
+        <Fields
+          label="User Name"
+          type="text"
+          name="username"
+          placeholder="JhonDoe123"
+          value={formik.values.username}
+          handleBlur={formik.handleBlur}
+          handleChange={formik.handleChange}
+          error={formik.touched.username && formik.errors.username}
+        />
+
+        <Fields
+          label="Email"
+          type="email"
+          name="email"
+          placeholder="example@gmail.com"
+          value={formik.values.email}
+          handleBlur={formik.handleBlur}
+          handleChange={formik.handleChange}
+          error={formik.touched.email && formik.errors.email}
+        />
+        <Fields
+          label="Password"
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formik.values.password}
+          handleBlur={formik.handleBlur}
+          handleChange={formik.handleChange}
+          error={formik.touched.password && formik.errors.password}
+        />
+        <Fields
+          label="Confirm Password"
+          type="password"
+          name="confirmPassword"
+          placeholder="Password"
+          value={formik.values.confirmPassword}
+          handleBlur={formik.handleBlur}
+          handleChange={formik.handleChange}
+          error={formik.touched.confirmPassword && formik.errors.confirmPassword}
+        />
+        <div>
+          <Button text="Create account" type="submit" />
+        </div>
+        <div className="flex items-center justify-center dark:bg-gray-800">
+          <button className="px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
+            <img
+              className="w-6 h-6"
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              loading="lazy"
+              alt="google logo"
+            />
+            <span>Login with Google</span>
+          </button>
+        </div>
+      </form>
+    </AuthLayout>
+  );
+};
+
+export default SignUpPage;

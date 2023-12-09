@@ -1,4 +1,4 @@
-const {Sequelize,DataTypes}=require('sequelize');
+const {Sequelize,DataTypes,Op}=require('sequelize');
 
 const sequelize=new Sequelize(
     'SHOPLINK',
@@ -15,4 +15,4 @@ sequelize.authenticate().then(() => {
     console.error('Unable to connect to the database: ', error);
 });
 
-module.exports = { sequelize, DataTypes };
+module.exports = { sequelize, DataTypes,Op };
