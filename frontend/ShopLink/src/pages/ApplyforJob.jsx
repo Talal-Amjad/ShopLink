@@ -2,11 +2,20 @@ import React, { useState } from 'react';
 import axios from '../axios';
 import SkillInput from '../components/Fields/SkillInput';
 import Button from '../components/Buttons/Button';
-import { useParams } from 'react-router-dom';
 import UserLayout from '../components/layouts/User/UserLayout';
 import UserNavBar from '../components/Navbar/UserNavBar';
+import { useLocation,useNavigate } from 'react-router-dom';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faUpload } from '@fortawesome/free-solid-svg-icons';
+
+
+
 const ApplyforJob = () => {
-  const { jobVacancyID, jobTitle } = useParams();
+
+  const location = useLocation();
+  const { jobVacancyID, jobTitle } = location.state || {};
+  const navigate=useNavigate();
+  
 
   const [cvOption, setCvOption] = useState(null);
   const [skills, setSkills] = useState('');
@@ -46,6 +55,7 @@ const ApplyforJob = () => {
       });
 
       console.log(response.data);
+      navigate('/jobs');
     } catch (error) {
       console.error('Error submitting application:', error);
       setError('There was an error submitting the application. Please try again.');
@@ -56,7 +66,7 @@ const ApplyforJob = () => {
     <UserLayout UserLayout>
       <UserNavBar/>
     <div className="bg-gray-100 min-h-screen flex justify-center items-center dark:bg-gray-900">
-      <div className="bg-white p-8 rounded shadow-md w-96 m-5 dark:bg-gray-700">
+      <div className="bg-white p-8 rounded shadow-md w-100 m-5 dark:bg-gray-700">
         <form onSubmit={handleSubmit} encType='multipart/form-data'>
           <h1 className="text-lg font-bold dark:text-gray-400">Application Form</h1>
           <div className="mb-4">
