@@ -21,7 +21,7 @@ function App() {
         <Route path="/" element={<LandingPage/>} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/signin" element={<SignInPage/>} />
-        <Route path="/applyforjob/:jobVacancyID/:jobTitle" element={<ApplyfoJob/>}/>
+        <Route path="/applyforjob" element={<ApplyfoJob/>}/>
         <Route path="/postjob" element={<PostJob/>}/>
         <Route path="/emailverification" element={<EmailVerification/>}/>
         <Route path="/manager" element={<ManagerDashboardLayout/>}/>

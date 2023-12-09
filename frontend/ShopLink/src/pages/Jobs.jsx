@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from "./../axios";
 import UserLayout from '../components/layouts/User/UserLayout';
-import { useNavigate } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
+
 import UserNavBar from '../components/Navbar/UserNavBar';
 const Jobs = () => {
   const navigate = useNavigate();
@@ -37,11 +38,15 @@ const Jobs = () => {
 
   const handleApplyClick = (job) => {
     console.log(`Applied for ${job.jobTitle} (Job ID: ${job.jobVacancyID})`);
-
-    // Use navigate to send both job title and job ID to /applyforjob
-    navigate(`/applyforjob/${job.jobVacancyID}/${encodeURIComponent(job.jobTitle)}`);
+    navigate({
+      pathname: '/applyforjob',
+      state: {
+        jobVacancyID: job.jobVacancyID,
+        jobTitle: job.jobTitle,
+      },
+    });
   };
-
+  
 
   const handleSearch = async (searchInput) => {
     setSearchTerm(searchInput);
