@@ -38,8 +38,8 @@ exports.signUp = async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
     temporaryUsers[verificationCode] = {
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
+      firstname: req.body.firstName,
+      lastname: req.body.lastName,
       username: req.body.username,
       email: req.body.email,
       password: hashedPassword,
@@ -47,7 +47,7 @@ exports.signUp = async (req, res) => {
     };
 
     await sendVerificationEmail(req.body.email, verificationCode);
-
+    console.log("Verification code : ", verificationCode);
     res.status(200).json({ successMsg: 'Verification code sent to email.' });
   } catch (error) {
     console.error('Error in signUpUser:', error);

@@ -1,4 +1,4 @@
-const JobApplication = require("../models/jobApplication.model");
+const  JobApplication  = require("../models/jobApplication.model");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 const { sequelize } = require("../config/dbConfig");
@@ -43,36 +43,52 @@ exports.uploadDocument = async (req, res) => {
 
       const tokenParts = authorizationHeader.split(" ");
 
-      console.log('Authorization header:', req.headers.authorization);
-
       if (tokenParts.length !== 2 || tokenParts[0] !== "Bearer") {
         return res.status(401).send("Invalid Authorization header format");
       }
 
       const token = tokenParts[1];
-      console.log('Token is : ', token);
-
-      const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
-      const username = decodeToken.username;
 
       try {
         await sequelize.sync();
         console.log("Document table synced successfully!");
 
-        await JobApplication.create({
-          cv: req.file.path,
-          username: username,
+        const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
+        const username = decodeToken.username;
+        const username2 = decodeToken.username;
+
+        // Check if the user has already applied for the same job
+        const existingApplication = await JobApplication.findOne({
+          where: {
+            username:username2,
+            jobVacancyID: req.body.jobVacancyID,
+            status: "pending", 
+          },
+        });
+
+        if (existingApplication) {
+          return res.status(201).send("You have already applied for this job.");
+        }
+       
+        const jobApplicationData = {
+          username,
           applythrough: req.body.applythrough,
           skills: req.body.skills,
           status: "pending",
           jobVacancyID: req.body.jobVacancyID,
           jobTitle: req.body.jobTitle,
-        });
+        };
+
+        if (req.body.applythrough === 'withCV') {
+          jobApplicationData.cv = req.file.path;
+        }
+
+        await JobApplication.create(jobApplicationData);
 
         console.log("Uploaded file:", req.file);
-        res.send("Successfully added record for the document.");
+        res.send("Successfully added a record for the document.");
       } catch (error) {
-        console.error("Failed to create new record: ", error);
+        console.error("Failed to create a new record: ", error);
         res.status(500).send(error.message);
       }
     });

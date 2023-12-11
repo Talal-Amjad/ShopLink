@@ -6,28 +6,35 @@ const JobVacancy = sequelize.define("JobVacancy", {
         primaryKey: true,
         allowNull: false,
         unique: true,
+        defaultValue: () => {
+          return 'JV' + Date.now();
+        },
     },
-    jobTitle: {  
+    jobTitle: {
         type: DataTypes.STRING,
-        allowNull: false,  
+        allowNull: false,
     },
     expectedSalary: {
         type: DataTypes.INTEGER,
-        allowNull: false,  
+        allowNull: false,
     },
     jobDiscription: {
         type: DataTypes.STRING,
-        allowNull: false,  
+        allowNull: false,
     },
     lastDate: {
         type: DataTypes.DATE,
-        allowNull: false,  
+        allowNull: false,
     },
     status: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        defaultValue: 'pending',
     },
-
+    skills: {
+        type: DataTypes.JSON, 
+        allowNull: true, 
+    },
 });
 
 sequelize.sync().then(() => {
@@ -36,4 +43,4 @@ sequelize.sync().then(() => {
     console.error('Unable to create Job Vacancy table: ', error);
 });
 
-module.exports = {JobVacancy};
+module.exports = { JobVacancy };

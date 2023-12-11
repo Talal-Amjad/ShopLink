@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { FiMoreVertical } from 'react-icons/fi';
 import axios from '../../axios';
 import Table from '../../components/Table/Table';
-import ManagerDashboradLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
+import OwnerDashboradLayout from '../../components/layouts/ShopOwner/ownerDashboardLayout';
+
 
 const Actions = ({ menuItems }) => {
   return (
@@ -63,7 +64,7 @@ const ViewAllApplicants = () => {
   const headerData = ['Username', 'Apply Through', 'CV', 'Job ID', 'Job Title', 'Actions'];
 
   return (
-    <ManagerDashboradLayout>
+    <OwnerDashboradLayout>
       <Table
         headerData={headerData}
         tableData={applicants.map((applicant, index) => [
@@ -97,7 +98,7 @@ const ViewAllApplicants = () => {
           </>,
         ])}
       />
-    </ManagerDashboradLayout>
+    </OwnerDashboradLayout>
   );
 };
 

@@ -1,33 +1,27 @@
-const  {JobVacancy}  = require('../models/JobVacancy.model');
+const { JobVacancy } = require('../models/JobVacancy.model');
 const { sequelize } = require('../config/dbConfig');
-
 
 exports.postJobControllers = async (req, res) => {
   try {
     const {
-        jobVacancyID,
-        jobTitle, 
-        expectedSalary, 
-        jobDiscription, 
-        lastDate,  
-       
-     
+      jobTitle,
+      expectedSalary,
+      jobDescription,
+      lastDate,
+      skills,
     } = req.body;
 
-  const status="pending";
-
     const newJobVacancy = await JobVacancy.create({
-        jobVacancyID,
-        jobTitle, 
-        expectedSalary, 
-        jobDiscription, 
-        lastDate,
-        status
+      jobTitle,
+      expectedSalary,
+      jobDiscription: jobDescription,
+      lastDate,
+      skills: JSON.stringify(skills),
     });
 
-    res.status(200).json({successMsg: 'Job Post request submitted Successfully'});
+    res.status(200).json({ successMsg: 'Job Post request submitted Successfully' });
   } catch (error) {
-    console.error('Error in Job Post request :', error);
+    console.error('Error in Job Post request:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-}
+};

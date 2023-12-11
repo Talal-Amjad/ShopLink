@@ -5,7 +5,7 @@ import { useNavigate} from "react-router-dom";
 
 import UserNavBar from '../components/Navbar/UserNavBar';
 const Jobs = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const [jobs, setJobs] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -37,12 +37,14 @@ const Jobs = () => {
   };
 
   const handleApplyClick = (job) => {
-    console.log(`Applied for ${job.jobTitle} (Job ID: ${job.jobVacancyID})`);
-    navigate({
-      pathname: '/applyforjob',
+    console.log(`You Applied for ${job.jobVacancyID} (Job ID: ${job.jobVacancyID})`);
+    const jobVacancyID=job.jobVacancyID;
+    const jobTitle=job.jobTitle;
+
+    navigate('/applyforjob',{
       state: {
-        jobVacancyID: job.jobVacancyID,
-        jobTitle: job.jobTitle,
+        jobVacancyID,
+        jobTitle
       },
     });
   };
@@ -64,7 +66,7 @@ const Jobs = () => {
     <UserLayout>
       <UserNavBar onSearch={handleSearch}></UserNavBar>
       <div className="container mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-8 mt-14 dark:text-white">Available Jobs</h1>
+        <h1 className="text-3xl font-bold mb-8 mt-20 dark:text-white">Available Jobs</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mx-6">
           {jobs.map((job) => (
             <div key={job.jobVacancyID} className="bg-white p-6 shadow-md rounded-md w-full dark:bg-gray-900 dark:text-white">
@@ -75,6 +77,14 @@ const Jobs = () => {
                 <div className='md:flex'>
                   <h2 className="text-xl font-bold mb-2">Expected Salary:</h2>
                   <p className="mb-4 text-lg">&nbsp;&nbsp;&nbsp;{`${job.expectedSalary.toLocaleString()}`}</p>
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold mb-2">Required Skills:</h2>
+                  <div className="mb-4 text-lg">
+                    {JSON.parse(job.skills).map((skill, index) => (
+                      <p key={index}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; {skill}</p>
+                    ))}
+                  </div>
                 </div>
                 <div className='md:flex'>
                   <h2 className="text-xl font-bold mb-2">Last Date &nbsp;&nbsp;&nbsp;:</h2>
