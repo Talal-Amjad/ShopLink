@@ -10,29 +10,30 @@ let temp_forget_pass = 0;
   let temp_forgetpass_email = "";
   const verify_forget_Password_email = async (req, res) => {
     try {
-        await sequelize.sync();
-
-        const user = await User.findOne({
-            where: {
-                email: req.body.email,
-            }
-        });
-
-        if (user) {
-            const forgetpass_verificationCode = crypto.randomBytes(3).toString('hex').toUpperCase();
-            await sendVerificationEmail(req.body.email, forgetpass_verificationCode);
-            res.send("Verification code sent to your email");
-
-            temp_forget_pass = forgetpass_verificationCode;
-            temp_forgetpass_email = req.body.email;
-        } else {
-            res.status(404).send("Email not found");
-        }
+      await sequelize.sync();
+  
+      const user = await User.findOne({
+        where: {
+          email: req.body.email,
+        },
+      });
+  
+      if (user) {
+        const forgetpass_verificationCode = crypto.randomBytes(3).toString('hex').toUpperCase();
+        await sendVerificationEmail(req.body.email, forgetpass_verificationCode);
+        res.send("Verification code sent to your email");
+  
+        temp_forget_pass = forgetpass_verificationCode;
+        temp_forgetpass_email = req.body.email;
+      } else {
+        res.status(404).send("Email not found");
+      }
     } catch (error) {
-        console.error("Error: ", error.message);
-        res.status(500).send(error.message);
+      console.error("Error: ", error.message);
+      res.status(500).send(error.message);
     }
-};
+  };
+  
 
 let isVerified = false;
 const verify_forgetpass = async (req, res) => {

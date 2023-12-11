@@ -22,7 +22,7 @@ const OwnerBar = ({ sidebarVisible }) => {
     {
       id: 3,
       name: "View All Applicants",
-      path: "/",
+      path: "/ownerviewallapplicants",
       icon: <FiUsers size={24} />,
     },
   ];
@@ -33,7 +33,7 @@ const OwnerBar = ({ sidebarVisible }) => {
 
   return (
     <div
-      className={`fixed w-full bg-white mt-14 ${
+      className={`fixed w-full bg-white mt-[120px]${
         sidebarVisible ? "left-0" : ""
       } transition-all duration-300 w-full top-0 -left-[100%] h-screen md:w-[20%] md:left-0 dark:bg-gray-900 dark:text-gray-400 z-20`}
     >
@@ -43,7 +43,7 @@ const OwnerBar = ({ sidebarVisible }) => {
           {sidebarOptions.map((option) => (
             <div key={option.id}>
               <div
-                className={`navItem flex items-center space-x-4 py-2 md:py-4 md:px-2`}
+                className={`navItem flex items-center space-x-4 py-2 md:py-4 md:px-2  hover:bg-[#5893c4] hover:rounded-md hover:text-white`}
               >
                 <div>{option.icon}</div>
                 <NavLink
