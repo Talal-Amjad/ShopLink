@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from "./../axios";
 import UserLayout from '../components/layouts/User/UserLayout';
 import { useNavigate} from "react-router-dom";
-
 import UserNavBar from '../components/Navbar/UserNavBar';
 const Jobs = () => {
   const navigate = useNavigate(); 
@@ -106,6 +105,7 @@ const Jobs = () => {
           ))}
         </div>
       </div>
+   
     </UserLayout>
   );
 };

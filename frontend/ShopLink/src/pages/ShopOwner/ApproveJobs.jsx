@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import axios from '../../axios';
 import OwnerDashboardLayout from '../../components/layouts/ShopOwner/ownerDashboardLayout';
 
@@ -10,7 +12,6 @@ const ApproveJobs = () => {
       .then(response => setPendingJobs(response.data))
       .catch(error => console.error('Error fetching pending job applications:', error));
   }, []);
-
 
   const isDatePassed = (dateString) => {
     const currentDate = new Date();
@@ -25,35 +26,48 @@ const ApproveJobs = () => {
     return !isDatePassed(showUntilDate);
   };
 
-
-
   const handleApproveClick = (job) => {
-   
-    const isApproved = window.confirm(`Are you sure to approve the job application for: ${job.jobTitle}?`);
-    if (isApproved) {
-      
-      axios.post('updatejobstatus', { jobVacancyID: job.jobVacancyID, status: 'approve' })
-        .then(response => {
-          console.log(response.data.message);
-          window.location.reload();
-        })
-        .catch(error => console.error('Error updating job status:', error));
-    }
+    toast.success(
+      <CustomNotification
+        title={`Approve job application for: ${job.jobTitle}`}
+        onConfirm={() => {
+          axios.post('updatejobstatus', { jobVacancyID: job.jobVacancyID, status: 'approve' })
+            .then(response => {
+              console.log(response.data.message);
+              window.location.reload();
+            })
+            .catch(error => console.error('Error updating job status:', error));
+        }}
+      />,
+      { closeButton: true }
+    );
   };
 
   const handleRejectClick = (job) => {
-    
-    const isRejected = window.confirm(`Are you sure to reject the job application for: ${job.jobTitle}?`);
-    if (isRejected) {
-      
-      axios.post('updatejobstatus', { jobVacancyID: job.jobVacancyID, status: 'reject' })
-        .then(response => {
-          console.log(response.data.message);
-          window.location.reload();
-        })
-        .catch(error => console.error('Error updating job status:', error));
-    }
+    toast.error(
+      <CustomNotification
+        title={`Reject job application for: ${job.jobTitle}`}
+        onConfirm={() => {
+          axios.post('updatejobstatus', { jobVacancyID: job.jobVacancyID, status: 'reject' })
+            .then(response => {
+              console.log(response.data.message);
+              window.location.reload();
+            })
+            .catch(error => console.error('Error updating job status:', error));
+        }}
+      />,
+      { closeButton: true }
+    );
   };
+  const CustomNotification = ({ title, onConfirm, closeToast }) => (
+    <div>
+      <h1>{title}</h1>
+      <div>
+        <button onClick={onConfirm}>Confirm</button>
+        <button onClick={() => closeToast()}></button>
+      </div>
+    </div>
+  );
 
   return (
     <OwnerDashboardLayout>
@@ -98,6 +112,7 @@ const ApproveJobs = () => {
           ))}
         </div>
       </div>
+      <ToastContainer />
     </OwnerDashboardLayout>
   );
 };

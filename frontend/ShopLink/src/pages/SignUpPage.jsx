@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import AuthLayout from "../components/layouts/AuthLayout";
@@ -13,8 +13,8 @@ const SignUpPage = () => {
   const [showError, setShowError] = useState(false);
 
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string().min(3, "First name must be at least 3 characters").required("First name is required"),
-    lastName: Yup.string().min(3, "Last name must be at least 3 characters").required("Last name is required"),
+    firstName: Yup.string().min(3, "First name must be at least 3 characters").matches(/^[A-Za-z]+$/, "First name cannot contain numeric values").required("First name is required"),
+    lastName: Yup.string().min(3, "Last name must be at least 3 characters").matches(/^[A-Za-z]+$/, "Last name cannot contain numeric values").required("Last name is required"),
     username: Yup.string().min(5, "Username must be at least 5 characters").required("Username is required"),
     email: Yup.string().email("Invalid email address").matches(/.*@(gmail\.com|.*\.edu\.pk)$/, "Email must be a Gmail address or end with .edu.pk").required("Email is required"),
     password: Yup.string().min(8, "Password must be at least 8 characters").matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character").required("Password is required"),
@@ -134,17 +134,6 @@ const SignUpPage = () => {
         />
         <div>
           <Button text="Create account" type="submit" />
-        </div>
-        <div className="flex items-center justify-center dark:bg-gray-800">
-          <button className="px-4 py-2 border flex gap-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-500 hover:text-slate-900 dark:hover:text-slate-300 hover:shadow transition duration-150">
-            <img
-              className="w-6 h-6"
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              loading="lazy"
-              alt="google logo"
-            />
-            <span>Login with Google</span>
-          </button>
         </div>
       </form>
     </AuthLayout>

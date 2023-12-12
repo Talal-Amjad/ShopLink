@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-
+import Footer from "../../LandingPageComponents/Footer";
 const UserLayout = ({ children1,children }) => {
   return (
     <div className="min-h-screen max-w-screen overflow-x-hidden">
@@ -7,6 +7,9 @@ const UserLayout = ({ children1,children }) => {
       <main className="bg-gray-100 min-h-screen dark:bg-gray-700 ">
         <div className="">{children}</div>
       </main>
+    
+      <Footer></Footer>
+     
     </div>
   );
 };

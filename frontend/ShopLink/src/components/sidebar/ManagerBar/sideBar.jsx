@@ -3,9 +3,28 @@ import { MdOutlineDashboard } from "react-icons/md";
 import { CgFileDocument } from "react-icons/cg";
 import { FiUsers } from "react-icons/fi";
 import PropTypes from "prop-types";
-
+import Logout from "../../../assets/images/Logout.png"
+import Swal from "sweetalert2"
+import { useNavigate } from "react-router-dom";
 const Sidebar = ({ sidebarVisible }) => {
   const { pathname } = useLocation();
+
+  const navigate=useNavigate();
+
+  const handleLogout = () => {
+    
+    localStorage.removeItem("token");
+    Swal.fire({
+      title: "Done!",
+      text: "Logged Out Successfully.",
+      icon: "success"
+    });
+    console.log("Token has been Removed");
+    navigate('/signin');
+
+  };
+
+
   const sidebarOptions = [
     {
       id: 1,
@@ -33,7 +52,7 @@ const Sidebar = ({ sidebarVisible }) => {
 
   return (
     <div
-      className={`fixed w-full bg-white mt-[120px] ${
+      className={`fixed w-full bg-white mt-[100px] ${
         sidebarVisible ? "left-0" : ""
       } transition-all duration-300 w-full top-0 -left-[100%] h-screen md:w-[20%] md:left-0 dark:bg-gray-900 dark:text-gray-400 z-20`}
     >
@@ -58,6 +77,15 @@ const Sidebar = ({ sidebarVisible }) => {
           <hr />
         </div>
       </div>
+      <div className="fixed bottom-0 flex items-center ml-2 mb-5 font-sans text-black dark:text-gray-400">
+          <span className="mr-4">
+            <img src={Logout} className="h-10 w-10 ml-4 cursor-pointer" onClick={handleLogout}
+            />
+          </span>
+          <button className="flex items-center text-xl bg-none border-none cursor-pointer" onClick={handleLogout}>
+            Logout
+          </button>
+        </div>
     </div>
   );
 };

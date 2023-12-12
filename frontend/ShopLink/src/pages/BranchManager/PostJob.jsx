@@ -1,3 +1,4 @@
+// Import necessary dependencies and components
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -9,9 +10,11 @@ import SkillInput from '../../components/Fields/SkillInput';
 
 const PostJob = () => {
   const [skills, setSkills] = useState([]);
+  const [notification, setNotification] = useState(null);
+  const [notificationType, setNotificationType] = useState(null);
 
   const validationSchema = Yup.object().shape({
-    jobTitle: Yup.string().min(5, 'Job Title must be at least 5 characters').required('Job Title is required'),
+    jobTitle: Yup.string().min(5, 'Job Title must be at least 5 characters').matches(/^[A-Za-z\s]+$/, "Job Title cannot contain numeric values").required('Job Title is required'),
     salary: Yup.number().min(5000, 'Expected Salary must be greater than or equal to 5000').required('Expected Salary is required'),
     description: Yup.string().min(30, 'Job Description must be at least 30 characters').required('Job Description is required'),
     date: Yup.date().min(
@@ -20,9 +23,7 @@ const PostJob = () => {
     ).required('Last Date to Apply is required'),
     skills: Yup.array().min(3, 'At least 3 skills are required'),
   });
-  
-  
-  
+
   const formik = useFormik({
     initialValues: {
       jobTitle: '',
@@ -41,12 +42,21 @@ const PostJob = () => {
           skills,
         });
 
-        console.log('Job Post request submitted Successfully');
+        setNotification('Job Post request submitted Successfully');
+        setNotificationType('success');
         formik.resetForm();
         setSkills([]);
       } catch (error) {
+        setNotification(`Error in Job Post request: ${error.message}`);
+        setNotificationType('error');
         console.error('Error in Job Post request:', error);
       }
+
+      // Clear notification after 2 seconds
+      setTimeout(() => {
+        setNotification(null);
+        setNotificationType(null);
+      }, 2000);
     },
   });
 
@@ -101,9 +111,25 @@ const PostJob = () => {
 
             <Button text="Post Job" type="submit" />
           </form>
+
+          {/* Notification component */}
+          {notification && (
+            <div
+              className={`mt-4 p-4 rounded ${
+                notificationType === 'success' ? 'bg-green-500' : 'bg-red-500'
+              } text-white flex justify-between items-center`}
+            >
+              <span>{notification}</span>
+              <button className="text-white" onClick={() => setNotification(null)}>
+                X
+              </button>
+            </div>
+          )}
         </div>
       </div>
+     
     </ManagerDashboardLayout>
+   
   );
 };
 
