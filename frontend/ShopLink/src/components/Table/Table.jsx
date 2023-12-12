@@ -5,7 +5,7 @@ const Table = ({ headerData, tableData }) => {
     <div className="overflow-x-auto ml-7 mr-7 mt-[80px]">
       <table className="table w-full border-separate border-collapse border-spacing-y-3 scroll-y">
         <thead>
-          <tr className="rounded-row bg-white rounded-lg text-gray-500 z-40 p-4 dark:bg-gray-900 dark:text-gray-300 hover:bg-gray-100">
+          <tr className="rounded-row bg-white rounded-lg text-gray-500 z-40 p-4 dark:bg-gray-900 dark:text-gray-300">
             {headerData.map((header, index) => (
               <th
                 className="p-4 font-manrope text-lg min-w-0"

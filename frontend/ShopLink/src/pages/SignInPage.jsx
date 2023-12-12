@@ -86,7 +86,7 @@ const SignInPage = () => {
           label="Username"
           type="text"
           name="username"
-          placeholder="example@gmail.com"
+          placeholder="user123"
           value={formik.values.username}
           handleBlur={formik.handleBlur}
           handleChange={formik.handleChange}
@@ -105,17 +105,6 @@ const SignInPage = () => {
 
         <div>
           <Button type="submit" text="Continue" />
-        </div>
-        <div className="flex items-center justify-center dark:bg-gray-800">
-          <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
-            <GoogleLogin
-              onSuccess={handleOauthLogin}
-              onError={() => {
-                setError("Google login failed");
-                setShowError(true);
-              }}
-            />
-          </GoogleOAuthProvider>
         </div>
       </form>
     </AuthLayout>

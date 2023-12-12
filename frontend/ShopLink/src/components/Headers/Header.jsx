@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FaSearch, FaFilter } from 'react-icons/fa';
+import { IoLogOutSharp } from "react-icons/io5";
 import PropTypes from 'prop-types';
 import logo from '../../assets/images/ShopLinkLogo.png'
 
@@ -61,7 +62,7 @@ const Header = ({ toggleSidebar }) => {
         </div>
         <div className="filter flex items-center ml-2 font-sans text-black dark:text-gray-400">
           <span className="filter-icon mr-1">
-            <FaFilter className="filter-icon-inner" size={20} />
+            <FaFilter className="logout-icon-inner text-primary" size={20} />
           </span>
           <button className="hidden md:flex items-center text-lg bg-none border-none cursor-pointer">
             Filter
