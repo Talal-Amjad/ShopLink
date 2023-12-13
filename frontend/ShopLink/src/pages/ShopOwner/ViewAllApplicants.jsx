@@ -34,7 +34,7 @@ const ViewAllApplicants = () => {
       })
       .catch(error => {
         console.error('Error fetching data:', error);
-        // Handle error as needed
+        
       });
   }, []);
 
@@ -52,8 +52,8 @@ const ViewAllApplicants = () => {
   };
 
   const actionMenuItems = [
-    { label: "Show CV", onClick: handleShowCV },
-    { label: "Show Skills", onClick: handleShowSkills },
+    { label: "Reject ", onClick: handleShowCV },
+    { label: "Select", onClick: handleShowSkills },
     { label: "Cancel", onClick: handleCancel },
   ];
 
@@ -61,7 +61,7 @@ const ViewAllApplicants = () => {
     setSelectedMenuIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const headerData = ['Username', 'Apply Through', 'CV', 'Job ID', 'Job Title', 'Actions'];
+  const headerData = ['Username', 'Apply Through', 'Experience', 'Job ID', 'Job Title', 'Actions'];
 
   return (
     <OwnerDashboradLayout>
@@ -74,7 +74,7 @@ const ViewAllApplicants = () => {
             </div>
           </div>,
           applicant.applythrough,
-          applicant.cv,
+          applicant.experience,
           applicant.jobVacancyID,
           applicant.jobTitle,
           <>

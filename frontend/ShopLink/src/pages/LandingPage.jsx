@@ -3,7 +3,7 @@ import NavBar from '../components/LandingPageComponents/NavBar'
 import HeroSection from '../components/LandingPageComponents/HeroSection'
 import AboutUS from '../components/LandingPageComponents/AboutUS'
 import Services from '../components/LandingPageComponents/Services'
-import Team from '../components/LandingPageComponents/Team'
+
 import Footer from '../components/LandingPageComponents/Footer'
 export default function LandingPage() {
   return (
@@ -12,7 +12,7 @@ export default function LandingPage() {
         <HeroSection/>
         <AboutUS/>
         <Services/>
-        <Team/>
+        
         <Footer/>
    </>
   )

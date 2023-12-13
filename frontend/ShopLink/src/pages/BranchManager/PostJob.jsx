@@ -17,6 +17,7 @@ const PostJob = () => {
     jobTitle: Yup.string().min(5, 'Job Title must be at least 5 characters').matches(/^[A-Za-z\s]+$/, "Job Title cannot contain numeric values").required('Job Title is required'),
     salary: Yup.number().min(5000, 'Expected Salary must be greater than or equal to 5000').required('Expected Salary is required'),
     description: Yup.string().min(30, 'Job Description must be at least 30 characters').required('Job Description is required'),
+    experience: Yup.string().required('Job Experience is required'),
     date: Yup.date().min(
       new Date(new Date().getTime() + 48 * 60 * 60 * 1000).toISOString().split('T')[0], 
       'Last Date to Apply should be at least the next day'
@@ -28,6 +29,7 @@ const PostJob = () => {
     initialValues: {
       jobTitle: '',
       salary: '',
+      experience:'',
       description: '',
       date: '',
     },
@@ -38,6 +40,7 @@ const PostJob = () => {
           jobTitle: values.jobTitle,
           expectedSalary: values.salary,
           jobDescription: values.description,
+          experience:values.experience,
           lastDate: values.date,
           skills,
         });
@@ -95,6 +98,16 @@ const PostJob = () => {
               handleBlur={formik.handleBlur}
               handleChange={formik.handleChange}
               error={formik.touched.description && formik.errors.description}
+            />
+            <Fields
+              label="Experience"
+              type="text"
+              name='experience'
+              placeholder="Enter experience"
+              value={formik.values.experience}
+              handleBlur={formik.handleBlur}
+              handleChange={formik.handleChange}
+              error={formik.touched.experience && formik.errors.experience}
             />
             <Fields
               label="Last Date to Apply"

@@ -12,10 +12,7 @@ const DashboardLayout = ({ children }) => {
       <main className="pt-20 px-4 min-h-screen w-screen ml-0 md:ml-[20%] md:px-10 md:pt-20 md:pb-10 bg-[#F2F4F4] dark:bg-gray-700 scrollbar-hide md:w-[80vw]">
         <div className="">{children}</div>
       </main>
-     
-    </div>
-   
-   
+    </div>  
   );
 };
 

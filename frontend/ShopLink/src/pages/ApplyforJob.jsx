@@ -1,4 +1,3 @@
-// Import necessary dependencies and components
 import React, { useState, useEffect } from 'react';
 import axios from '../axios';
 import SkillInput from '../components/Fields/SkillInput';
@@ -6,26 +5,51 @@ import Button from '../components/Buttons/Button';
 import UserLayout from '../components/layouts/User/UserLayout';
 import UserNavBar from '../components/Navbar/UserNavBar';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Fields from '../components/Fields/Fields';
 
 const ApplyforJob = () => {
   const navigate = useNavigate();
   const { jobVacancyID, jobTitle } = useLocation().state;
 
-  // State for managing notification and notification background color
   const [notification, setNotification] = useState(null);
   const [notificationColor, setNotificationColor] = useState(null);
+  const [experience, setExperience] = useState('');
+  const handleExperienceChange = (event) => {
+    setExperience(event.target.value);
+  };
 
   const [cvOption, setCvOption] = useState(null);
   const [skills, setSkills] = useState([]);
   const [file, setFile] = useState(null);
+  const [selectedFileName, setSelectedFileName] = useState(null);
 
   const handleCVOption = (option) => {
     setCvOption(option);
   };
 
+  const handleFolderIconClick = () => {
+    document.getElementById('fileInput').click();
+  };
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    setFile(file);
+
+    if (file) {
+      const fileExtension = file.name.split('.').pop().toLowerCase();
+      const allowedExtensions = ['pdf', 'doc', 'docx'];
+
+      if (allowedExtensions.includes(fileExtension)) {
+        setFile(file);
+        setSelectedFileName(file.name);
+      } else {
+        setNotification('Invalid file type. Please upload a PDF or Word document.');
+        setNotificationColor('red');
+        setTimeout(() => {
+          setNotification(null);
+          setNotificationColor(null);
+        }, 3000);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -67,6 +91,7 @@ const ApplyforJob = () => {
       formData.append('skills', skills);
       formData.append('jobVacancyID', jobVacancyID);
       formData.append('jobTitle', jobTitle);
+      formData.append('experience', experience);
 
       if (cvOption === 'withCV' && file) {
         formData.append('cv', file);
@@ -83,9 +108,7 @@ const ApplyforJob = () => {
 
       console.log(response.data);
 
-      // Check if the user has already applied
       if (response.data === 'You have already applied for this job.') {
-        // Show notification in red and do not submit the form
         setNotification('You have already applied for this job.');
         setNotificationColor('red');
         setTimeout(() => {
@@ -93,7 +116,6 @@ const ApplyforJob = () => {
           setNotificationColor(null);
         }, 3000);
       } else {
-        // Successfully applied, show success notification in green and navigate to /jobs
         setNotification('Successfully applied!');
         setNotificationColor('green');
         setTimeout(() => {
@@ -103,7 +125,6 @@ const ApplyforJob = () => {
         }, 3000);
       }
     } catch (error) {
-      // Show error notification in red
       setNotification('There was an error submitting the application. Please try again.');
       setNotificationColor('red');
       setTimeout(() => {
@@ -117,12 +138,12 @@ const ApplyforJob = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    console.log(experience);
     handleSubmit(e);
   };
 
-  // Render the component
   return (
-    <UserLayout UserLayout>
+    <UserLayout>
       <UserNavBar />
       <div className="bg-gray-100 min-h-screen flex justify-center items-center dark:bg-gray-900">
         <div className="bg-white md:w-[400px] p-8 rounded shadow-md w-100 m-5 dark:bg-gray-700">
@@ -137,6 +158,15 @@ const ApplyforJob = () => {
               </div>
             )}
             <div className="mb-4">
+              <Fields
+                label='Experience'
+                type='text'
+                name='experience'
+                placeholder='Enter Your experience'
+                value={experience}
+                handleChange={() => handleExperienceChange(event)}
+              />
+
               <label className="block text-gray-700 text-lg md:text-xl font-bold mb-2">
                 Apply with CV or without CV
               </label>
@@ -162,21 +192,28 @@ const ApplyforJob = () => {
 
             {cvOption === 'withCV' && (
               <div className="border-2 border-dashed h-full dark:text-gray-400 my-2 md:my-4">
-                  <div className="flex flex-col items-center m-5">
-                      <i className="fa fa-folder-open fa-4x text-blue-700"></i>
-                    <span className="block text-gray-400 font-normal">Attach you files here</span>
-                    </div>
-                    <input type="file" id='fileInput'
-                    className="h-full w-full opacity-0" name="cv"  style={{}}
-                    onChange={handleFileChange}/>
-                  </div>
+                <div className="flex flex-col items-center m-5" onClick={handleFolderIconClick}>
+                  <i className="fa fa-folder-open fa-4x text-blue-700 cursor-pointer"></i>
+                  <span className="block text-gray-400 font-normal">
+                    {selectedFileName ? selectedFileName : 'Attach your files here'}
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  id="fileInput"
+                  className="h-full w-full opacity-0"
+                  name="cv"
+                  style={{}}
+                  onChange={handleFileChange}
+                />
+              </div>
             )}
 
             {cvOption === 'withoutCV' && (
               <SkillInput label="Skills" skills={skills} setSkills={setSkills} />
             )}
             <div className='md:mt-8'>
-                  <Button text="Apply" type="submit" />
+              <Button text="Apply" type="submit" />
             </div>
           </form>
         </div>

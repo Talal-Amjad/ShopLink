@@ -62,7 +62,7 @@ const Header = ({ toggleSidebar }) => {
         </div>
         <div className="filter flex items-center ml-2 font-sans text-black dark:text-gray-400">
           <span className="filter-icon mr-1">
-            <FaFilter className="logout-icon-inner text-primary" size={20} />
+            <FaFilter className="logout-icon-inner" size={20} />
           </span>
           <button className="hidden md:flex items-center text-lg bg-none border-none cursor-pointer">
             Filter
