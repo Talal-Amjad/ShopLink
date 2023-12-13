@@ -3,7 +3,7 @@ import logo from './../../assets/images/ShopLinkLogo.png';
 
 export default function NavBar() {
   const logoStyle = {
-    height: '5rem', // Adjust the height as needed
+    height: '5rem', 
     width: '5rem',
   
     
@@ -46,26 +46,6 @@ export default function NavBar() {
           <li>
               <a className="md:p-4 py-3 px-0 block" href="signin">
                 LogIn
-              </a>
-            </li>
-            <li>
-              <a className="md:p-4 py-3 px-0 block" href="#">
-                AboutUs
-              </a>
-            </li>
-            <li>
-              <a className="md:p-4 py-3 px-0 block" href="#">
-                Services
-              </a>
-            </li>
-            <li>
-              <a className="md:p-4 py-3 px-0 block" href="#">
-                Team
-              </a>
-            </li>
-            <li>
-              <a className="md:p-4 py-3 px-0 block md:mb-0 mb-2" href="#">
-                Contact Us
               </a>
             </li>
           </ul>

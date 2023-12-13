@@ -7,6 +7,7 @@ exports.postJobControllers = async (req, res) => {
       jobTitle,
       expectedSalary,
       jobDescription,
+      experience,
       lastDate,
       skills,
     } = req.body;
@@ -15,6 +16,7 @@ exports.postJobControllers = async (req, res) => {
       jobTitle,
       expectedSalary,
       jobDiscription: jobDescription,
+      experience,
       lastDate,
       skills: JSON.stringify(skills),
     });

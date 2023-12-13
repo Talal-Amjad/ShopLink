@@ -22,6 +22,11 @@ const JobVacancy = sequelize.define("JobVacancy", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    experience: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    
     lastDate: {
         type: DataTypes.DATE,
         allowNull: false,

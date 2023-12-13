@@ -13,16 +13,8 @@ import Jobs from "./pages/Jobs";
 import ApproveJobs from "./pages/ShopOwner/ApproveJobs";
 import OwnerViewAllApplicants from "./pages/ShopOwner/ViewAllApplicants";
 import Protected from "../Protected";
+
 function App() {
- 
-
-  // {
-  //   path: "freelancer/chat",
-  //   element: (
-  //     <Protected component={<Chat />} allowableuser="freelancer" />
-  //   ),
-  // },
-
   return (
     <>
     <BrowserRouter>

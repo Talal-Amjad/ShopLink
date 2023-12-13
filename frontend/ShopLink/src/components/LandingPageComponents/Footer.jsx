@@ -7,7 +7,7 @@ import githubIcon from './../../assets/images/github-mark.svg';
 
 export default function Footer() {
   return (
-    <div className="text-center py-11 dark:bg-gray-900">
+    <div className="text-center bg-gray-100 py-11 dark:bg-gray-900">
       <a className="flex items-center justify-center mb-5 text-3xl font-semibold text-gray-900 dark:text-white">
         <img src={logo} style={{ height: '120px' }} className="mr-5 sm:h-9" alt="ShopLink Logo" />
         ShopLink

@@ -3,6 +3,7 @@ import { FiMoreVertical } from 'react-icons/fi';
 import axios from '../../axios';
 import Table from '../../components/Table/Table';
 import ManagerDashboradLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
+import { useNavigate } from 'react-router-dom';
 
 const Actions = ({ menuItems }) => {
   return (
@@ -21,8 +22,11 @@ const Actions = ({ menuItems }) => {
 };
 
 const ViewAllApplicants = () => {
+  const navigate = useNavigate();
   const [selectedMenuIndex, setSelectedMenuIndex] = useState(null);
+  const [selectedApplicantIndex, setSelectedApplicantIndex] = useState(null);
   const [applicants, setApplicants] = useState([]);
+  const [currentCV, setCurrentCV] = useState('');
 
   useEffect(() => {
     // Fetch data from the server using Axios
@@ -38,8 +42,7 @@ const ViewAllApplicants = () => {
   }, []);
 
   const handleShowCV = () => {
-    console.log('CV Show Clicked');
-    
+   
   };
 
   const handleShowSkills = () => {
@@ -48,6 +51,7 @@ const ViewAllApplicants = () => {
 
   const handleCancel = () => {
     setSelectedMenuIndex(null);
+    setCurrentCV('');
   };
 
   const actionMenuItems = [
@@ -57,10 +61,11 @@ const ViewAllApplicants = () => {
   ];
 
   const handleMenuClick = (index) => {
+    setSelectedApplicantIndex(index);
     setSelectedMenuIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const headerData = ['Username', 'Apply Through', 'CV', 'Job ID', 'Job Title', 'Actions'];
+  const headerData = ['Username', 'Apply Through', 'experience', 'Job ID', 'Job Title', 'Actions'];
 
   return (
     <ManagerDashboradLayout>
@@ -73,7 +78,7 @@ const ViewAllApplicants = () => {
             </div>
           </div>,
           applicant.applythrough,
-          applicant.cv,
+          applicant.experience,
           applicant.jobVacancyID,
           applicant.jobTitle,
           <>
@@ -88,8 +93,8 @@ const ViewAllApplicants = () => {
                 menuItems={actionMenuItems.map((item) => ({
                   ...item,
                   onClick: () => {
-                    item.onClick(); 
-                    handleMenuClick(index); 
+                    item.onClick();
+                    handleMenuClick(index);
                   },
                 }))}
               />

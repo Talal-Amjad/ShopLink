@@ -77,6 +77,10 @@ const Jobs = () => {
                   <h2 className="text-xl font-bold mb-2">Expected Salary:</h2>
                   <p className="mb-4 text-lg">&nbsp;&nbsp;&nbsp;{`${job.expectedSalary.toLocaleString()}`}</p>
                 </div>
+                <div className='md:flex'>
+                  <h2 className="text-xl font-bold mb-2">Required Experience:</h2>
+                  <p className="mb-4 text-lg">&nbsp;&nbsp;&nbsp;{`${job.experience}`}</p>
+                </div>
                 <div>
                   <h2 className="text-xl font-bold mb-2">Required Skills:</h2>
                   <div className="mb-4 text-lg">

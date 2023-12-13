@@ -9,6 +9,10 @@ const JobApplication = sequelize.define("JobApplication", {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    experience: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
     cv: {
         type: DataTypes.STRING,
         allowNull: true,

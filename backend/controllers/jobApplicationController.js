@@ -69,11 +69,12 @@ exports.uploadDocument = async (req, res) => {
         if (existingApplication) {
           return res.status(201).send("You have already applied for this job.");
         }
-       
+       console.log(req.body.experience);
         const jobApplicationData = {
           username,
           applythrough: req.body.applythrough,
           skills: req.body.skills,
+          experience:req.body.experience,
           status: "pending",
           jobVacancyID: req.body.jobVacancyID,
           jobTitle: req.body.jobTitle,

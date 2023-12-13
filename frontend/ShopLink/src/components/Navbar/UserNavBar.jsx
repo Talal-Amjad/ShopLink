@@ -5,7 +5,7 @@ import Logout from '../../assets/images/Logout.png';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 
-// ... (imports)
+
 
 const UserNavBar = ({ onSearch }) => {
   const [searchInput, setSearchInput] = useState('');
@@ -34,10 +34,16 @@ const UserNavBar = ({ onSearch }) => {
     <header className="bg-white fixed w-full h-24 flex justify-between items-center transition-all duration-[400ms] z-40 p-4 dark:bg-gray-900 text-gray-400">
       <div className="logo ml-5 font-bold text-3xl text-primary hidden md:flex">
         <img src={Logo} className="h-[130px] w-[100px]" alt="Logo" />
-        <span className="ml-1 mt-11 tracking-tighter">S</span>
-        <span className="ml-1 mt-11 tracking-tighter">H</span>
-        {/* ... (other letters) ... */}
-        <span className="ml-1 mt-11 tracking-tighter">K</span>
+          <span className="ml-2 mt-10">
+            S</span>
+            <span className="ml-1 mt-10 tracking-tighter">H</span>
+            <span className="ml-1 mt-10 tracking-tighter">O</span>
+            <span className="ml-1 mt-10 tracking-tighter">P</span>
+            <span className="ml-1 mt-10 tracking-tighter">L</span>
+            <span className="ml-1 mt-10 tracking-tighter">I</span>
+            <span className="ml-1 mt-10 tracking-tighter">N</span>
+            <span className="ml-1 mt-10 tracking-tighter">K</span>
+          
       </div>
 
       <div className="menu-icon md:hidden cursor-pointer" onClick={() => setMenuOpen(!menuOpen)}>
