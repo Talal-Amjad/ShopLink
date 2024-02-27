@@ -5,8 +5,6 @@ import Logout from '../../assets/images/Logout.png';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const UserNavBar = ({ onSearch }) => {
   const [searchInput, setSearchInput] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,14 +12,19 @@ const UserNavBar = ({ onSearch }) => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+   
     Swal.fire({
       title: 'Done!',
       text: 'Logged Out Successfully.',
       icon: 'success',
     });
+    localStorage.removeItem('token');
     console.log('Token has been Removed');
     navigate('/signin');
+  };
+
+  const handleJobs = () => {
+    navigate('/jobs');
   };
 
   const handleSearchInputChange = (e) => {
@@ -46,11 +49,14 @@ const UserNavBar = ({ onSearch }) => {
           
       </div>
 
+         <button className="flex items-center text-xl text-black bg-none border-none cursor-pointer" onClick={handleJobs}>
+            Jobs
+          </button>
       <div className="menu-icon md:hidden cursor-pointer" onClick={() => setMenuOpen(!menuOpen)}>
         <FaBars className="text-3xl" />
       </div>
-
       <div className={`header-right flex items-center flex-col ${menuOpen ? 'flex' : 'hidden'} md:flex md:items-center md:mr-8`}>
+
         <div className="search flex items-center md:mr-[120px] px-2 py-2 rounded-md bg-gray-300 mb-4">
           <FaSearch className="search-icon text-gray-500" />
           <input
@@ -63,10 +69,10 @@ const UserNavBar = ({ onSearch }) => {
         </div>
 
         <div className="fixed right-0 flex items-center ml-2 mb-5 font-sans text-black dark:text-gray-400">
-          <span className="mr-4">
+          <span className="mr-1">
             <img src={Logout} className="h-10 w-10 ml-4 cursor-pointer" onClick={handleLogout} alt="Logout" />
           </span>
-          <button className="flex items-center text-xl bg-none border-none cursor-pointer" onClick={handleLogout}>
+          <button className="flex items-center text-xl mr-2 bg-none border-none cursor-pointer" onClick={handleLogout}>
             Logout
           </button>
         </div>

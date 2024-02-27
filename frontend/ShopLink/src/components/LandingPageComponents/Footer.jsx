@@ -1,13 +1,16 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import logo from '../../assets/images/ShopLinkLogo.png';
 import facebookIcon from './../../assets/images/facebook.svg';
 import instaIcon from './../../assets/images/instagram.svg';
 import twitterIcon from './../../assets/images/twitter.svg';
 import githubIcon from './../../assets/images/github-mark.svg';
 
-export default function Footer() {
+export default function Footer({ bgColor }) {
+  console.log('bgColor:', bgColor); // Add console log to check bgColor prop
+
   return (
-    <div className="text-center bg-gray-100 py-11 dark:bg-gray-900">
+    <div className={`text-center py-11 ${bgColor} dark:bg-gray-900`}>
       <a className="flex items-center justify-center mb-5 text-3xl font-semibold text-gray-900 dark:text-white">
         <img src={logo} style={{ height: '120px' }} className="mr-5 sm:h-9" alt="ShopLink Logo" />
         ShopLink
@@ -42,3 +45,11 @@ export default function Footer() {
     </div>
   );
 }
+
+Footer.propTypes = {
+  bgColor: PropTypes.string,
+};
+
+Footer.defaultProps = {
+  bgColor: 'bg-gray-100',
+};

@@ -8,7 +8,7 @@ const UserLayout = ({ children1,children }) => {
         <div className="">{children}</div>
       </main>
     
-      <Footer></Footer>
+      <Footer bgColor="bg-white"></Footer>
      
     </div>
   );
