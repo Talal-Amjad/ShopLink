@@ -1,12 +1,75 @@
 import React from 'react';
+import Swal from 'sweetalert2';
 import logo from './../../assets/images/ShopLinkLogo.png';
+import axios from '../../axios';
 
 export default function NavBar() {
   const logoStyle = {
     height: '5rem', 
     width: '5rem',
-  
-    
+  };
+
+  const handleTrackApplication = async () => {
+    const { value: email } = await Swal.fire({
+      title: "Input email address",
+      input: "email",
+      inputLabel: "Your email address",
+      inputBorderColor:"#4682B4",
+      confirmButtonColor:"#4682B4",
+      inputPlaceholder: "Enter your email address"
+    });
+    if (email) {
+      fetchJobsByEmail(email);
+    }
+  };
+
+  const fetchJobsByEmail = async (email) => {
+    try {
+      const response = await axios.post('/applicationstatus', { email });
+      console.log(response.data);
+
+      if (response.data.applications.length === 0) {
+        Swal.fire({
+          title: 'No jobs applied',
+          text: 'You have not applied for any jobs.',
+          confirmButtonColor: '#4682B4',
+        });
+      } else {
+        const jobs = response.data.applications;
+
+        // Create HTML table content
+        let tableContent = '<table>';
+        tableContent += '<tr><th>Job Title</th><th>Status</th></tr>';
+        jobs.forEach(job => {
+          tableContent += `<tr><td>${job.jobTitle}</td><td>${job.status}</td></tr>`;
+        });
+        tableContent += '</table>';
+
+        // Display Swal modal with HTML table
+        Swal.fire({
+          title: 'Jobs Applied',
+          html: tableContent,
+          confirmButtonColor: '#4682B4',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      // Handle errors here
+      if (error.response && error.response.status === 400) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid email',
+          text: 'Please enter a valid email address',
+          confirmButtonColor: '#4682B4',
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          text: 'No user Found for entered Email',
+          confirmButtonColor: '#4682B4',
+        });
+      }
+    }
   };
 
   return (
@@ -41,10 +104,17 @@ export default function NavBar() {
       <input className="hidden" type="checkbox" id="menu-toggle" />
 
       <div className="hidden md:flex md:w-auto w-full" id="menu">
+        <a
+          onClick={handleTrackApplication}
+          className="flex items-center justify-center mx-4 px-4 py-2 border-2 text-base font-medium rounded-md text-gray-800 text-primary hover:bg-primary hover:text-white border-primary borde md:py-4 md:text-lg md:px-10"
+        >
+          Track Application
+        </a>
+    
         <nav>
           <ul className="md:flex items-center justify-between text-xl text-gray-700 dark:text-gray-400">
-          <li>
-              <a className="md:p-4 py-3 px-0 block" href="signin">
+            <li>
+              <a className="flex items-center justify-center mx-4 px-4 py-2 border-2 text-base font-medium rounded-md text-gray-800 text-primary hover:bg-primary hover:text-white border-primary borde md:py-4 md:text-lg md:px-10" href="signin">
                 LogIn
               </a>
             </li>

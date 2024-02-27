@@ -8,7 +8,7 @@ const { authenticateToken } = require('../middleware/authMiddleware');
 const viewAllApplicantsController=require('../controllers/viewAllApplicantsController');
 const approveJobController=require('../controllers/approveJobController');
 const selectApplicantController=require('../controllers/selectApplicantController')
-
+const ApplicationStatusController=require('../controllers/ApplicationStatusController')
 
 const router = express.Router();
 
@@ -25,7 +25,7 @@ router.get('/applicants',viewAllApplicantsController.getAllApplicants);
 router.get('/pendingjobs', approveJobController.getPendingJobApplications);
 router.post('/updatejobstatus', approveJobController.updateJobStatus);
 router.put('/updatestatus',selectApplicantController.updateStatus)
-
+router.post('/applicationstatus',ApplicationStatusController.getUserApplicationStatus)
 router.get('/protected', authenticateToken, (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });
