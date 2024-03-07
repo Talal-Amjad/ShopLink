@@ -44,8 +44,6 @@ export default function NavBar() {
           tableContent += `<tr><td>${job.jobTitle}</td><td>${job.status}</td></tr>`;
         });
         tableContent += '</table>';
-
-        // Display Swal modal with HTML table
         Swal.fire({
           title: 'Jobs Applied',
           html: tableContent,
@@ -54,7 +52,6 @@ export default function NavBar() {
       }
     } catch (error) {
       console.error('Error fetching jobs:', error);
-      // Handle errors here
       if (error.response && error.response.status === 400) {
         Swal.fire({
           icon: 'error',
@@ -104,15 +101,15 @@ export default function NavBar() {
       <input className="hidden" type="checkbox" id="menu-toggle" />
 
       <div className="hidden md:flex md:w-auto w-full" id="menu">
-        <a
-          onClick={handleTrackApplication}
-          className="flex items-center justify-center mx-4 px-4 py-2 border-2 text-base font-medium rounded-md text-gray-800 text-primary hover:bg-primary hover:text-white border-primary borde md:py-4 md:text-lg md:px-10"
-        >
-          Track Application
-        </a>
-    
         <nav>
           <ul className="md:flex items-center justify-between text-xl text-gray-700 dark:text-gray-400">
+            <li>
+              <a
+                onClick={handleTrackApplication}
+                className="flex items-center cursor-pointer justify-center mx-4 px-4 py-2 border-2 text-base font-medium rounded-md text-gray-800 text-primary hover:bg-primary hover:text-white border-primary borde md:py-4 md:text-lg md:px-10">
+                Track Application
+              </a>
+            </li>
             <li>
               <a className="flex items-center justify-center mx-4 px-4 py-2 border-2 text-base font-medium rounded-md text-gray-800 text-primary hover:bg-primary hover:text-white border-primary borde md:py-4 md:text-lg md:px-10" href="signin">
                 LogIn

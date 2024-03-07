@@ -22,7 +22,7 @@ const Actions = ({ menuItems }) => {
   );
 };
 
-const ViewAllApplicants = () => {
+const ApplicantsSkillReport = () => {
   const navigate = useNavigate();
   const [selectedMenuIndex, setSelectedMenuIndex] = useState(null);
   const [selectedApplicantIndex, setSelectedApplicantIndex] = useState(null);
@@ -31,7 +31,7 @@ const ViewAllApplicants = () => {
 
   useEffect(() => {
     // Fetch data from the server using Axios
-    axios.get('/applicants')
+    axios.get('/skillsreport')
       .then(response => {
         console.log('Data fetched successfully:', response.data);
         setApplicants(response.data);
@@ -148,11 +148,15 @@ const ViewAllApplicants = () => {
     setSelectedMenuIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const handleViewSkillReport = () => {
-    navigate('/skillsreport');
+  const handleShowSkills = (title, skills) => {
+    Swal.fire({
+      title: title,
+      html: skills.map(skill => `<div>${skill}</div>`).join(''), // Show each skill in a separate div
+      confirmButtonText: 'Close'
+    });
   };
 
-  const headerData = ['Username', 'Apply Through', 'Experience', 'Job ID', 'Job Title', 'Actions'];
+  const headerData = ['Username', 'Matched Skills', 'Missing Skills', 'Score', 'Actions'];
 
   return (
     <ManagerDashboardLayout>
@@ -164,42 +168,40 @@ const ViewAllApplicants = () => {
               <div>{applicant.username}</div>
             </div>
           </div>,
-          applicant.applythrough,
-          applicant.experience,
-          applicant.jobVacancyID,
-          applicant.jobTitle,
-          <>
-            <div
-              className="flex justify-center cursor-pointer"
-              onClick={() => handleMenuClick(index)}
-            >
-              <FiMoreVertical />
-            </div>
-            {selectedMenuIndex === index && (
-              <Actions
-                menuItems={actionMenuItems.map((item) => ({
-                  ...item,
-                  onClick: () => {
-                    item.onClick(applicant.username);
-                    handleMenuClick(index);
-                  },
-                }))}
-              />
-            )}
-          </>,
+          <div
+            className="cursor-pointer text-primary"
+            onClick={() => handleShowSkills("Matched Skills", applicant.matchedSkills)}
+          >
+            {applicant.matchedSkills.length} <div className='text-sm'>View Matched Skills</div>
+          </div>,
+          <div
+            className="cursor-pointer text-primary"
+            onClick={() => handleShowSkills("Missing Skills", applicant.missedSkills)}
+          >
+            {applicant.missedSkills.length} <div className='text-sm'>View Missing Skills</div>
+          </div>,
+          applicant.score.toFixed(2), // Display score rounded to 2 decimal places
+          <div
+            className="flex justify-center cursor-pointer"
+            onClick={() => handleMenuClick(index)}
+          >
+            <FiMoreVertical />
+          </div>,
+          selectedMenuIndex === index && (
+            <Actions
+              menuItems={actionMenuItems.map((item) => ({
+                ...item,
+                onClick: () => {
+                  item.onClick(applicant.username);
+                  handleMenuClick(index);
+                },
+              }))}
+            />
+          ),
         ])}
       />
-      <button
-        className="fixed bottom-4 right-4 px-4 py-2 bg-primary text-white rounded"
-        onClick={handleViewSkillReport}
-      >
-        View Applicant's Skill Report
-      </button>
     </ManagerDashboardLayout>
-
-
-
   );
 };
 
-export default ViewAllApplicants;
+export default ApplicantsSkillReport;
