@@ -34,8 +34,8 @@ const OwnerBar = ({ sidebarVisible }) => {
     },
     {
       id: 2,
-      name: "Sales Insights",
-      path: "/owner",
+      name: "Hiring Process Report",
+      path: "/hiringreport",
       icon: <CgFileDocument size={24} />,
     },
     {
