@@ -14,6 +14,8 @@ import ApproveJobs from "./pages/ShopOwner/ApproveJobs";
 import OwnerViewAllApplicants from "./pages/ShopOwner/ViewAllApplicants";
 import HiringProcessReport from "./pages/ShopOwner/HiringProcessReport";
 import ApplicantsSkillReport from "./pages/BranchManager/ApplicantsSkillReport"
+import AddProduct from "./pages/BranchManager/AddProduct";
+import AddSale from "./pages/BranchManager/AddSale";
 import Protected from "../Protected";
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
         <Route path="/signin" element={<SignInPage/>} />
         <Route path="/applyforjob" element={<Protected component={<ApplyfoJob/>} allowableuser="user"/>} />
         <Route path="/postjob" element={<Protected component={<PostJob/>} allowableuser="manager"/>}/>
+        <Route path="/addproduct" element={<Protected component={<AddProduct/>} allowableuser="manager"/>}/>
+        <Route path="/addsale" element={<Protected component={<AddSale/>} allowableuser="manager"/>}/>
         <Route path="/emailverification" element={<EmailVerification/>}/>
         <Route path="/manager" element={<Protected component={<ManagerDashboardLayout/>}  allowableuser="manager"/>}/>
         <Route path="/owner" element={<Protected component={<OwnerDashboardLayout/>}  allowableuser="owner"/>}/>

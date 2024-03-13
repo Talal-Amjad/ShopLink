@@ -1,12 +1,11 @@
-// Import necessary dependencies and components
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import axios from '../../axios'; 
+import axios from '../../axios';
 import Fields from '../../components/Fields/Fields';
 import Button from '../../components/Buttons/Button';
-import ManagerDashboardLayout from "../../components/layouts/BranchManager/managerDashboardLayout";
-import SkillInput from '../../components/Fields/SkillInput'; 
+import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
+import SkillInput from '../../components/Fields/SkillInput';
 
 const PostJob = () => {
   const [skills, setSkills] = useState([]);
@@ -14,14 +13,25 @@ const PostJob = () => {
   const [notificationType, setNotificationType] = useState(null);
 
   const validationSchema = Yup.object().shape({
-    jobTitle: Yup.string().min(5, 'Job Title must be at least 5 characters').matches(/^[A-Za-z\s]+$/, "Job Title cannot contain numeric values").required('Job Title is required'),
-    salary: Yup.number().min(5000, 'Expected Salary must be greater than or equal to 5000').required('Expected Salary is required'),
-    description: Yup.string().min(30, 'Job Description must be at least 30 characters').required('Job Description is required'),
+    jobTitle: Yup.string()
+      .min(5, 'Job Title must be at least 5 characters')
+      .matches(/^[A-Za-z\s]+$/, 'Job Title cannot contain numeric values')
+      .required('Job Title is required'),
+    salary: Yup.number()
+      .min(5000, 'Expected Salary must be greater than or equal to 5000')
+      .required('Expected Salary is required'),
+    description: Yup.string()
+      .min(30, 'Job Description must be at least 30 characters')
+      .required('Job Description is required'),
     experience: Yup.string().required('Job Experience is required'),
-    date: Yup.date().min(
-      new Date(new Date().getTime() + 48 * 60 * 60 * 1000).toISOString().split('T')[0], 
-      'Last Date to Apply should be at least the next day'
-    ).required('Last Date to Apply is required'),
+    date: Yup.date()
+      .min(
+        new Date(new Date().getTime() + 48 * 60 * 60 * 1000)
+          .toISOString()
+          .split('T')[0],
+        'Last Date to Apply should be at least the next day'
+      )
+      .required('Last Date to Apply is required'),
     skills: Yup.array().min(3, 'At least 3 skills are required'),
   });
 
@@ -29,7 +39,7 @@ const PostJob = () => {
     initialValues: {
       jobTitle: '',
       salary: '',
-      experience:'',
+      experience: '',
       description: '',
       date: '',
     },
@@ -40,7 +50,7 @@ const PostJob = () => {
           jobTitle: values.jobTitle,
           expectedSalary: values.salary,
           jobDescription: values.description,
-          experience:values.experience,
+          experience: values.experience,
           lastDate: values.date,
           skills,
         });
@@ -66,63 +76,76 @@ const PostJob = () => {
   return (
     <ManagerDashboardLayout>
       <div className="bg-gray-100 min-h-screen flex justify-center items-center dark:bg-gray-700">
-        <div className="bg-white p-8 rounded shadow-md w-[700px] dark:bg-gray-900">
+        <div className="max-w-6xl w-full bg-white p-8 relative m-10 shadow-md dark:bg-gray-900 border border-4 rounded-lg">
           <form onSubmit={formik.handleSubmit}>
-            <h1 className="text-lg font-bold dark:text-gray-400">Post Job Details</h1>
-            <Fields
-              label="Job Title"
-              type="text"
-              name='jobTitle'
-              placeholder="Manager"
-              value={formik.values.jobTitle}
-              handleBlur={formik.handleBlur}
-              handleChange={formik.handleChange}
-              error={formik.touched.jobTitle && formik.errors.jobTitle}
-            />
-            <Fields
-              label="Expected Salary"
-              type="number"
-              name='salary'
-              placeholder="10000"
-              value={formik.values.salary}
-              handleBlur={formik.handleBlur}
-              handleChange={formik.handleChange}
-              error={formik.touched.salary && formik.errors.salary}
-            />
+            <h1 className="text-lg font-bold dark:text-gray-400 mb-4">Post Job Details</h1>
+            <hr className="border-gray-200 w-full mt-4 mb-4" />
+            <div className="grid grid-cols-2 gap-6">
+              <Fields
+                label="Job Title"
+                type="text"
+                name="jobTitle"
+                placeholder="Manager"
+                value={formik.values.jobTitle}
+                handleBlur={formik.handleBlur}
+                handleChange={formik.handleChange}
+                error={formik.touched.jobTitle && formik.errors.jobTitle}
+              />
+              <Fields
+                label="Expected Salary"
+                type="number"
+                name="salary"
+                placeholder="10000"
+                value={formik.values.salary}
+                handleBlur={formik.handleBlur}
+                handleChange={formik.handleChange}
+                error={formik.touched.salary && formik.errors.salary}
+              />
+              <Fields
+                label="Experience"
+                type="text"
+                name="experience"
+                placeholder="Enter experience"
+                value={formik.values.experience}
+                handleBlur={formik.handleBlur}
+                handleChange={formik.handleChange}
+                error={formik.touched.experience && formik.errors.experience}
+              />
+              <Fields
+                label="Last Date to Apply"
+                type="date"
+                name="date"
+                value={formik.values.date}
+                handleBlur={formik.handleBlur}
+                handleChange={formik.handleChange}
+                error={formik.touched.date && formik.errors.date}
+              />
+               
+            </div>
+
+              {/* Use the SkillInput component for handling skills */}
+              <div className='w-1/2'>
+            <SkillInput label="Skills" skills={skills} setSkills={setSkills} />
+            </div>
+
             <Fields
               label="Job Description"
               type="textarea"
-              name='description'
+              name="description"
               placeholder="Details about job"
               value={formik.values.description}
               handleBlur={formik.handleBlur}
               handleChange={formik.handleChange}
               error={formik.touched.description && formik.errors.description}
             />
-            <Fields
-              label="Experience"
-              type="text"
-              name='experience'
-              placeholder="Enter experience"
-              value={formik.values.experience}
-              handleBlur={formik.handleBlur}
-              handleChange={formik.handleChange}
-              error={formik.touched.experience && formik.errors.experience}
-            />
-            <Fields
-              label="Last Date to Apply"
-              type="date"
-              name='date'
-              value={formik.values.date}
-              handleBlur={formik.handleBlur}
-              handleChange={formik.handleChange}
-              error={formik.touched.date && formik.errors.date}
-            />
-
-            {/* Use the SkillInput component for handling skills */}
-            <SkillInput label="Skills" skills={skills} setSkills={setSkills} />
-
-            <Button text="Post Job" type="submit" />
+          
+            <div className="mt-4">
+              <hr className="border-gray-200 w-full mt-4 mb-4" />
+              <div className='w-44'>
+              <Button text="Post Job" type="submit" />
+              </div>
+              
+            </div>
           </form>
 
           {/* Notification component */}
@@ -140,9 +163,7 @@ const PostJob = () => {
           )}
         </div>
       </div>
-     
     </ManagerDashboardLayout>
-   
   );
 };
 
