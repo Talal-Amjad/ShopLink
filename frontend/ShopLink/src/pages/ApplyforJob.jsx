@@ -52,45 +52,29 @@ const ApplyforJob = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!cvOption) {
-      setNotification('Please select a method to apply.');
-      setNotificationColor('red');
-      setTimeout(() => {
-        setNotification(null);
-        setNotificationColor(null);
-      }, 3000);
-      return;
-    }
-
-    if (cvOption === 'withCV' && !file) {
-      setNotification('Please add CV.');
-      setNotificationColor('red');
-      setTimeout(() => {
-        setNotification(null);
-        setNotificationColor(null);
-      }, 3000);
-      return;
-    }
-
-    if (cvOption === 'withoutCV' && skills.length === 0) {
-      setNotification('Please enter skills manually.');
-      setNotificationColor('red');
-      setTimeout(() => {
-        setNotification(null);
-        setNotificationColor(null);
-      }, 3000);
-      return;
-    }
-
+  const handleUploadButtonClick = async () => {
     try {
       const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await axios.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setSkills(response.data.skills);
+    } catch (error) {
+      console.error('Error uploading file and extracting skills:', error);
+    }
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+
+    /*try {
+      let formData = new FormData();
       formData.append('applythrough', cvOption);
-      formData.append('skills', skills);
-      formData.append('jobVacancyID', jobVacancyID);
-      formData.append('jobTitle', jobTitle);
       formData.append('experience', experience);
 
       if (cvOption === 'withCV' && file) {
@@ -98,7 +82,6 @@ const ApplyforJob = () => {
       }
 
       const token = localStorage.getItem('token');
-      console.log(token);
 
       const response = await axios.post('/apply', formData, {
         headers: {
@@ -106,16 +89,7 @@ const ApplyforJob = () => {
         },
       });
 
-      console.log(response.data);
-
-      if (response.data === 'You have already applied for this job.') {
-        setNotification('You have already applied for this job.');
-        setNotificationColor('red');
-        setTimeout(() => {
-          setNotification(null);
-          setNotificationColor(null);
-        }, 3000);
-      } else {
+      if (response.data.message === 'Application submitted successfully') {
         setNotification('Successfully applied!');
         setNotificationColor('green');
         setTimeout(() => {
@@ -133,13 +107,7 @@ const ApplyforJob = () => {
       }, 3000);
 
       console.error('Error submitting application:', error);
-    }
-  };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    console.log(experience);
-    handleSubmit(e);
+    }*/
   };
 
   return (
@@ -164,7 +132,7 @@ const ApplyforJob = () => {
                 name='experience'
                 placeholder='Enter Your experience'
                 value={experience}
-                handleChange={() => handleExperienceChange(event)}
+                handleChange={handleExperienceChange}
               />
 
               <label className="block text-gray-700 text-lg md:text-xl font-bold mb-2">
@@ -213,6 +181,7 @@ const ApplyforJob = () => {
               <SkillInput label="Skills" skills={skills} setSkills={setSkills} />
             )}
             <div className='md:mt-8'>
+              <Button text="Upload File" onClick={handleUploadButtonClick} />
               <Button text="Apply" type="submit" />
             </div>
           </form>

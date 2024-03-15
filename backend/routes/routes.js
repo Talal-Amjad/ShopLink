@@ -11,12 +11,16 @@ const selectApplicantController=require('../controllers/selectApplicantControlle
 const ApplicationStatusController=require('../controllers/ApplicationStatusController');
 const SkillsReport=require('../controllers/SkillsReportController');
 const HiringReport=require('../controllers/HiringReportController');
+const fileUploadController = require('../controllers/fileUploadController');
+const applyForJobController = require('../controllers/applyForJobController');
 const router = express.Router();
 
 router.post('/signup', authController.signUp);
 router.post('/verify', authController.verifyUser)
 router.post('/signin', authController.signIn);
-router.post('/apply', JobApplicationController.uploadDocument);
+router.post('/apply2', JobApplicationController.uploadDocument);
+router.post('/upload', fileUploadController.uploadFile);
+router.post('/apply', applyForJobController.applyForJob);
 router.post('/postjob',postJobController.postJobControllers);
 router.post('/verif_foretpass_email', forgetpass.verify_forget_Password_email)
 router.post('/verify_email_encoded_pass', forgetpass.verify_forgetpass)
