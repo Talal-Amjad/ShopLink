@@ -25,7 +25,7 @@ const OwnerBar = ({ sidebarVisible }) => {
 
   };
 
-  const sidebarOptions = [
+  const sidebarOptions1 = [
     {
       id: 1,
       name: "Approve Job",
@@ -46,28 +46,61 @@ const OwnerBar = ({ sidebarVisible }) => {
     },
   ];
 
+  const sidebarOptions2 = [
+    {
+      id: 1,
+      name: "Manage Branches",
+      icon: <MdOutlineDashboard size={24} />,
+      path: "/",
+    },
+    {
+      id: 3,
+      name: "Sales Reports",
+      path: "/ownerviewallapplicants",
+      icon: <FiUsers size={24} />,
+    },
+  ];
+
+  const sidebarOptions3 = [
+    {
+      id: 1,
+      name: "Employees",
+      icon: <FiUsers size={24} />,
+      path: "/",
+    }
+  ];
+
+
   const isPathActive = (path) => {
     return pathname === path;
   };
 
   return (
     <div
-      className={`fixed w-full bg-white mt-[120px]${
+      className={`fixed w-full bg-white mt-[100px] ${
         sidebarVisible ? "left-0" : ""
-      } transition-all duration-300 w-full top-0 -left-[100%] h-screen md:w-[20%] md:left-0 dark:bg-gray-900 dark:text-gray-400 z-20`}
+      } transition-all duration-300 w-full top-0 -left-[100%] h-screen md:w-[20%] md:left-0 dark:bg-gray-900 dark:text-gray-400 z-20 overflow-y-auto`}
+      style={{ scrollbarWidth: "none" }} // Hide scrollbar for Firefox
+      // Hide scrollbar for WebKit browsers (Chrome, Safari)
+      css={{
+        "&::-webkit-scrollbar": {
+          width: 0,
+        },
+      }}
     >
       <div className="p-4">
         {/* Sidebar Options */}
         <div className="space-y-4">
-          {sidebarOptions.map((option) => (
+          {/* Sidebar Options 1 */}
+          {sidebarOptions1.map((option) => (
             <div key={option.id}>
               <div
-                className={`navItem flex items-center space-x-4 py-2 md:py-4 md:px-2  hover:bg-[#5893c4] hover:rounded-md hover:text-white`}
+                className={`navItem flex items-center space-x-4 py-2 md:py-4 md:px-2 hover:bg-[#5893c4] hover:rounded-md hover:text-white`}
               >
                 <div>{option.icon}</div>
                 <NavLink
                   to={option.path || "#"}
-                  className="flex w-full lg:text-[18px]  justify-between"
+                  className="flex w-full lg:text-[18px] justify-between"
                 >
                   {option.name}
                 </NavLink>
@@ -75,17 +108,60 @@ const OwnerBar = ({ sidebarVisible }) => {
             </div>
           ))}
           <hr />
+          {/* Sidebar Options 2 */}
+          {sidebarOptions2.map((option) => (
+            <div key={option.id}>
+              <div
+                className={`navItem flex items-center space-x-4 py-2 md:py-4 md:px-2 hover:bg-[#5893c4] hover:rounded-md hover:text-white`}
+              >
+                <div>{option.icon}</div>
+                <NavLink
+                  to={option.path || "#"}
+                  className="flex w-full lg:text-[18px] justify-between"
+                >
+                  {option.name}
+                </NavLink>
+              </div>
+            </div>
+          ))}
+          <hr />
+          {/* Sidebar Options 3 */}
+          {sidebarOptions3.map((option) => (
+            <div key={option.id}>
+              <div
+                className={`navItem flex items-center space-x-4 py-2 md:py-4 md:px-2 hover:bg-[#5893c4] hover:rounded-md hover:text-white`}
+              >
+                <div>{option.icon}</div>
+                <NavLink
+                  to={option.path || "#"}
+                  className="flex w-full lg:text-[18px] justify-between"
+                >
+                  {option.name}
+                </NavLink>
+              </div>
+            </div>
+          ))}
+          {/* Logout Option */}
+          <hr />
+          <div
+            className={`navItem flex items-center space-x-4 py-2 md:py-4 md:px-2 hover:bg-[#5893c4] hover:rounded-md hover:text-white`}
+          >
+            <div>
+              <img
+                src={Logout}
+                className="h-10 w-10 ml-4 cursor-pointer"
+                onClick={handleLogout}
+              />
+            </div>
+            <button
+              className="flex items-center text-xl bg-none border-none cursor-pointer"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
         </div>
       </div>
-      <div className="fixed bottom-0 flex items-center ml-2 mb-5 font-sans text-black dark:text-gray-400">
-          <span className="mr-4">
-            <img src={Logout} className="h-10 w-10 ml-4 cursor-pointer" onClick={handleLogout}
-            />
-          </span>
-          <button className="flex items-center text-xl bg-none border-none cursor-pointer" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
     </div>
   );
 };

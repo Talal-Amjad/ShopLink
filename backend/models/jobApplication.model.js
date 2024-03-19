@@ -5,17 +5,9 @@ const JobApplication = sequelize.define("JobApplication", {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    applythrough: {
-        type: DataTypes.STRING,
-        allowNull: false,
-    },
     experience: {
         type: DataTypes.STRING,
         allowNull: false,
-    },
-    cv: {
-        type: DataTypes.STRING,
-        allowNull: true,
     },
     skills: {
         type: DataTypes.JSON,

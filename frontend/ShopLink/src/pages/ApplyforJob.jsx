@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from '../axios';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import SkillInput from '../components/Fields/SkillInput';
 import Button from '../components/Buttons/Button';
 import UserLayout from '../components/layouts/User/UserLayout';
@@ -7,24 +9,21 @@ import UserNavBar from '../components/Navbar/UserNavBar';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Fields from '../components/Fields/Fields';
 
+const MySwal = withReactContent(Swal);
+
 const ApplyforJob = () => {
   const navigate = useNavigate();
   const { jobVacancyID, jobTitle } = useLocation().state;
-
   const [notification, setNotification] = useState(null);
   const [notificationColor, setNotificationColor] = useState(null);
   const [experience, setExperience] = useState('');
-  const handleExperienceChange = (event) => {
-    setExperience(event.target.value);
-  };
-
-  const [cvOption, setCvOption] = useState(null);
+  const [cvOption, setCvOption] = useState('withoutCV');
   const [skills, setSkills] = useState([]);
   const [file, setFile] = useState(null);
   const [selectedFileName, setSelectedFileName] = useState(null);
 
-  const handleCVOption = (option) => {
-    setCvOption(option);
+  const handleExperienceChange = (event) => {
+    setExperience(event.target.value);
   };
 
   const handleFolderIconClick = () => {
@@ -33,11 +32,9 @@ const ApplyforJob = () => {
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-
     if (file) {
       const fileExtension = file.name.split('.').pop().toLowerCase();
       const allowedExtensions = ['pdf', 'doc', 'docx'];
-
       if (allowedExtensions.includes(fileExtension)) {
         setFile(file);
         setSelectedFileName(file.name);
@@ -52,71 +49,166 @@ const ApplyforJob = () => {
     }
   };
 
-  const handleUploadButtonClick = async () => {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await axios.post('/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setSkills(response.data.skills);
-    } catch (error) {
-      console.error('Error uploading file and extracting skills:', error);
-    }
-  };
-
-  const handleFormSubmit = async (e) => {
+  const handleUploadButtonClick = async (e) => {
     e.preventDefault();
-
-    /*try {
-      let formData = new FormData();
-      formData.append('applythrough', cvOption);
-      formData.append('experience', experience);
-
-      if (cvOption === 'withCV' && file) {
-        formData.append('cv', file);
-      }
-
-      const token = localStorage.getItem('token');
-
-      const response = await axios.post('/apply', formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.data.message === 'Application submitted successfully') {
-        setNotification('Successfully applied!');
-        setNotificationColor('green');
-        setTimeout(() => {
-          setNotification(null);
-          setNotificationColor(null);
-          navigate('/jobs');
-        }, 3000);
-      }
-    } catch (error) {
-      setNotification('There was an error submitting the application. Please try again.');
+    if (!file) {
+      setNotification('Please attach a file.');
       setNotificationColor('red');
       setTimeout(() => {
         setNotification(null);
         setNotificationColor(null);
       }, 3000);
-
-      console.error('Error submitting application:', error);
-    }*/
+      return; // Stop execution if no file is attached
+    }
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await axios.post('/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      if (response.data.skills) {
+        setSkills(response.data.skills.split(',').map(skill => skill.trim())); // Split the string of skills into an array
+      }
+      // Display notification
+      setNotification('Skills extracted successfully. Add more skills manually.');
+      setNotificationColor('green');
+      setTimeout(() => {
+        setNotification(null);
+        setNotificationColor(null);
+        setCvOption('withoutCV');
+      }, 3000);
+    } catch (error) {
+      console.error('Error uploading file and extracting skills:', error);
+      setNotification('Error extracting skills from the uploaded file.');
+      setNotificationColor('red');
+      setTimeout(() => {
+        setNotification(null);
+        setNotificationColor(null);
+      }, 3000);
+    }
   };
+
+  const handleVerifySkills = () => {
+    MySwal.fire({
+      title: 'Confirm Skills',
+      html: (
+        <div>
+          {skills.map((skill, index) => {
+            // Split skill text by common separators (comma, semicolon, newline, etc.)
+            const skillItems = skill.split(/[,\n;]/);
+            return (
+              <div key={index}>
+                {skillItems.map((item, idx) => (
+                  // Trim each item to remove leading/trailing spaces and render as a separate paragraph
+                  <p key={`${index}-${idx}`}>{item.trim()}</p>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      ),
+      showCancelButton: true,
+      confirmButtonText: 'Confirm',
+      cancelButtonText: 'Cancel',
+    });
+  };
+  
+  
+  
+  
+  
+
+  const handleAddMoreSkills = () => {
+    setNotification(null);
+    setNotificationColor(null);
+    setCvOption('withoutCV');
+  };
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        if (!experience.trim()) {
+            setNotification('Please enter your experience.');
+            setNotificationColor('red');
+            setTimeout(() => {
+                setNotification(null);
+                setNotificationColor(null);
+            }, 3000);
+            return;
+        }
+
+        // Check if either skills are entered manually or a file is uploaded
+        if (cvOption === 'withCV' && !file) {
+            setNotification('Please upload a file to extract skills.');
+            setNotificationColor('red');
+            setTimeout(() => {
+                setNotification(null);
+                setNotificationColor(null);
+            }, 3000);
+            return;
+        } else if (cvOption === 'withoutCV' && skills.length === 0) {
+            setNotification('Please enter skills manually or upload a file to extract skills.');
+            setNotificationColor('red');
+            setTimeout(() => {
+                setNotification(null);
+                setNotificationColor(null);
+            }, 3000);
+            return;
+        }
+
+        // Format skills before saving
+        const formattedSkills = skills.join('\n•\n');
+
+        const token = localStorage.getItem('token');
+        console.log("--------------------------");
+        console.log('experience', experience);
+        console.log('skills', formattedSkills);
+        console.log('jobVacancyID', jobVacancyID);
+        console.log('jobTitle', jobTitle);
+        console.log("--------------------------");
+
+        const formData = {
+            experience,
+            skills: formattedSkills, // Send formatted skills
+            jobVacancyID,
+            jobTitle
+        };
+
+        const response = await axios.post('/apply2', formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        if (response.data.message === 'Application submitted successfully') {
+            setNotification('Successfully applied!');
+            setNotificationColor('green');
+            setTimeout(() => {
+                setNotification(null);
+                setNotificationColor(null);
+                navigate('/jobs');
+            }, 3000);
+        }
+    } catch (error) {
+        setNotification('There was an error submitting the application. Please try again.');
+        setNotificationColor('red');
+        setTimeout(() => {
+            setNotification(null);
+            setNotificationColor(null);
+        }, 3000);
+        console.error('Error submitting application:', error);
+    }
+};
+
 
   return (
     <UserLayout>
       <UserNavBar />
       <div className="bg-gray-100 min-h-screen flex justify-center items-center dark:bg-gray-900">
-        <div className="bg-white md:w-[400px] p-8 rounded shadow-md w-100 m-5 dark:bg-gray-700">
+        <div className="bg-white md:w-[400px] pt-0 pr-8 pl-8 rounded shadow-md md:mt-10 dark:bg-gray-700">
           <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
-            <h1 className="text-3xl mb-7 font-bold dark:text-gray-400 text-center">Application Form</h1>
+            <h1 className="text-3xl mb-7 font-bold mt-5 dark:text-gray-400 text-center">Application Form</h1>
             {notification && (
               <div className={`bg-${notificationColor || 'red'}-500 text-white p-2 mb-4 mt-5 flex justify-between items-center`}>
                 <span>{notification}</span>
@@ -134,7 +226,6 @@ const ApplyforJob = () => {
                 value={experience}
                 handleChange={handleExperienceChange}
               />
-
               <label className="block text-gray-700 text-lg md:text-xl font-bold mb-2">
                 Apply with CV or without CV
               </label>
@@ -144,7 +235,8 @@ const ApplyforJob = () => {
                   id="withCV"
                   name="cvOption"
                   className="mr-2"
-                  onChange={() => handleCVOption('withCV')}
+                  onChange={() => setCvOption('withCV')}
+                  checked={cvOption === 'withCV'}
                 />
                 <label htmlFor="withCV">Apply with CV</label>
                 <input
@@ -152,36 +244,53 @@ const ApplyforJob = () => {
                   id="withoutCV"
                   name="cvOption"
                   className="ml-8 mr-2"
-                  onChange={() => handleCVOption('withoutCV')}
+                  onChange={() => setCvOption('withoutCV')}
+                  checked={cvOption === 'withoutCV'}
                 />
                 <label htmlFor="withoutCV">Apply without CV</label>
               </div>
             </div>
-
             {cvOption === 'withCV' && (
-              <div className="border-2 border-dashed h-full dark:text-gray-400 my-2 md:my-4">
-                <div className="flex flex-col items-center m-5" onClick={handleFolderIconClick}>
-                  <i className="fa fa-folder-open fa-4x text-blue-700 cursor-pointer"></i>
-                  <span className="block text-gray-400 font-normal">
-                    {selectedFileName ? selectedFileName : 'Attach your files here'}
-                  </span>
+              <div>
+                <div className="border-2 border-dashed h-full dark:text-gray-400 my-2 md:my-4">
+                  <div className="flex flex-col items-center m-2" onClick={handleFolderIconClick}>
+                    <i className="fa fa-folder-open fa-4x text-blue-700 cursor-pointer"></i>
+                    <span className="block text-gray-400 font-normal">
+                      {selectedFileName ? selectedFileName : 'Attach your files here'}
+                    </span>
+                  </div>
+                  <input
+                    type="file"
+                    id="fileInput"
+                    className="h-full w-full opacity-0"
+                    name="cv"
+                    style={{}}
+                    onChange={handleFileChange}
+                  />
                 </div>
-                <input
-                  type="file"
-                  id="fileInput"
-                  className="h-full w-full opacity-0"
-                  name="cv"
-                  style={{}}
-                  onChange={handleFileChange}
-                />
+                <Button text="Upload File" onClick={handleUploadButtonClick} />
               </div>
             )}
-
             {cvOption === 'withoutCV' && (
-              <SkillInput label="Skills" skills={skills} setSkills={setSkills} />
+              <>
+                <SkillInput label="Skills" skills={skills} setSkills={setSkills} />
+                {notification && (
+                  <div className={`bg-${notificationColor || 'red'}-500 text-white p-2 mb-4 mt-5 flex justify-between items-center`}>
+                    <span>{notification}</span>
+                    {notification.includes('Skills extracted successfully.') && (
+                      <>
+                        <button className="text-white mr-4" onClick={handleVerifySkills}>Verify</button>
+                        <button className="text-white" onClick={handleAddMoreSkills}>Add More</button>
+                      </>
+                    )}
+                    <button className="text-white" onClick={() => setNotification(null)}>
+                      X
+                    </button>
+                  </div>
+                )}
+              </>
             )}
             <div className='md:mt-8'>
-              <Button text="Upload File" onClick={handleUploadButtonClick} />
               <Button text="Apply" type="submit" />
             </div>
           </form>
