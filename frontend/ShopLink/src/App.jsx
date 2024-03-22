@@ -16,6 +16,8 @@ import HiringProcessReport from "./pages/ShopOwner/HiringProcessReport";
 import ApplicantsSkillReport from "./pages/BranchManager/ApplicantsSkillReport"
 import AddProduct from "./pages/BranchManager/AddProduct";
 import AddSale from "./pages/BranchManager/AddSale";
+import AddBranch from "./pages/ShopOwner/AddBranch";
+import ShowAllBranches from "./pages/ShopOwner/ShowAllBranches";
 import Protected from "../Protected";
 
 function App() {
@@ -26,6 +28,10 @@ function App() {
         <Route path="/" element={<LandingPage/>} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/signin" element={<SignInPage/>} />
+        {/*Testing Routes*/}
+        <Route path="/addbranch" element={<AddBranch/>} />
+        <Route path="/allbranches" element={<ShowAllBranches/>} />
+        {/*Testing Routes*/}
         <Route path="/applyforjob" element={<Protected component={<ApplyfoJob/>} allowableuser="user"/>} />
         <Route path="/postjob" element={<Protected component={<PostJob/>} allowableuser="manager"/>}/>
         <Route path="/addproduct" element={<Protected component={<AddProduct/>} allowableuser="manager"/>}/>
