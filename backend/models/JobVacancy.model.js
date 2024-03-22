@@ -40,6 +40,10 @@ const JobVacancy = sequelize.define("JobVacancy", {
         type: DataTypes.JSON, 
         allowNull: true, 
     },
+    branchId: {
+        type: DataTypes.INTEGER, 
+        allowNull: false, 
+    },
 });
 
 sequelize.sync().then(() => {

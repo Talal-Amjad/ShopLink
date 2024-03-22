@@ -152,7 +152,7 @@ const ViewAllApplicants = () => {
     navigate('/skillsreport');
   };
 
-  const headerData = ['Username', 'Apply Through', 'Experience', 'Job ID', 'Job Title', 'Actions'];
+  const headerData = ['Username', 'Experience', 'Job ID', 'Job Title', 'Actions'];
 
   return (
     <ManagerDashboardLayout>
@@ -164,7 +164,6 @@ const ViewAllApplicants = () => {
               <div>{applicant.username}</div>
             </div>
           </div>,
-          applicant.applythrough,
           applicant.experience,
           applicant.jobVacancyID,
           applicant.jobTitle,
@@ -190,15 +189,13 @@ const ViewAllApplicants = () => {
         ])}
       />
       <button
-        className="fixed bottom-4 right-4 px-4 py-2 bg-primary text-white rounded"
+        className="bottom-4 right-4 px-4 py-2 bg-primary text-white rounded m-10"
         onClick={handleViewSkillReport}
+       
       >
         View Applicant's Skill Report
       </button>
     </ManagerDashboardLayout>
-
-
-
   );
 };
 

@@ -41,7 +41,7 @@ export default function NavBar() {
         let tableContent = '<table>';
         tableContent += '<tr><th>Job Title</th><th>Status</th></tr>';
         jobs.forEach(job => {
-          tableContent += `<tr><td>${job.jobTitle}</td><td>${job.status}</td></tr>`;
+          tableContent += `<tr class="text-center"><td>${job.jobTitle}</td><td>${job.status}</td></tr>`;
         });
         tableContent += '</table>';
         Swal.fire({

@@ -1,5 +1,6 @@
 const JobApplication = require('../models/jobApplication.model');
 const jwt = require("jsonwebtoken");
+
 const applyForJob = async (req, res) => {
   try {
     const authorizationHeader = req.headers.authorization;
@@ -17,23 +18,29 @@ const applyForJob = async (req, res) => {
     const token = tokenParts[1];
     const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodeToken.username;
-    const { experience, skills, jobVacancyID, jobTitle } = req.body;
-    const mydata=req.body;
-    console.log("Data",mydata);
+    const { experience, skills, jobVacancyID, jobTitle,branchId } = req.body;
 
     // Validate if required fields are present
     if (!experience || !skills || !jobVacancyID || !jobTitle) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
-  
+    // Check if the user has already applied for this job
+    const existingApplication = await JobApplication.findOne({ username, jobVacancyID });
+
+    if (existingApplication) {
+      return res.status(409).json({ message: 'You have already applied for this job' });
+    }
+
+    // If not, create a new application
     const jobApplication = await JobApplication.create({
       username,
       experience,
       skills,
       status: 'Pending',
       jobVacancyID,
-      jobTitle
+      jobTitle,
+      branchId
     });
 
     res.status(201).json({ message: 'Application submitted successfully', jobApplication });

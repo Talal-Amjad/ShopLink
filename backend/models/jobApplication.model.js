@@ -26,7 +26,11 @@ const JobApplication = sequelize.define("JobApplication", {
         type: DataTypes.STRING,
         allowNull: false
 
-    }
+    },
+    branchId: {
+        type: DataTypes.INTEGER, 
+        allowNull: false, 
+    },
 });
 
 sequelize.sync().then(() => {

@@ -45,14 +45,21 @@ const PostJob = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
+      const token = localStorage.getItem('token');
+
+      const value= {
+        jobTitle: values.jobTitle,
+        expectedSalary: values.salary,
+        jobDescription: values.description,
+        experience: values.experience,
+        lastDate: values.date,
+        skills,
+      };
       try {
-        await axios.post('/postjob', {
-          jobTitle: values.jobTitle,
-          expectedSalary: values.salary,
-          jobDescription: values.description,
-          experience: values.experience,
-          lastDate: values.date,
-          skills,
+        await axios.post('/postjob',value,{
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         setNotification('Job Post request submitted Successfully');
@@ -122,8 +129,6 @@ const PostJob = () => {
               />
                
             </div>
-
-              {/* Use the SkillInput component for handling skills */}
               <div className='w-1/2'>
             <SkillInput label="Skills" skills={skills} setSkills={setSkills} />
             </div>
@@ -147,8 +152,6 @@ const PostJob = () => {
               
             </div>
           </form>
-
-          {/* Notification component */}
           {notification && (
             <div
               className={`mt-4 p-4 rounded ${
