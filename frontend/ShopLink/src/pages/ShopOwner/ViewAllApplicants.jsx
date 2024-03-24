@@ -24,19 +24,30 @@ const Actions = ({ menuItems }) => {
 const ViewAllApplicants = () => {
   const [selectedMenuIndex, setSelectedMenuIndex] = useState(null);
   const [applicants, setApplicants] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+
 
   useEffect(() => {
-    // Fetch data from the server using Axios
-    axios.get('/applicants')
-      .then(response => {
-        console.log('Data fetched successfully:', response.data);
-        setApplicants(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        
-      });
+    axios.get('/allbranchesids')
+      .then(response => setBranches(response.data))
+      .catch(error => console.error('Error fetching branches:', error));
   }, []);
+
+  useEffect(() => {
+    fetchApplicants();
+  }, [selectedBranch, selectedStatus]);
+  
+
+
+
+  const fetchApplicants = () => {
+    axios.get('/allapplicants', { params: { branchId: selectedBranch,status:selectedStatus } })
+      .then(response => setApplicants(response.data))
+      .catch(error => console.error('Error fetching pending job applications:', error));
+  };
+
 
   const handleShowCV = () => {
     console.log('CV Show Clicked');
@@ -51,6 +62,13 @@ const ViewAllApplicants = () => {
     setSelectedMenuIndex(null);
   };
 
+  const handleBranchChange = (event) => {
+    setSelectedBranch(event.target.value);
+  };
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
+  };
+
   const actionMenuItems = [
     { label: "Reject ", onClick: handleShowCV },
     { label: "Select", onClick: handleShowSkills },
@@ -61,10 +79,36 @@ const ViewAllApplicants = () => {
     setSelectedMenuIndex((prevIndex) => (prevIndex === index ? null : index));
   };
 
-  const headerData = ['Username', 'Apply Through', 'Experience', 'Job ID', 'Job Title', 'Actions'];
+  const headerData = ['Username', 'Experience', 'Job ID', 'Job Title', 'Actions'];
 
   return (
     <OwnerDashboradLayout>
+        <div className="flex justify-between items-center my-2 mt-8">
+          <p className="font-semibold text-2xl dark:text-gray-400">All Applicants</p>
+          <select
+            value={selectedBranch}
+            onChange={handleBranchChange}
+            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+          >
+            <option value=""  disabled>Select Branch</option>
+            <option value="All">All</option>
+            {branches.map(branch => (
+              <option key={branch.branchId} value={branch.branchId}>{branch.branchId}</option>
+            ))}
+          </select>
+          <select
+            value={selectedStatus}
+            onChange={handleStatusChange}
+            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+          >
+            <option value="" disabled>Select Status</option>
+            <option value="All">All</option>
+            <option value="pending">Pending</option>
+            <option value="selected">Selected</option>
+            <option value="reject">Rejected</option>
+           
+          </select>
+        </div>
       <Table
         headerData={headerData}
         tableData={applicants.map((applicant, index) => [
@@ -73,7 +117,6 @@ const ViewAllApplicants = () => {
               <div>{applicant.username}</div>
             </div>
           </div>,
-          applicant.applythrough,
           applicant.experience,
           applicant.jobVacancyID,
           applicant.jobTitle,

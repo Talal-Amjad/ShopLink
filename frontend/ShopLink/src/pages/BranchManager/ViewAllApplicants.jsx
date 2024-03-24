@@ -5,6 +5,7 @@ import Table from '../../components/Table/Table';
 import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { jwtDecode } from 'jwt-decode';
 
 const Actions = ({ menuItems }) => {
   return (
@@ -28,10 +29,18 @@ const ViewAllApplicants = () => {
   const [selectedApplicantIndex, setSelectedApplicantIndex] = useState(null);
   const [applicants, setApplicants] = useState([]);
   const [currentCV, setCurrentCV] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('');
+  const token = localStorage.getItem('token');
+  const decodedToken = jwtDecode(token);
+  const role = decodedToken.role;
+  const username = decodedToken.username;
+  console.log("userame is  ",username);
 
   useEffect(() => {
     // Fetch data from the server using Axios
-    axios.get('/applicants')
+    axios.get('/applicants', {
+      params: { username, role,status:selectedStatus }
+  })
       .then(response => {
         console.log('Data fetched successfully:', response.data);
         setApplicants(response.data);
@@ -40,8 +49,11 @@ const ViewAllApplicants = () => {
         console.error('Error fetching data:', error);
         // Handle error as needed
       });
-  }, []);
+  },[selectedStatus]);
 
+  const handleStatusChange = (event) => {
+    setSelectedStatus(event.target.value);
+  };
 
   const handleSelect = (username) => {
     Swal.fire({
@@ -156,6 +168,23 @@ const ViewAllApplicants = () => {
 
   return (
     <ManagerDashboardLayout>
+       <div className="flex justify-between items-center my-2 mt-8">
+        <p className="font-semibold text-2xl dark:text-gray-400">
+          {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}{selectedStatus === 'reject' ? 'ed' : selectedStatus === 'approve' ? 'd' : ''} Applicants
+        </p>
+          <select
+            value={selectedStatus}
+            onChange={handleStatusChange}
+            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+          >
+            <option value="" disabled>Select Status</option>
+            <option value="All">All</option>
+            <option value="pending">Pending</option>
+            <option value="selected">Selected</option>
+            <option value="reject">Rejected</option>
+           
+          </select>
+        </div>
       <Table
         headerData={headerData}
         tableData={applicants.map((applicant, index) => [
@@ -165,6 +194,7 @@ const ViewAllApplicants = () => {
             </div>
           </div>,
           applicant.experience,
+
           applicant.jobVacancyID,
           applicant.jobTitle,
           <>

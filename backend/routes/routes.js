@@ -15,6 +15,9 @@ const fileUploadController = require('../controllers/fileUploadController');
 const applyForJobController = require('../controllers/applyForJobController');
 const jobApplicationController=require('../controllers/jobApplicationController');
 const manageBranchesController = require('../controllers/manageBranchesController');
+const getAllBranches= require('../controllers/getAllBranchesIds');
+const jobNotificationController = require('../controllers/jobNotificationsController');
+const notificationManagementControler = require('../controllers/notificationManagementController');
 const router = express.Router();
 
 router.post('/signup', authController.signUp);
@@ -29,6 +32,7 @@ router.post('/verify_email_encoded_pass', forgetpass.verify_forgetpass)
 router.post('/changepass', forgetpass.change_password)
 router.get('/alljobs',showJobsController.getAllJobs);
 router.get('/applicants',viewAllApplicantsController.getAllApplicants);
+router.get('/allapplicants',viewAllApplicantsController.getAllApplicantsforowner);
 router.get('/pendingjobs', approveJobController.getPendingJobApplications);
 router.post('/updatejobstatus', approveJobController.updateJobStatus);
 router.put('/updatestatus',selectApplicantController.updateStatus);
@@ -38,6 +42,13 @@ router.get('/hiringreport',HiringReport.hiringreport);
 router.get('/managersusername',manageBranchesController.getManagerUsernames);
 router.post('/addbranch',manageBranchesController.addBranch);
 router.get('/allbranches',manageBranchesController.showAllBraches);
+router.get('/allbranchesids',getAllBranches.getAllBranches);
+router.post('/savejobnotification',jobNotificationController.saveJobNotificaton);
+router.get('/shownotifications',jobNotificationController.fetchNotifications);
+router.get('/unreadNotificationCount', notificationManagementControler.getUnreadNotificationCount);
+router.put('/markNotificationsAsRead', notificationManagementControler.markNotificationsAsRead);
+router.delete('/deleteNotification/:notificationID', notificationManagementControler.deleteNotification);
+router.post('/savepostjobnotification',jobNotificationController.savePostJobNotificaton);
 router.get('/protected', authenticateToken, (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });

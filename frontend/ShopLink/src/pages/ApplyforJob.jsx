@@ -34,12 +34,12 @@ const ApplyforJob = () => {
     const file = event.target.files[0];
     if (file) {
       const fileExtension = file.name.split('.').pop().toLowerCase();
-      const allowedExtensions = ['pdf', 'doc', 'docx'];
+      const allowedExtensions = ['pdf'];
       if (allowedExtensions.includes(fileExtension)) {
         setFile(file);
         setSelectedFileName(file.name);
       } else {
-        setNotification('Invalid file type. Please upload a PDF or Word document.');
+        setNotification('Invalid file type. Please upload a PDF Document.');
         setNotificationColor('red');
         setTimeout(() => {
           setNotification(null);
@@ -182,7 +182,7 @@ const ApplyforJob = () => {
         },
       });
   
-      if (response.status === 400 && response.data.message === 'You have already applied for this job') {
+      if (response.status === 409 && response.data.message === 'You have already applied for this job') {
         // Handle case where user has already applied for the job
         setNotification(response.data.message);
         setNotificationColor('red');
@@ -227,7 +227,7 @@ return (
   <UserLayout>
     <UserNavBar />
     <div className="bg-gray-100 min-h-screen flex justify-center items-center dark:bg-gray-900">
-      <div className="bg-white md:w-[400px] max-md:w-1/2 pt-0 pr-8 pl-8 rounded shadow-md md:mt-16 dark:bg-gray-700">
+      <div className="bg-white md:w-[400px] max-md:w-1/2 pt-0 pr-8 pl-8 rounded shadow-md mt-40 mb-40 dark:bg-gray-700">
         <form onSubmit={handleFormSubmit} encType='multipart/form-data'>
           <h1 className="text-3xl mb-7 font-bold mt-5 dark:text-gray-400 text-center">Application Form</h1>
           {notification && (
@@ -287,6 +287,7 @@ return (
                 </div>
                 <input
                   type="file"
+                  accept=".pdf"
                   id="fileInput"
                   className="h-full w-full opacity-0"
                   name="cv"
