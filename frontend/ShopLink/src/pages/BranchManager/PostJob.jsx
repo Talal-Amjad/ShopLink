@@ -6,6 +6,7 @@ import Fields from '../../components/Fields/Fields';
 import Button from '../../components/Buttons/Button';
 import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
 import SkillInput from '../../components/Fields/SkillInput';
+import { jwtDecode } from 'jwt-decode';
 
 const PostJob = () => {
   const [skills, setSkills] = useState([]);
@@ -45,7 +46,10 @@ const PostJob = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-      const token = localStorage.getItem('token');
+       const token = localStorage.getItem('token');
+    const decodedToken = jwtDecode(token);
+    const role = decodedToken.role;
+    const username = decodedToken.username;
 
       const value= {
         jobTitle: values.jobTitle,
@@ -66,6 +70,20 @@ const PostJob = () => {
         setNotificationType('success');
         formik.resetForm();
         setSkills([]);
+
+        axios.post('/savepostjobnotification', {
+          jobTitle: values.jobTitle,
+          title : 'New job Posted',
+          username:username,
+          status: 'unread'
+        })
+        .then(response => {
+          // Existing code remains the same
+        })
+        .catch(error => console.error('Error updating job status:', error));
+
+
+
       } catch (error) {
         setNotification(`Error in Job Post request: ${error.message}`);
         setNotificationType('error');

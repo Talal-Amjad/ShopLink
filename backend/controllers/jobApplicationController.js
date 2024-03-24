@@ -19,6 +19,7 @@ const applyForJob = async (req, res) => {
     const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
     const username = decodeToken.username;
     const { experience, skills, jobVacancyID, jobTitle,branchId } = req.body;
+    console.log(username);
 
     // Validate if required fields are present
     if (!experience || !skills || !jobVacancyID || !jobTitle) {
@@ -26,7 +27,7 @@ const applyForJob = async (req, res) => {
     }
 
     // Check if the user has already applied for this job
-    const existingApplication = await JobApplication.findOne({ username, jobVacancyID });
+    const existingApplication = await JobApplication.findOne({where:{ username, jobVacancyID }});
 
     if (existingApplication) {
       return res.status(409).json({ message: 'You have already applied for this job' });

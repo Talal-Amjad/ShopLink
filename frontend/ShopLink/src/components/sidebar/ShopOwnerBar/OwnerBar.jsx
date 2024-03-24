@@ -51,7 +51,7 @@ const OwnerBar = ({ sidebarVisible }) => {
       id: 1,
       name: "Manage Branches",
       icon: <MdOutlineDashboard size={24} />,
-      path: "/",
+      path: "/allbranches",
     },
     {
       id: 3,

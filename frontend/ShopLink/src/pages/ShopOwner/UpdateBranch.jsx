@@ -5,26 +5,36 @@ import axios from '../../axios';
 import Modal from "../../components/Modal/Modal";
 import Button from "../../components/Buttons/Button";
 
-function UpdateBranch({ branchId, initialValues, onClose, isOpen }) {
+function UpdateBranch({ onClose, isOpen }) {
+  const [managerUsernames, setManagerUsernames] = useState([]);
   const [notification, setNotification] = useState('');
 
+  useEffect(() => {
+    // Fetch manager usernames when component mounts
+    const fetchManagerUsernames = async () => {
+      try {
+        const response = await axios.get('/managersusername');
+        setManagerUsernames(response.data);
+      } catch (error) {
+        console.error('Error fetching manager usernames:', error);
+      }
+    };
+    fetchManagerUsernames();
+  }, []);
+
   const validationSchema = Yup.object().shape({
-    managerUsername: Yup.string().required('Manager username is required'),
+    branchcode: Yup.number().min(1001, 'Branch code must be greater than 1000').required('Branch code is required'),
+    managerusername: Yup.string().required('Manager username is required'),
     city: Yup.string().required('City is required')
   });
 
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       // Make API call to update branch details
-      await axios.put(`/updatebranch/${branchId}`, values);
+      // Example:
+      // await axios.put(`/branches/${values.branchId}`, values);
       setSubmitting(false);
       onClose(); // Close the modal after successful submission
-      // Show success message using Swal or any other library
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Branch details updated successfully'
-      });
     } catch (error) {
       console.error('Error updating branch:', error);
       setNotification('Error updating branch. Please try again.');
@@ -38,7 +48,11 @@ function UpdateBranch({ branchId, initialValues, onClose, isOpen }) {
       </h1>
       <hr className="m-4" />
       <Formik
-        initialValues={initialValues}
+        initialValues={{
+          branchcode: '',
+          managerusername: '',
+          city: ''
+        }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
@@ -48,24 +62,28 @@ function UpdateBranch({ branchId, initialValues, onClose, isOpen }) {
               Branch Code / Branch Id
             </h1>
             <Field
-              name="branchId"
-              type="text"
+              name="branchcode"
+              type="number"
               placeholder="Branch Code"
               className="border-gray-300 border p-2 rounded-md w-full"
-              disabled
             />
-            <ErrorMessage name="branchId" component="div" className="text-red-500" />
+            <ErrorMessage name="branchcode" component="div" className="text-red-500" />
 
             <h1 className="font-manrope font-semibold mx-0 text-l leading-[32.78px] text-[#191D23] mb-2 dark:text-gray-400">
               Manager Username
             </h1>
+            {/* Dropdown for manager usernames */}
             <Field
-              name="managerUsername"
-              type="text"
-              placeholder="Manager Username"
+              name="managerusername"
+              as="select"
               className="border-gray-300 border p-2 rounded-md w-full"
-            />
-            <ErrorMessage name="managerUsername" component="div" className="text-red-500" />
+            >
+              <option value="">Select Manager Username</option>
+              {managerUsernames.map((username, index) => (
+                <option key={index} value={username}>{username}</option>
+              ))}
+            </Field>
+            <ErrorMessage name="managerusername" component="div" className="text-red-500" />
 
             <h1 className="font-manrope font-semibold mx-0 text-l leading-[32.78px] text-[#191D23] mb-2 dark:text-gray-400">
               City
