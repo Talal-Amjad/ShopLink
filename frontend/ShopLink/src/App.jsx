@@ -18,6 +18,9 @@ import AddProduct from "./pages/BranchManager/AddProduct";
 import AddSale from "./pages/BranchManager/AddSale";
 import UpdateBranch from "./pages/ShopOwner/UpdateBranch";
 import ShowAllBranches from "./pages/ShopOwner/ShowAllBranches";
+import AllStocks from "./pages/BranchManager/allstocks";
+import SalesInsights from "./pages/BranchManager/SalesInsights";
+import PostedJob from "./pages/BranchManager/PostedJobs";
 import Protected from "../Protected";
 
 function App() {
@@ -31,6 +34,10 @@ function App() {
         {/*Testing Routes*/}
         <Route path="/updatebranch" element={<UpdateBranch/>} />
         <Route path="/allbranches" element={<ShowAllBranches/>} />
+        <Route path="/stock" element={<AllStocks/>} />
+        <Route path="/insights" element={<SalesInsights/>} />
+        <Route path="/postedjobs" element={<PostedJob/>} />
+
         {/*Testing Routes*/}
         <Route path="/applyforjob" element={<Protected component={<ApplyfoJob/>} allowableuser="user"/>} />
         <Route path="/postjob" element={<Protected component={<PostJob/>} allowableuser="manager"/>}/>

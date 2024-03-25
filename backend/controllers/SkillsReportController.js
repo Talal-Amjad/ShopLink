@@ -1,13 +1,29 @@
 const JobApplication  = require('../models/jobApplication.model');
 const { JobVacancy } = require('../models/JobVacancy.model');
+const BranchDetails = require('../models/branchDetails.model');
 
 async function generateSkillsReport(req, res) {
     try {
-        const jobApplications = await JobApplication.findAll();
+        const { username, status } = req.query;
+    const managerBranch = await BranchDetails.findOne({
+      where: { managerUsername: username }
+    });
+    let applicants;
+    
+    if (status && status !== 'All') {
+      applicants = await JobApplication.findAll({
+        where: { branchId: managerBranch.branchId, status }
+      });
+    } else {
+      applicants = await JobApplication.findAll({
+        where: { branchId: managerBranch.branchId }
+      });
+    }
+
 
         const report = [];
 
-        for (const application of jobApplications) {
+        for (const application of applicants) {
             let applicantSkills = [];
             if (typeof application.skills === 'string') {
                 // Parse skills based on different formats

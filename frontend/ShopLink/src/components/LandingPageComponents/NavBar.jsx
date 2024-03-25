@@ -24,7 +24,7 @@ export default function NavBar() {
   };
 
   const fetchJobsByEmail = async (email) => {
-    try {
+ try {
       const response = await axios.post('/applicationstatus', { email });
       console.log(response.data);
 
@@ -39,9 +39,9 @@ export default function NavBar() {
 
         // Create HTML table content
         let tableContent = '<table>';
-        tableContent += '<tr><th>Job Title</th><th>Status</th></tr>';
+        tableContent += '<tr><th>Job Title</th><th>Status</th><th>Branch Code</th></tr>';
         jobs.forEach(job => {
-          tableContent += `<tr class="text-center"><td>${job.jobTitle}</td><td>${job.status}</td></tr>`;
+          tableContent += `<tr class="text-center justify-center"><td>${job.jobTitle}</td><td>${job.status}</td><td>${job.branchId}</td></tr>`;
         });
         tableContent += '</table>';
         Swal.fire({
@@ -66,7 +66,7 @@ export default function NavBar() {
           confirmButtonColor: '#4682B4',
         });
       }
-    }
+    }   
   };
 
   return (
@@ -106,12 +106,12 @@ export default function NavBar() {
             <li>
               <a
                 onClick={handleTrackApplication}
-                className="flex items-center cursor-pointer justify-center mx-4 px-4 py-2 border-2 text-base font-medium rounded-md text-gray-800 text-primary hover:bg-primary hover:text-white border-primary borde md:py-4 md:text-lg md:px-10">
+                className="flex items-center cursor-pointer justify-center mx-4 px-4 py-2 border-2 text-base font-medium rounded-md text-primary hover:bg-primary hover:text-white border-primary borde md:py-4 md:text-lg md:px-10">
                 Track Application
               </a>
             </li>
             <li>
-              <a className="flex items-center justify-center mx-4 px-4 py-2 border-2 text-base font-medium rounded-md text-gray-800 text-primary hover:bg-primary hover:text-white border-primary borde md:py-4 md:text-lg md:px-10" href="signin">
+              <a className="flex items-center justify-center mx-4 px-4 py-2 border-2 text-base font-medium rounded-md t text-primary hover:bg-primary hover:text-white border-primary borde md:py-4 md:text-lg md:px-10" href="signin">
                 LogIn
               </a>
             </li>

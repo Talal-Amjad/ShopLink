@@ -18,6 +18,11 @@ const manageBranchesController = require('../controllers/manageBranchesControlle
 const getAllBranches= require('../controllers/getAllBranchesIds');
 const jobNotificationController = require('../controllers/jobNotificationsController');
 const notificationManagementControler = require('../controllers/notificationManagementController');
+const addStockController = require('../controllers/addStockController');
+const saleController = require('../controllers/saleController');
+const allStockController = require('../controllers/allStocksController');
+const manageStock =require('../controllers/managestock');
+const postedJobs = require('../controllers/postedJobController');
 const router = express.Router();
 
 router.post('/signup', authController.signUp);
@@ -49,6 +54,15 @@ router.get('/unreadNotificationCount', notificationManagementControler.getUnread
 router.put('/markNotificationsAsRead', notificationManagementControler.markNotificationsAsRead);
 router.delete('/deleteNotification/:notificationID', notificationManagementControler.deleteNotification);
 router.post('/savepostjobnotification',jobNotificationController.savePostJobNotificaton);
+router.post('/addproducts',addStockController.addProduct);
+router.post('/addsale', saleController.addSale);
+router.get('/branchsales',saleController.getallbranchsales);
+router.get('/allstock',allStockController.getallstocks);
+router.delete('/deleteproduct/:productId',manageStock.deleteProduct);
+router.delete('/deletesale/:saleId',saleController.deleteSale);
+router.get('/postedjobs',postedJobs.getPostedJobs)
+
+
 router.get('/protected', authenticateToken, (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });

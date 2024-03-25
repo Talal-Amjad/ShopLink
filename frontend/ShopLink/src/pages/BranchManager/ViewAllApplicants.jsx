@@ -30,6 +30,8 @@ const ViewAllApplicants = () => {
   const [applicants, setApplicants] = useState([]);
   const [currentCV, setCurrentCV] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('');
+
+  
   const token = localStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const role = decodedToken.role;

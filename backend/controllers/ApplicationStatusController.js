@@ -14,7 +14,7 @@ exports.getUserApplicationStatus = async (req, res) => {
       // Fetch job titles and statuses for all applied jobs against the username
       const applications = await JobApplication.findAll({ 
         where: { username }, 
-        attributes: ['jobVacancyID','jobTitle', 'status'] 
+        attributes: ['jobVacancyID','jobTitle', 'status','branchId'] 
       });
 
       if (!applications || applications.length === 0) {
