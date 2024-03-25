@@ -26,14 +26,14 @@ const Sidebar = ({ sidebarVisible }) => {
   const sidebarOptions1 = [
     {
       id: 1,
-      name: "Post Job",
+      name: "Jobs",
       icon: <MdOutlineDashboard size={24} />,
-      path: "/postjob",
+      path: "/postedjobs",
     },
     {
       id: 2,
       name: "Sales Insights",
-      path: "/manager",
+      path: "/insights",
       icon: <CgFileDocument size={24} />,
     },
     {
@@ -47,9 +47,9 @@ const Sidebar = ({ sidebarVisible }) => {
   const sidebarOptions2 = [
     {
       id: 1,
-      name: "Add Stock",
+      name: "Stock",
       icon: <MdOutlineDashboard size={24} />,
-      path: "/addproduct",
+      path: "/stock",
     },
     {
       id: 2,

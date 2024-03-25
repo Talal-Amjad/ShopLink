@@ -35,20 +35,10 @@ const ApproveJobs = () => {
     setSelectedStatus(event.target.value);
   };
 
-  const isDatePassed = (dateString) => {
-    const currentDate = new Date();
-    const lastDate = new Date(dateString);
-    return currentDate > lastDate;
-  };
-
-  const shouldShowJob = (job) => {
-    const daysToShowAfterLastDate = 2;
-    const lastDate = new Date(job.lastDate);
-    const showUntilDate = new Date(lastDate);
-    showUntilDate.setDate(showUntilDate.getDate() + daysToShowAfterLastDate);
-
-    const currentDate = new Date();
-    return currentDate <= showUntilDate;
+  const updateJobStatus = (jobVacancyID, status) => {
+    axios.post('updatejobstatus', { jobVacancyID, status })
+      .then(() => fetchPendingJobs())
+      .catch(error => console.error('Error updating job status:', error));
   };
 
   const handleApproveClick = (job) => {
@@ -62,23 +52,14 @@ const ApproveJobs = () => {
       confirmButtonText: "Yes, approve it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.post('updatejobstatus', { jobVacancyID: job.jobVacancyID, status: 'approve' })
-          .then(response => {
-            Swal.fire({
-              title: "Approved!",
-              text: response.data.message,
-              icon: "success"
-            }).then(() => window.location.reload());
-
-          })
-          .catch(error => console.error('Error updating job status:', error));
+        updateJobStatus(job.jobVacancyID, 'approve');
         axios.post('/savejobnotification', {
           jobVacancyID: job.jobVacancyID,
           branchId: job.branchId,
           title: 'Job Approved',
           status: 'unread'
         })
-          .then(response => {
+          .then(() => {
             // Existing code remains the same
           })
           .catch(error => console.error('Error updating job status:', error));
@@ -97,25 +78,33 @@ const ApproveJobs = () => {
       confirmButtonText: "Yes, reject it!"
     }).then((result) => {
       if (result.isConfirmed) {
-        axios.post('updatejobstatus', { jobVacancyID: job.jobVacancyID, status: 'reject' })
-          .then(response => {
-            Swal.fire({
-              title: "Rejected!",
-              text: response.data.message,
-              icon: "error"
-            }).then(() => window.location.reload());
-          })
-          .catch(error => console.error('Error updating job status:', error));
+        updateJobStatus(job.jobVacancyID, 'reject');
         axios.post('/savejobnotification', {
           jobVacancyID: job.jobVacancyID,
           branchId: job.branchId,
           title: 'Job Rejected',
           status: 'unread'
         })
-          .then(response => {
+          .then(() => {
             // Existing code remains the same
           })
           .catch(error => console.error('Error updating job status:', error));
+      }
+    });
+  };
+
+  const handleCloseClick = (job) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You want to close this job application?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, close it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateJobStatus(job.jobVacancyID, 'closed');
       }
     });
   };
@@ -125,23 +114,13 @@ const ApproveJobs = () => {
       return (
         <>
           <button
-            className={`${
-              isDatePassed(job.lastDate) || !shouldShowJob(job)
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-green-500'
-            } text-white px-4 py-2 rounded-md`}
-            disabled={isDatePassed(job.lastDate) || !shouldShowJob(job)}
+            className="bg-green-500 text-white px-4 py-2 rounded-md"
             onClick={() => handleApproveClick(job)}
           >
             Approve
           </button>
           <button
-            className={`${
-              isDatePassed(job.lastDate) || !shouldShowJob(job)
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-red-500'
-            } text-white px-4 py-2 rounded-md`}
-            disabled={isDatePassed(job.lastDate) || !shouldShowJob(job)}
+            className="bg-red-500 text-white px-4 py-2 rounded-md"
             onClick={() => handleRejectClick(job)}
           >
             Reject
@@ -151,29 +130,19 @@ const ApproveJobs = () => {
     } else if (job.status === 'approve') {
       return (
         <button
-          className={`${
-            isDatePassed(job.lastDate) || !shouldShowJob(job)
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-red-500'
-          } text-white px-4 py-2 rounded-md`}
-          disabled={isDatePassed(job.lastDate) || !shouldShowJob(job)}
-          onClick={() => handleRejectClick(job)}
+          className="bg-red-500 text-white px-4 py-2 rounded-md"
+          onClick={() => handleCloseClick(job)}
         >
           Close
         </button>
       );
-    } else if (job.status === 'reject') {
+    } else if (job.status === 'reject' || job.status === 'expired' || job.status === 'closed') {
       return (
         <button
-          className={`${
-            isDatePassed(job.lastDate) || !shouldShowJob(job)
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-green-500'
-          } text-white px-4 py-2 rounded-md`}
-          disabled={isDatePassed(job.lastDate) || !shouldShowJob(job)}
+          className="bg-green-500 text-white px-4 py-2 rounded-md"
           onClick={() => handleApproveClick(job)}
         >
-          Open
+          {job.status === 'reject' ? 'Open':'closed' ? 'Open' : 'Reopen'}
         </button>
       );
     }
@@ -183,10 +152,9 @@ const ApproveJobs = () => {
     <OwnerDashboardLayout>
       <div className="container mx-auto p-8">
         <div className="flex justify-between items-center my-2 mt-8">
-        <p className="font-semibold text-2xl dark:text-gray-400">
-  {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}{selectedStatus === 'reject' ? 'ed' : selectedStatus === 'approve' ? 'd' : ''} Jobs
-</p>
-
+          <p className="font-semibold text-2xl dark:text-gray-400">
+            {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}{selectedStatus === 'reject' ? 'ed' : selectedStatus === 'approve' ? 'd' : ''} Jobs
+          </p>
           <select
             value={selectedBranch}
             onChange={handleBranchChange}
@@ -208,34 +176,37 @@ const ApproveJobs = () => {
             <option value="pending">Pending</option>
             <option value="approve">Approved</option>
             <option value="reject">Rejected</option>
+            <option value="expired">Expired</option>
           </select>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mx-6">
           {pendingJobs.map((job) => (
-            shouldShowJob(job) && (
-              <div key={job.jobVacancyID} className="bg-white p-6 shadow-md rounded-md w-full dark:bg-gray-700 dark:text-white">
-                <h2 className="text-xl font-bold mb-4 text-center">{job.jobTitle}</h2>
-                <h2 className="text-xl font-bold mb-4">Job Description</h2>
-                <p className="mb-4">{job.jobDiscription}</p>
-                <div className='flex'>
-                  <h2 className="text-xl font-bold mb-4">Expected Salary:</h2>
-                  <p className="mb-4">&nbsp;{`${job.expectedSalary.toLocaleString()}`}</p>
-                </div>
-                <div className='flex'>
-                  <h2 className="text-xl font-bold mb-4">Required Experience:</h2>
-                  <p className="mb-4">&nbsp;{`${job.experience.toLocaleString()}`}</p>
-                </div>
-                <div className="mb-4 text-lg">
-                  {JSON.parse(job.skills).map((skill, index) => (
-                    <p key={index}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; {skill}</p>
-                  ))}
-                </div>
-                <p className="text-gray-600 dark:text-[#F2F4F4] mb-4">Last Date to Apply: {job.lastDate.substring(0, 10)}</p>
-                <div className="flex justify-between">
-                  {renderButton(job)}
-                </div>
+            <div key={job.jobVacancyID} className="bg-white p-6 shadow-md rounded-md w-full dark:bg-gray-700 dark:text-white">
+              <h2 className="text-xl font-bold mb-4 text-center">{job.jobTitle}</h2>
+              <h2 className="text-xl font-bold mb-4">Job Description</h2>
+              <p className="mb-4">{job.jobDiscription}</p>
+              <div className='flex'>
+                <h2 className="text-xl font-bold mb-4">Expected Salary:</h2>
+                <p className="mb-4">&nbsp;{`${job.expectedSalary.toLocaleString()}`}</p>
               </div>
-            )
+              <div className='flex'>
+                <h2 className="text-xl font-bold mb-4">Required Experience:</h2>
+                <p className="mb-4">&nbsp;{`${job.experience.toLocaleString()}`}</p>
+              </div>
+              <div className='flex'>
+                  <h2 className="text-xl font-bold mb-4">Status:</h2>
+                  <p className="mb-4">&nbsp;{`${job.status}`}</p>
+                </div>
+              <div className="mb-4 text-lg">
+                {JSON.parse(job.skills).map((skill, index) => (
+                  <p key={index}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; {skill}</p>
+                ))}
+              </div>
+              <p className="text-gray-600 dark:text-[#F2F4F4] mb-4">Last Date to Apply: {job.lastDate.substring(0, 10)}</p>
+              <div className="flex justify-between">
+                {renderButton(job)}
+              </div>
+            </div>
           ))}
         </div>
       </div>

@@ -1,6 +1,5 @@
 const { JobVacancy } = require('../models/JobVacancy.model');
 
-// Controller: (/pendingjobs)
 const getPendingJobApplications = async (req, res) => {
   try {
     let jobs;
@@ -35,6 +34,15 @@ const getPendingJobApplications = async (req, res) => {
       jobs = await JobVacancy.findAll();
     }
 
+    // Check if lastDate has passed for each job and update status to 'expired'
+    const currentDate = new Date();
+    for (const job of jobs) {
+      if (new Date(job.lastDate) < currentDate && job.status !== 'expired') {
+        job.status = 'expired';
+        await job.save();
+      }
+    }
+
     res.json(jobs);
   } catch (error) {
     console.error('Error fetching pending job applications:', error);
@@ -42,15 +50,17 @@ const getPendingJobApplications = async (req, res) => {
   }
 };
 
+module.exports = {
+  getPendingJobApplications,
+};
+
+
 
 const updateJobStatus = async (req, res) => {
   try {
     const { jobVacancyID, status } = req.body;
 
-    // Validate if status is either 'approve' or 'reject'
-    if (status !== 'approve' && status !== 'reject') {
-      return res.status(400).json({ error: 'Invalid status' });
-    }
+    
 
     // Update status in the database
     const updatedJob = await JobVacancy.update(
