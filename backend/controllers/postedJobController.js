@@ -5,26 +5,32 @@ const getPostedJobs = async (req, res) => {
   try {
     let jobs;
 
-    const { username } = req.query;
+    const { username, status } = req.query;
+    console.log('Received username:', username); // Log the received username for debugging
+
     const managerBranch = await BranchDetails.findOne({
       where: { managerUsername: username }
     });
+    console.log('Manager branch:', managerBranch.branchId); // Log the managerBranch for debugging
 
-    if ((req.query.status && req.query.status !== 'All')) {
+    if (!managerBranch) {
+      return res.status(404).json({ error: 'Manager branch not found' });
+    }
+
+    if (status && status !== 'All') {
       jobs = await JobVacancy.findAll({
         where: {
           branchId: managerBranch.branchId,
-          status: req.query.status,
+          status: status,
         },
       });
-    } 
-    else {
+    } else {
       jobs = await JobVacancy.findAll({
         where: {
           branchId: managerBranch.branchId,
         },
       });
-    } 
+    }
 
     res.json(jobs);
   } catch (error) {
@@ -32,6 +38,7 @@ const getPostedJobs = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 
 const updateJobStatus = async (req, res) => {

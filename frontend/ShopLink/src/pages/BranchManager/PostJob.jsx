@@ -7,11 +7,13 @@ import Button from '../../components/Buttons/Button';
 import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
 import SkillInput from '../../components/Fields/SkillInput';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const PostJob = () => {
   const [skills, setSkills] = useState([]);
   const [notification, setNotification] = useState(null);
   const [notificationType, setNotificationType] = useState(null);
+  const navigate=useNavigate();
 
   const validationSchema = Yup.object().shape({
     jobTitle: Yup.string()
@@ -70,6 +72,7 @@ const PostJob = () => {
         setNotificationType('success');
         formik.resetForm();
         setSkills([]);
+        navigate(-1);
 
         axios.post('/savepostjobnotification', {
           jobTitle: values.jobTitle,

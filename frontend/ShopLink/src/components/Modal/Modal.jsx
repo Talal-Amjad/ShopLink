@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
-const Modal = ({ isOpen, onClose, position = "center",children }) => {
+
+const Modal = ({ isOpen, onClose, position = "center", children, id = null }) => {
   const getModalPosition = () => {
     switch (position) {
       case "left":
@@ -10,6 +11,7 @@ const Modal = ({ isOpen, onClose, position = "center",children }) => {
         return "flex items-center min-h-screen ";
     }
   };
+
   if (!isOpen) {
     return null;
   }
@@ -25,6 +27,7 @@ const Modal = ({ isOpen, onClose, position = "center",children }) => {
           className={`relative w-full max-w-lg p-4 mx-auto bg-white rounded-md shadow-lg dark:bg-gray-700 dark:text-gray-400 ${
             isOpen ? "animate-scale-in" : ""
           }`}
+          id={id}
         >
           {children}
         </div>
@@ -38,5 +41,7 @@ Modal.propTypes = {
   onClose: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
   position: PropTypes.string,
+  id: PropTypes.string, // Added id prop
 };
+
 export default Modal;

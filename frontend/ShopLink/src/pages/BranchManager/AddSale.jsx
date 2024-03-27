@@ -1,173 +1,142 @@
 import React, { useState } from 'react';
-import { Formik, Form, Field, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
-import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
 import axios from '../../axios';
-import Swal from 'sweetalert2';
 import { jwtDecode } from 'jwt-decode';
+import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
+import Swal from 'sweetalert2';
 
-export default function AddSale() {
-  const [additionalProducts, setAdditionalProducts] = useState([]);
-
-  const validationSchema = Yup.object().shape({
-    customerName: Yup.string().required('Customer Name is required'),
-    customerPhone: Yup.string().required('Customer Phone is required'),
-  });
-
+function AddSale() {
+  const [customerName, setCustomerName] = useState('');
+  const [customerPhone, setCustomerPhone] = useState('');
   const token = localStorage.getItem('token');
-  const username = jwtDecode(token).username;
+  const decodedToken = jwtDecode(token);
+  const username = decodedToken.username;
 
-  const handleMainSubmit = async (values, { setSubmitting, resetForm }) => {
-    console.log('Submit Clicked');
-    try {
-      const { customerName, customerPhone } = values;
-  
-      // Check stock availability before submission
-      const insufficientStockProducts = await checkStockAvailability();
-      if (insufficientStockProducts.length > 0) {
-        showStockAlert(insufficientStockProducts);
-        return;
-      }
-  
-      // Send data to backend for each product
-      await Promise.all(additionalProducts.map(async (product) => {
-        await axios.post('/addsale', { ...product, customerName, customerPhone }, {
-          params: { username }
-        });
-      }));
-  
-      // Reset form and additional products after successful submission
-      resetForm();
-      setAdditionalProducts([]);
-  
-      // Show success message
-      Swal.fire('Success', 'Sale added successfully', 'success');
-    } catch (error) {
-      console.error('Error adding sale: ', error);
-      // Show error message
-      Swal.fire('Error', 'Error adding sale', 'error');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const [products, setProducts] = useState([{ productName: '', productCategory: '', unitPrice: '', quantity: '' }]);
 
-  const checkStockAvailability = async () => {
-    const insufficientStockProducts = [];
-    for (const product of additionalProducts) {
-      const response = await axios.get('/checkstock', {
-        params: {
-          productName: product.productName,
-          productCategory: product.productCategory,
-          quantity: product.quantity,
-        },
-      });
-      if (!response.data.available) {
-        insufficientStockProducts.push(product);
-      }
-    }
-    return insufficientStockProducts;
-  };
-
-  const showStockAlert = (products) => {
-    let message = 'The following products are out of stock or have insufficient quantity:\n';
-    for (const product of products) {
-      message += `${product.productName} (${product.productCategory})\n`;
-    }
-    Swal.fire('Stock Error', message, 'error');
+  const handleProductChange = (e, index, field) => {
+    const updatedProducts = [...products];
+    updatedProducts[index][field] = e.target.value;
+    setProducts(updatedProducts);
   };
 
   const handleAddProduct = () => {
-    setAdditionalProducts([...additionalProducts, initialValues]);
+    setProducts([...products, { productName: '', productCategory: '', unitPrice: '', quantity: '' }]);
   };
 
-  const removeProduct = (index) => {
-    const updatedProducts = additionalProducts.filter((_, i) => i !== index);
-    setAdditionalProducts(updatedProducts);
+  const handleRemoveProduct = (index) => {
+    const updatedProducts = [...products];
+    updatedProducts.splice(index, 1);
+    setProducts(updatedProducts);
   };
 
-  const initialValues = {
-    productName: '',
-    productCategory: '',
-    unitPrice: '',
-    quantity: '',
+  const handleSubmit = async () => {
+    try {
+      // Check if any field is empty
+      if (customerName.trim() === '' || customerPhone.trim() === '' || products.some(product => product.productName.trim() === '' || product.productCategory.trim() === '' || product.unitPrice.trim() === '' || product.quantity.trim() === '')) {
+        throw new Error('All fields are required.');
+      }
+  
+      // Validate customer phone number
+      if (!/^03\d{9}$/.test(customerPhone)) {
+        throw new Error('Customer phone number must start with 03 and be 11 digits long.');
+      }
+  
+      // Check if price or quantity is negative
+      if (products.some(product => parseFloat(product.unitPrice) < 0 || parseInt(product.quantity) < 0)) {
+        throw new Error('Price and quantity cannot be negative.');
+      }
+  
+      // Check if product is available in stock and quantity is sufficient
+      for (const product of products) {
+        const existingProduct = await axios.get(`/check-stock?productName=${product.productName}&productCategory=${product.productCategory}`);
+        if (!existingProduct) {
+          throw new Error(`Product "${product.productName}" in category "${product.productCategory}" is not available in stock.`);
+        }
+        
+        if (existingProduct.data.quantity < product.quantity) {
+          throw new Error(`Not enough quantity available for product "${product.productName}" in category "${product.productCategory}".`);
+        }
+      }
+  
+      const payload = {
+        customerId: 1, // Assuming you have a customerId
+        customerName,
+        customerPhone,
+        products,
+      };
+  
+      // Make API call to add sale
+      const response = await axios.post('/add', payload, {
+        params: { username }
+      });
+  
+      // Reset form
+      setCustomerName('');
+      setCustomerPhone('');
+      setProducts([{ productName: '', productCategory: '', unitPrice: '', quantity: '' }]);
+  
+      // Show success message
+      Swal.fire({
+        icon: 'success',
+        title: 'Sale added successfully!',
+        showConfirmButton: false,
+        timer: 1500
+      });
+    } catch (error) {
+      console.error('Error adding sale:', error.response ? error.response.data : error.message);
+  
+      // Extract the message from the response data if available
+      const errorMessage = error.response ? error.response.data.message : error.message;
+  
+      // Show error message
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: errorMessage
+      });
+    }
   };
-
+  
+  
   return (
     <ManagerDashboardLayout>
-      <div className="bg-white border-4 rounded-lg shadow relative m-10">
-        <div className="flex items-start justify-between p-5 border-b rounded-t">
-          <h3 className="text-xl font-semibold">Add Sale</h3>
+      <div className="bg-white container mx-auto p-10 mt-10 w-1/2">
+        <h1 className="text-3xl font-bold mb-4">Add Sale</h1>
+        <div className="mb-4">
+          <label htmlFor="customerName" className="block">Customer Name:</label>
+          <input type="text" id="customerName" value={customerName} onChange={(e) => setCustomerName(e.target.value)} className="w-full px-3 py-2 border rounded-md" />
         </div>
-        <div className="p-6 space-y-6">
-          <Formik
-            initialValues={{ customerName: '', customerPhone: '' }}
-            validationSchema={validationSchema}
-            onSubmit={handleMainSubmit}
-          >
-            {({ isSubmitting }) => (
-              <Form>
-                <div className="grid grid-cols-6 gap-6">
-                  <div className="col-span-6 sm:col-span-3">
-                    <label htmlFor="customerName" className="text-sm font-medium text-gray-900 block mb-2">Customer Name</label>
-                    <Field type="text" name="customerName" id="customerName" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Customer Name" />
-                    <ErrorMessage name="customerName" component="div" className="text-red-500 text-sm" />
-                  </div>
-                  <div className="col-span-6 sm:col-span-3">
-                    <label htmlFor="customerPhone" className="text-sm font-medium text-gray-900 block mb-2">Customer Phone</label>
-                    <Field type="text" name="customerPhone" id="customerPhone" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Customer Phone" />
-                    <ErrorMessage name="customerPhone" component="div" className="text-red-500 text-sm" />
-                  </div>
-                  {/* Main set of fields */}
-                  {additionalProducts.map((product, index) => (
-                    <React.Fragment key={index}>
-                      <div className="col-span-6">
-                        <button type="button" onClick={() => removeProduct(index)} className="text-red-500 absolute text-3xl right-0 mr-6 mt-2 mb-4">✕</button>
-                      </div>
-                      <div className="col-span-6 sm:col-span-3">
-                        <label htmlFor={`productName_${index}`} className="text-sm font-medium text-gray-900 block mb-2">Product Name</label>
-                        <Field type="text" name={`productName_${index}`} id={`productName_${index}`} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Product Name" />
-                        <ErrorMessage name={`productName_${index}`} component="div" className="text-red-500 text-sm" />
-                      </div>
-                      <div className="col-span-6 sm:col-span-3">
-                        <label htmlFor={`productCategory_${index}`} className="text-sm font-medium text-gray-900 block mb-2">Category</label>
-                        <Field as="select" name={`productCategory_${index}`} id={`productCategory_${index}`} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5">
-                          <option value="">Select a category</option>
-                          <option value="tablet">Tablet</option>
-                          <option value="capsule">Capsule</option>
-                          <option value="sachet">Sachet</option>
-                          <option value="injection">Injection</option>
-                        </Field>
-                        <ErrorMessage  name={`productCategory_${index}`} component="div" className="text-red-500 text-sm"/>
-                      </div>
-                      <div className="col-span-6 sm:col-span-3">
-                        <label htmlFor={`unitPrice_${index}`} className="text-sm font-medium text-gray-900 block mb-2">Unit Price </label>
-                        <Field type="number" name={`unitPrice_${index}`} id={`unitPrice_${index}`} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Unit Price" />
-                        <ErrorMessage name={`unitPrice_${index}`} component="div" className="text-red-500 text-sm" />
-                      </div>
-                      <div className="col-span-6 sm:col-span-3">
-                        <label htmlFor={`quantity_${index}`} className="text-sm font-medium text-gray-900 block mb-2">Quantity</label>
-                        <Field type="number" name={`quantity_${index}`} id={`quantity_${index}`} className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Quantity" />
-                        <ErrorMessage name={`quantity_${index}`} component="div" className="text-red-500 text-sm" />
-                      </div>
-                    </React.Fragment>
-                  ))}
-                  {/* End of main fields */}
-                </div>
-                <div className="p-6 border-t border-gray-200 rounded-b flex justify-between items-center">
-                  <button
-                    className="text-white bg-primary hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-                    type="submit"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'Saving...' : 'Save all'}
-                  </button>
-                  <button className="text-white bg-green-500 hover:bg-green-700 focus:ring-4 focus:ring-green-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="button" onClick={handleAddProduct}>Add Product</button>
-                </div>
-              </Form>
-            )}
-          </Formik>
+        <div className="mb-4">
+          <label htmlFor="customerPhone" className="block">Customer Phone:</label>
+          <input type="text" id="customerPhone" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} className="w-full px-3 py-2 border rounded-md" />
         </div>
-      </div>
-    </ManagerDashboardLayout>
-  );
+        {products.map((product, index) => (
+          <div key={index} className="mb-4 border p-4 rounded-md">
+            <h3 className="text-lg font-bold mb-2">Product {index + 1}</h3>
+            <div className="mb-2">
+              <label htmlFor={`productName${index}`} className="block">Product Name:</label>
+              <input type="text" id={`productName${index}`} value={product.productName} onChange={(e) => handleProductChange(e, index, 'productName')} className="w-full px-3 py-2 border rounded-md" />
+            </div>
+            <div className="mb-2">
+              <label htmlFor={`productCategory${index}`} className="block">Product Category:</label>
+              <input type="text" id={`productCategory${index}`} value={product.productCategory} onChange={(e) => handleProductChange(e, index, 'productCategory')} className="w-full px-3 py-2 border rounded-md" />
+            </div>
+            <div className="mb-2">
+              <label htmlFor={`unitPrice${index}`} className="block">Unit Price:</label>
+              <input type="text" id={`unitPrice${index}`} value={product.unitPrice} onChange={(e) => handleProductChange(e, index, 'unitPrice')} className="w-full px-3 py-2 border rounded-md" />
+            </div>
+            <div className="mb-2">
+              <label htmlFor={`quantity${index}`} className="block">Quantity:</label>
+              <input type="text" id={`quantity${index}`} value={product.quantity} onChange={(e) => handleProductChange(e, index, 'quantity')} className="w-full px-3 py-2 border rounded-md" />
+            </div>
+            <button onClick={() => handleRemoveProduct(index)} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">Remove Product</button>
+          </div>
+              ))}
+    <button onClick={handleAddProduct} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mr-4">Add Product</button>
+    <button onClick={handleSubmit} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">Add Sale</button>
+  </div>
+</ManagerDashboardLayout>
+);
 }
+
+export default AddSale;

@@ -106,12 +106,120 @@ const deleteSale = async (req, res) => {
     }
   };
 
- 
-
+  const checkStock = async (req, res) => {
+    try {
+      const { productName, productCategory } = req.query;
+  
+      // Find the product in stock
+      const existingProduct = await stock.findOne({ 
+        where: { 
+          productName: productName,
+          category: productCategory 
+        } 
+      });
+  
+      // If the product doesn't exist in stock
+      if (!existingProduct) {
+        return res.status(404).json({ message: 'Product not found in stock.' });
+      }
+  
+      // Send back the product information
+      res.status(200).json(existingProduct);
+    } catch (error) {
+      console.error('Error checking stock:', error);
+      res.status(500).json({ message: 'Internal server error.' });
+    }
+  };
   
 
+
+const addSale2 = async (req, res) => {
+  try {
+    const { username } = req.query;
+    const managerBranch = await BranchDetails.findOne({
+      where: { managerUsername: username }
+    });
+    const { customerId, customerName, customerPhone, products } = req.body;
+
+    // Loop through each product and validate against stock
+    for (const product of products) {
+      const { productName, productCategory, quantity } = product;
+
+      // Find the product in the stock based on productName and productCategory
+      const existingProduct = await stock.findOne({ 
+        where: { 
+          productName: productName,
+          category: productCategory
+        } 
+      });
+
+      if (!existingProduct) {
+        return res.status(404).json({ message: `Product ${productName} in category ${productCategory} not found in stock.` });
+      }
+
+      if (existingProduct.quantity < quantity) {
+        return res.status(400).json({ message: `Not enough quantity available for product ${productName} in category ${productCategory}.` });
+      }
+
+      // Calculate total price
+      const totalPrice = existingProduct.unitPrice * quantity;
+
+      // Update stock quantity
+      const updatedQuantity = existingProduct.quantity - quantity;
+      console.log("updated",updatedQuantity)
+      await stock.update({ quantity: updatedQuantity }, { where: { proID: existingProduct.proID } });
+
+      // Create sale record for each product
+      await sale.create({
+        customerId,
+        customerName,
+        customerPhone,
+        productId: existingProduct.proID, // Use the proID of the existing product
+        quantity,
+        unitPrice: existingProduct.unitPrice,
+        totalPrice,
+        productName,
+        productCategory,
+        salesDate: new Date(),
+        branchId: managerBranch.branchId
+      });
+    }
+
+    return res.status(201).json({ message: 'Sale added successfully.' });
+  } catch (error) {
+    console.error('Error adding sale:', error);
+    return res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+
+//for owner
+async function getallbranchessales(req, res) {
+  try {
+    const { branchId } = req.query;
+    let Sales
+    if ((req.query.branchId && req.query.branchId !== 'All')) {
+       Sales = await sale.findAll({
+      where: { branchId: branchId}
+    });
+  }
+  else{
+    Sales = await sale.findAll();
+  }
+    
+
+
+    res.json(Sales);
+  } catch (error) {
+    console.error('Error fetching employees:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 module.exports = {
     addSale,
     getallbranchsales,
-    deleteSale
+    deleteSale,
+    checkStock,
+    addSale2,
+    getallbranchessales
 };

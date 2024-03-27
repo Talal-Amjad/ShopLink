@@ -55,8 +55,8 @@ const OwnerBar = ({ sidebarVisible }) => {
     },
     {
       id: 3,
-      name: "Sales Reports",
-      path: "/ownerviewallapplicants",
+      name: "Sales Insights",
+      path: "/ownerinsights",
       icon: <FiUsers size={24} />,
     },
   ];
@@ -66,7 +66,13 @@ const OwnerBar = ({ sidebarVisible }) => {
       id: 1,
       name: "Employees",
       icon: <FiUsers size={24} />,
-      path: "/",
+      path: "/allemployees",
+    },
+    {
+      id: 2,
+      name: "Stock",
+      icon: <FiUsers size={24} />,
+      path: "/stockforallaranches",
     }
   ];
 

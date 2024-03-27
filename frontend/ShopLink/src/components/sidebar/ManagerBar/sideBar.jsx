@@ -70,7 +70,7 @@ const Sidebar = ({ sidebarVisible }) => {
       id: 1,
       name: "Employees",
       icon: <MdOutlineDashboard size={24} />,
-      path: "/",
+      path: "/employees",
     }
   ];
 

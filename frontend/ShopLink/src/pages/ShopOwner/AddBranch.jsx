@@ -10,18 +10,7 @@ function AddBranch({ onClose, isOpen }) {
   const [notification, setNotification] = useState('');
   const [managerUsernames, setManagerUsernames] = useState([]);
 
-  useEffect(() => {
-    // Fetch manager usernames when component mounts
-    const fetchManagerUsernames = async () => {
-      try {
-        const response = await axios.get('/managersusername');
-        setManagerUsernames(response.data);
-      } catch (error) {
-        console.error('Error fetching manager usernames:', error);
-      }
-    };
-    fetchManagerUsernames();
-  }, []);
+
 
   const validationSchema = Yup.object().shape({
     branchcode: Yup.number().min(1001, 'Branch code must be greater than 1000').required('Branch code is required'),

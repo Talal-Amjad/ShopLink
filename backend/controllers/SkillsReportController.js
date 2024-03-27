@@ -50,14 +50,18 @@ async function generateSkillsReport(req, res) {
 
             // Calculate score
             const score = (matchedSkills.length / jobSkills.length) * 100;
+           
 
             // Construct applicant report
             const applicantReport = {
                 username: application.username,
                 matchedSkills,
                 missedSkills,
-                score
+                score,
+                jobTitle: jobVacancy.jobTitle, // Access jobTitle from jobVacancy
+                status: application.status // Access status directly from application
             };
+            
 
             report.push(applicantReport);
         }

@@ -21,6 +21,11 @@ import ShowAllBranches from "./pages/ShopOwner/ShowAllBranches";
 import AllStocks from "./pages/BranchManager/allstocks";
 import SalesInsights from "./pages/BranchManager/SalesInsights";
 import PostedJob from "./pages/BranchManager/PostedJobs";
+import Employee from "./pages/BranchManager/Employee";
+import NoDataFound from "./pages/NoDataFound";
+import AllBranchesEmployee from "./pages/ShopOwner/AllBranchesEmployee";
+import OwnerSalesInsights from "./pages/ShopOwner/SalesInsights";
+import StockforAllBranches from "./pages/ShopOwner/StockforAllBranches";
 import Protected from "../Protected";
 
 function App() {
@@ -36,7 +41,13 @@ function App() {
         <Route path="/allbranches" element={<ShowAllBranches/>} />
         <Route path="/stock" element={<AllStocks/>} />
         <Route path="/insights" element={<SalesInsights/>} />
+        <Route path="/ownerinsights" element={<OwnerSalesInsights/>} />
         <Route path="/postedjobs" element={<PostedJob/>} />
+        <Route path="/employees" element={<Employee/>} />
+        <Route path="/nodatafound" element={<NoDataFound/>} />
+        <Route path="/allemployees" element={<AllBranchesEmployee/>} />
+        <Route path="/stockforallaranches" element={<StockforAllBranches/>} />
+
 
         {/*Testing Routes*/}
         <Route path="/applyforjob" element={<Protected component={<ApplyfoJob/>} allowableuser="user"/>} />

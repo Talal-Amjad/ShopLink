@@ -28,7 +28,7 @@ const Header = ({ toggleSidebar }) => {
   const handleNotificationClick = async () => {
     try {
         await axios.put('/markNotificationsAsRead', null, {
-            params: { username, role } // Sending username and role as query parameters
+            params: { username, role } 
         });
         fetchUnreadNotificationCount();
         toggleModal();

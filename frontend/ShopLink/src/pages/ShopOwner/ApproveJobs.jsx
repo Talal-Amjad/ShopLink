@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from '../../axios';
 import Swal from 'sweetalert2';
 import OwnerDashboardLayout from '../../components/layouts/ShopOwner/ownerDashboardLayout';
+import NoDataFound from '../NoDataFound';
 
 const ApproveJobs = () => {
   const [pendingJobs, setPendingJobs] = useState([]);
@@ -40,6 +41,7 @@ const ApproveJobs = () => {
       .then(() => fetchPendingJobs())
       .catch(error => console.error('Error updating job status:', error));
   };
+
 
   const handleApproveClick = (job) => {
     Swal.fire({
@@ -151,34 +153,50 @@ const ApproveJobs = () => {
   return (
     <OwnerDashboardLayout>
       <div className="container mx-auto p-8">
-        <div className="flex justify-between items-center my-2 mt-8">
-          <p className="font-semibold text-2xl dark:text-gray-400">
-            {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}{selectedStatus === 'reject' ? 'ed' : selectedStatus === 'approve' ? 'd' : ''} Jobs
-          </p>
-          <select
-            value={selectedBranch}
-            onChange={handleBranchChange}
-            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
-          >
-            <option value="">Select Branch</option>
-            <option value="All">All</option>
-            {branches.map(branch => (
-              <option key={branch.branchId} value={branch.branchId}>{branch.branchId}</option>
-            ))}
-          </select>
-          <select
-            value={selectedStatus}
-            onChange={handleStatusChange}
-            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
-          >
-            <option value="" disabled>Select Status</option>
-            <option value="All">All</option>
-            <option value="pending">Pending</option>
-            <option value="approve">Approved</option>
-            <option value="reject">Rejected</option>
-            <option value="expired">Expired</option>
-          </select>
-        </div>
+      <div className="flex justify-between items-center my-2 mt-8">
+  <div className="flex items-center"> {/* Flex container for Jobs text */}
+    <p className="font-semibold text-2xl dark:text-gray-400">Jobs</p>
+  </div>
+  <div className="flex items-center"> {/* Flex container for select fields and button */}
+    <div className="flex items-center"> {/* Flex container for select fields */}
+      <h3 className='text-xl font-semibold m-3'>Branch Code : </h3>
+      <select
+        value={selectedBranch}
+        onChange={handleBranchChange}
+        className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+      >
+        <option value="">Select Branch</option>
+        <option value="All">All</option>
+        {branches.map(branch => (
+          <option key={branch.branchId} value={branch.branchId}>{branch.branchId}</option>
+        ))}
+      </select>
+      <h3 className='text-xl font-semibold m-3'>Status : </h3>
+      <select
+        value={selectedStatus}
+        onChange={handleStatusChange}
+        className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+      >
+        <option value="" disabled>Select Status</option>
+        <option value="All">All</option>
+        <option value="pending">Pending</option>
+        <option value="approve">Approved</option>
+        <option value="reject">Rejected</option>
+        <option value="expired">Expired</option>
+        <option value="close">Closed</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+         {/* Conditionally render NoDataFound component or pending jobs */}
+         {pendingJobs.length === 0 ? (
+          <NoDataFound />
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mx-6">
           {pendingJobs.map((job) => (
             <div key={job.jobVacancyID} className="bg-white p-6 shadow-md rounded-md w-full dark:bg-gray-700 dark:text-white">
@@ -206,9 +224,11 @@ const ApproveJobs = () => {
               <div className="flex justify-between">
                 {renderButton(job)}
               </div>
+          
             </div>
           ))}
         </div>
+        )}
       </div>
       <ToastContainer />
     </OwnerDashboardLayout>

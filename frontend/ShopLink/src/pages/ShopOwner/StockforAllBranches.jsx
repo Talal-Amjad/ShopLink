@@ -2,33 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { FiMoreVertical } from 'react-icons/fi';
 import axios from '../../axios';
 import Table from '../../components/Table/Table';
-import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
+import OwnerDashboardLayout from '../../components/layouts/ShopOwner/ownerDashboardLayout';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import Button from '../../components/Buttons/Button';
 import NoDataFound from '../NoDataFound'; 
-import useModal from "../../hooks/useModal";
-import EditProduct from './EditProduct';
 
 
-const AllStocks = () => {
+
+const StockforAllBranches = () => {
   const navigate = useNavigate();
   const [selectedMenuIndex, setSelectedMenuIndex] = useState(null);
   const [allStocks, setAllStocks] = useState([]);
+  const [branches, setBranches] = useState([]); 
+  const [selectedStatus, setSelectedStatus] = useState('');
+
   const token = localStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const role = decodedToken.role;
   const username = decodedToken.username;
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [isOpen, toggleModal] = useModal();
-  const [selectedProID, setSelectedProID] = useState(null); 
+ 
+ 
+ 
+  const [selectedBranch, setSelectedBranch] = useState('');
+  useEffect(() => {
+    axios.get('/allbranchesids')
+      .then(response => setBranches(response.data))
+      .catch(error => console.error('Error fetching branches:', error));
+  }, []);
+
+  const handleBranchChange = (event) => {
+    setSelectedBranch(event.target.value);
+  };
 
 
   useEffect(() => {
     // Fetch data from the server using Axios
-    axios.get('/allstock', {
-      params: { username, status: selectedStatus }
+    axios.get('/stockforallbranches', {
+      params: {status: selectedStatus, branchId:selectedBranch }
     })
       .then(response => {
         console.log('Data fetched successfully:', response.data);
@@ -38,49 +49,12 @@ const AllStocks = () => {
         console.error('Error fetching data:', error);
         // Handle error as needed
       });
-  }, [selectedStatus]);
-
-
-
- 
+  }, [selectedStatus,selectedBranch]);
 
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
   };
-
-  const handleEditClick = (proID) => {
-    setSelectedProID(proID); // Set the selected product ID
-    toggleModal(); // Open the modal
-  };
-
-  const handleDelete = (productId) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You want to delete this product?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        axios.delete(`/deleteproduct/${productId}`)
-          .then(response => {
-            console.log('Product deleted successfully:', response.data);
-            // Handle any UI updates or notifications
-          })
-          .catch(error => {
-            console.error('Error deleting product:', error);
-            // Handle error as needed
-          });
-      }
-    });
-  };
-
-
-  const handleAddProduct = () => {
-    navigate('/addproduct');
-  }
+ 
 
   // Function to format date to a standard format without time
   const formatDate = (dateString) => {
@@ -88,10 +62,10 @@ const AllStocks = () => {
     return date.toLocaleDateString('en-US');
   };
 
-  const headerData = ['Product Name', 'Category', 'Dosage','Quantity' ,'Unit Price', 'Brand Name', 'Expiry Date', 'Status', 'Actions'];
+  const headerData = ['Product Name', 'Category', 'Dosage','Quantity' ,'Unit Price', 'Brand Name', 'Expiry Date'];
 
   return (
-    <ManagerDashboardLayout>
+    <OwnerDashboardLayout>
       <div className="flex justify-between items-center my-2 mt-8">
         <p className="font-semibold text-2xl dark:text-gray-400">
           {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}{selectedStatus === 'reject' ? 'ed' : selectedStatus === 'approve' ? 'd' : ''} Medicines
@@ -106,8 +80,20 @@ const AllStocks = () => {
           <option value="valid">Valid</option>
           <option value="expired">Expired</option>
         </select>
+        <h3 className='text-xl font-semibold m-3'>Branch Code : </h3>
+          <select
+            value={selectedBranch}
+            onChange={handleBranchChange}
+            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+          >
+            <option value="">Select Branch</option>
+            <option value="All">All</option>
+            {branches.map(branch => (
+              <option key={branch.branchId} value={branch.branchId}>{branch.branchId}</option>
+            ))}
+          </select>
         <div>
-          <Button text="+ Add Product" type="button" roundedFull={true} onClick={handleAddProduct} />
+         
         </div>
       </div>
       {allStocks.length === 0 ? ( // Conditionally render NoDataFound if allStocks array is empty
@@ -130,18 +116,11 @@ const AllStocks = () => {
             <span className={`p-2 inline-flex text-l leading-5 rounded-full ${stock.status === 'valid' ? 'bg-green-100 text-green-800' : stock.status === 'expired' ? 'bg-red-100 text-red-800' : ''}`}>
               {stock.status}
             </span>,
-            <div>
-            <button className="ml-2 px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out" onClick={() => handleEditClick(stock.proID)}>Edit</button>
-            <button className="ml-2 px-4 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out" 
-              onClick={() => handleDelete(stock.proID)}>Delete</button>
-            </div>
           ]))}
         />
       )}
-       
-      {isOpen && <EditProduct isOpen={isOpen} onClose={toggleModal} proID={selectedProID}  />}
-    </ManagerDashboardLayout>
+    </OwnerDashboardLayout>
   );
 };
 
-export default AllStocks;
+export default StockforAllBranches;
