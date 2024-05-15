@@ -57,19 +57,13 @@ const Sidebar = ({ sidebarVisible }) => {
       path: "/addsale",
       icon: <CgFileDocument size={24} />,
     },
-    {
-      id: 3,
-      name: "Sales Reports",
-      path: "/",
-      icon: <FiUsers size={24} />,
-    },
   ];
 
   const sidebarOptions3 = [
     {
       id: 1,
       name: "Employees",
-      icon: <MdOutlineDashboard size={24} />,
+      icon: <FiUsers size={24} />,
       path: "/employees",
     }
   ];
@@ -83,8 +77,7 @@ const Sidebar = ({ sidebarVisible }) => {
       className={`fixed w-full bg-white mt-[100px] ${
         sidebarVisible ? "left-0" : ""
       } transition-all duration-300 w-full top-0 -left-[100%] h-screen md:w-[20%] md:left-0 dark:bg-gray-900 dark:text-gray-400 z-20 overflow-y-auto`}
-      style={{ scrollbarWidth: "none" }} // Hide scrollbar for Firefox
-      // Hide scrollbar for WebKit browsers (Chrome, Safari)
+      style={{ scrollbarWidth: "none" }} 
       css={{
         "&::-webkit-scrollbar": {
           width: 0,

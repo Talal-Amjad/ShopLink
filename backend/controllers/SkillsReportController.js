@@ -74,23 +74,19 @@ async function generateSkillsReport(req, res) {
     }
 }
 
-// Function to parse skills based on different formats
+
 function parseSkills(skillsString) {
     const skills = [];
     const lines = skillsString.split(/\r?\n/);
     lines.forEach(line => {
         const trimmedLine = line.trim();
-        // Check if line contains digits followed by a period
         if (/^\d+\.\s/.test(trimmedLine)) {
-            // Extract skill after removing the digits and period
             const skill = trimmedLine.replace(/^\d+\.\s/, '');
             skills.push(skill);
         } else if (trimmedLine.startsWith('Skills:')) {
-            // Extract skills after removing the 'Skills:' prefix
             const skillsSubstring = trimmedLine.substring('Skills:'.length).trim();
             skills.push(...skillsSubstring.split(',').map(skill => skill.trim()));
         } else {
-            // Assume single skill on this line
             skills.push(trimmedLine);
         }
     });

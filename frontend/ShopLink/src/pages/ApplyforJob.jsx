@@ -185,6 +185,15 @@ const ApplyforJob = () => {
         }, 3000);
         return;
       }
+      else if (cvOption === 'withoutCV' && skills.length === 0) {
+        setNotification('Please enter skills manually or upload a file to extract skills.');
+        setNotificationColor('red');
+        setTimeout(() => {
+          setNotification(null);
+          setNotificationColor(null);
+        }, 3000);
+        return;
+      }
 
       // Format skills before saving
       const formattedSkills = skills.join('\n•\n');
@@ -241,7 +250,7 @@ const ApplyforJob = () => {
         }, 3000);
       } else {
         // Handle other errors
-        setNotification('There was an error submitting the application. Please try again.');
+        setNotification('Upload File to extract Skills');
         setNotificationColor('red');
         setTimeout(() => {
           setNotification(null);

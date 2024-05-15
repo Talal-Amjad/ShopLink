@@ -54,10 +54,16 @@ const OwnerBar = ({ sidebarVisible }) => {
       path: "/allbranches",
     },
     {
+      id: 2,
+      name: "Sales Report",
+      icon: <MdOutlineDashboard size={24} />,
+      path: "/salesreport",
+    },
+    {
       id: 3,
       name: "Sales Insights",
       path: "/ownerinsights",
-      icon: <FiUsers size={24} />,
+      icon: <CgFileDocument size={24} />,
     },
   ];
 
@@ -71,7 +77,7 @@ const OwnerBar = ({ sidebarVisible }) => {
     {
       id: 2,
       name: "Stock",
-      icon: <FiUsers size={24} />,
+      icon: <CgFileDocument size={24} />,
       path: "/stockforallaranches",
     }
   ];

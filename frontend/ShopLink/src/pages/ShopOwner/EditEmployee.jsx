@@ -92,7 +92,11 @@ const EditEmployee = ({ onClose, isOpen, employeeID }) => {
                     onSubmit={onSubmit}
                 >
                     {({ errors, touched }) => (
-                        <Form>
+                        <Form className='p-6'> 
+                            <h1 className="font-manrope font-semibold mx-0 text-l leading-[32.78px] text-[#191D23] mb-2 dark:text-gray-400">
+              Branch Code / Branch Id
+            </h1>
+            <hr className='m-7 mx-0'/>
                             <div className="grid grid-cols-6 gap-6">
                                 <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="firstname" className="text-sm font-medium text-gray-900 block mb-2">First Name</label>
@@ -134,7 +138,7 @@ const EditEmployee = ({ onClose, isOpen, employeeID }) => {
                                         </select>
                                     </div>
                                 </div>
-                                <button className="text-white bg-primary hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="submit">Save</button>
+                                <button className="text-white bg-primary hover:bg-cyan-700 mt-4 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="submit">Save</button>
                             </Form>
                         )}
                     </Formik>

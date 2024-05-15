@@ -22,8 +22,12 @@ const PostedJob = () => {
   }, [selectedStatus]);
 
   const fetchPendingJobs = () => {
-    axios.get('/postedjobs', { params: { username:username, status: selectedStatus } })
-      .then(response => setPendingJobs(response.data))
+    axios.get('/postedjobs', { params: { username: username, status: selectedStatus } })
+      .then(response => {
+        // Filter out jobs with status 'expired'
+        const filteredJobs = response.data.filter(job => job.status !== 'expired');
+        setPendingJobs(filteredJobs);
+      })
       .catch(error => console.error('Error fetching posted job applications:', error));
   };
 
@@ -123,7 +127,7 @@ const PostedJob = () => {
   const renderButton = (job) => {
     if (job.status === 'pending') {
       return <p className="text-gray-600 dark:text-[#F2F4F4]">Job is pending</p>;
-    } else if (job.status === 'approve') {
+    } else if (job.status === 'approve' || job.status==='open') {
       return (
         <button
           className={`${
@@ -137,7 +141,7 @@ const PostedJob = () => {
           Close
         </button>
       );
-    } else if (job.status === 'reject') {
+    } else if (job.status === 'reject' || job.status === 'closed') { // Modified line
       return (
         <button
           className={`${
@@ -146,13 +150,14 @@ const PostedJob = () => {
               : 'bg-green-500'
           } text-white px-4 py-2 rounded-md`}
           disabled={isDatePassed(job.lastDate) || !shouldShowJob(job)}
-          onClick={() => handleApproveClick(job)}
+          onClick={() => handleApproveClick(job)} // Modified line
         >
           Open
         </button>
       );
     }
   };
+  
   
 
   return (

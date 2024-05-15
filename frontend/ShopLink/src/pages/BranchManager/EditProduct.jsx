@@ -24,7 +24,7 @@ const EditProduct = ({ onClose, isOpen, proID }) => {
                 })
                 .catch(error => {
                     console.error('Error fetching product data:', error);
-                    // Handle error as needed
+                    
                 });
         }
     }, [isOpen, proID]);
@@ -84,7 +84,8 @@ const EditProduct = ({ onClose, isOpen, proID }) => {
                 >
                     {({ errors, touched }) => (
                         <Form>
-                            <div className="grid grid-cols-6 gap-6">
+                            <h1  className='text-3xl font-medium p-2 text-center'> Edit Product</h1>
+                            <div className="grid grid-cols-6 gap-6 p-2">
                                 <div className="col-span-6 sm:col-span-3">
                                     <label htmlFor="productName" className="text-sm font-medium text-gray-900 block mb-2">Product Name</label>
                                     <Field type="text" name="productName" id="productName" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Apple Imac 27”" />
@@ -108,7 +109,7 @@ const EditProduct = ({ onClose, isOpen, proID }) => {
                                         <ErrorMessage name="dosage" component="div" className="text-red-500 text-sm" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
-                                        <label htmlFor="unitPrice" className="text-sm font-medium text-gray-900 block mb-2">unitPrice</label>
+                                        <label htmlFor="unitPrice" className="text-sm font-medium text-gray-900 block mb-2">Unit Price</label>
                                         <Field type="number" name="unitPrice" id="unitPrice" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="2300"/>
                                         <ErrorMessage name="unitPrice" component="div" className="text-red-500 text-sm" />
                                     </div>
@@ -138,7 +139,7 @@ const EditProduct = ({ onClose, isOpen, proID }) => {
                                         <ErrorMessage name="description" component="div" className="text-red-500 text-sm" />
                                     </div>
                                 </div>
-                                <button className="text-white bg-primary hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="submit">Save all</button>
+                                <button className="text-white bg-primary mt-4 ml-2 hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="submit">Save all</button>
                                 </Form>
                 )}
             </Formik>

@@ -13,7 +13,7 @@ exports.addProduct = async (req, res) => {
             return res.status(404).json({ success: false, error: 'No branch details found for the provided username' });
         }
 
-        const { productName, category, dosage, price, brandName, quantity, manufactureDate, expiryDate, description } = req.body;
+        const { productName, category, dosage, price, brandName, quantity, manufactureDate, expiryDate, description,barcode } = req.body;
 
         // Check if product already exists in stock
         let existingProduct = await stock.findOne({
@@ -50,7 +50,8 @@ exports.addProduct = async (req, res) => {
                 expiryDate,
                 description,
                 branchId: managerBranch.branchId,
-                status: 'valid'
+                status: 'valid',
+                barcode,
             });
 
             res.status(201).json({ success: true, message: 'Product added', data: newProduct });

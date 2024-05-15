@@ -87,26 +87,29 @@ const SalesInsights = () => {
 
   return (
     <OwnerDashboardLayout>
-      <div className="flex justify-between items-center my-2 mt-8">
-        <p className="font-semibold text-2xl dark:text-gray-400">Sales</p>
-        <div className="flex items-center">
-          <h3 className='text-xl font-semibold m-3'>Branch Code : </h3>
-          <select
-            value={selectedBranch}
-            onChange={handleBranchChange}
-            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
-          >
-            <option value="">Select Branch</option>
-            <option value="All">All</option>
-            {branches.map(branch => (
-              <option key={branch.branchId} value={branch.branchId}>{branch.branchId}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <Button text="Most Demanding Product" type="button" roundedFull={true} onClick={handleMostDemadingProduct} />
-        </div>
-      </div>
+    <div className="flex justify-between items-center my-2 mt-8">
+  <p className="font-semibold text-2xl dark:text-gray-400">Sales</p>
+  <div className="flex items-center justify-end"> {/* Modified line */}
+    <div className="ml-auto flex items-center"> {/* Modified line */}
+      <h3 className='text-xl font-semibold m-3'>Branch Code : </h3>
+      <select
+        value={selectedBranch}
+        onChange={handleBranchChange}
+        className="border-gray-300 border p-2 mr-3 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+      >
+        <option value="">Select Branch</option>
+        <option value="All">All</option>
+        {branches.map(branch => (
+          <option key={branch.branchId} value={branch.branchId}>{branch.branchId}</option>
+        ))}
+      </select>
+    </div>
+    <div>
+      <Button text="Most Demanding Product" type="button" roundedFull={true} onClick={handleMostDemadingProduct} />
+    </div>
+  </div>
+</div>
+
       {allsales.length > 0 ? (
         <Table
           headerData={headerData}

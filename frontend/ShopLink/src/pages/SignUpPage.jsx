@@ -12,9 +12,17 @@ const SignUpPage = () => {
   const [error, setError] = useState("");
   const [showError, setShowError] = useState(false);
 
+  const nameValidationRegex = /^[A-Za-z ]+$/;
+
   const validationSchema = Yup.object().shape({
-    firstName: Yup.string().min(3, "First name must be at least 3 characters").matches(/^[A-Za-z]+$/, "First name cannot contain numeric values").required("First name is required"),
-    lastName: Yup.string().min(3, "Last name must be at least 3 characters").matches(/^[A-Za-z]+$/, "Last name cannot contain numeric values").required("Last name is required"),
+    firstName: Yup.string()
+    .min(3, "First name must be at least 3 characters")
+    .matches(nameValidationRegex, "First name cannot contain numeric values")
+    .required("First name is required"),
+  lastName: Yup.string()
+    .min(3, "Last name must be at least 3 characters")
+    .matches(nameValidationRegex, "Last name cannot contain numeric values")
+    .required("Last name is required"),
     username: Yup.string().min(5, "Username must be at least 5 characters").required("Username is required"),
     email: Yup.string().email("Invalid email address").matches(/.*@(gmail\.com|.*\.edu\.pk)$/, "Email must be a Gmail address or end with .edu.pk").required("Email is required"),
     password: Yup.string().min(8, "Password must be at least 8 characters").matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain at least one special character").required("Password is required"),

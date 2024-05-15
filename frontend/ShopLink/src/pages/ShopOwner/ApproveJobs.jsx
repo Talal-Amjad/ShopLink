@@ -24,7 +24,11 @@ const ApproveJobs = () => {
 
   const fetchPendingJobs = () => {
     axios.get('/pendingjobs', { params: { branchId: selectedBranch, status: selectedStatus } })
-      .then(response => setPendingJobs(response.data))
+      .then(response => {
+        // Filter out jobs with status 'expired'
+        const filteredJobs = response.data.filter(job => job.status !== 'expired');
+        setPendingJobs(filteredJobs);
+      })
       .catch(error => console.error('Error fetching pending job applications:', error));
   };
 
@@ -36,12 +40,40 @@ const ApproveJobs = () => {
     setSelectedStatus(event.target.value);
   };
 
-  const updateJobStatus = (jobVacancyID, status) => {
-    axios.post('updatejobstatus', { jobVacancyID, status })
+  const handleOpenClick = (job) => {
+    Swal.fire({
+      title: "Set Last Date to Apply",
+      html: '<input id="swal-input1" class="swal2-input" type="date" min="' + new Date().toISOString().split('T')[0] + '">',
+      focusConfirm: false,
+      preConfirm: () => {
+        const lastDate = document.getElementById('swal-input1').value;
+        if (lastDate <= new Date().toISOString().split('T')[0]) {
+          Swal.showValidationMessage('Last date must be in the future');
+          return false;
+        }
+        return lastDate;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateJobStatus(job.jobVacancyID, 'open', result.value); // Pass the selected date as the third argument
+      }
+    });
+  };
+  
+  const updateJobStatus = (jobVacancyID, status, lastDate) => { // Add 'lastDate' parameter
+    let requestBody = { jobVacancyID, status };
+  
+    if (status === 'open') {
+      // Add last date to the request body if status is 'open'
+      requestBody.lastDate = lastDate;
+    }
+  
+    axios.post('updatejobstatus', requestBody)
       .then(() => fetchPendingJobs())
       .catch(error => console.error('Error updating job status:', error));
   };
-
+  
+  
 
   const handleApproveClick = (job) => {
     Swal.fire({
@@ -111,6 +143,8 @@ const ApproveJobs = () => {
     });
   };
 
+ 
+  
   const renderButton = (job) => {
     if (job.status === 'pending') {
       return (
@@ -129,7 +163,7 @@ const ApproveJobs = () => {
           </button>
         </>
       );
-    } else if (job.status === 'approve') {
+    } else if (job.status === 'approve' || job.status === 'open') {
       return (
         <button
           className="bg-red-500 text-white px-4 py-2 rounded-md"
@@ -142,13 +176,14 @@ const ApproveJobs = () => {
       return (
         <button
           className="bg-green-500 text-white px-4 py-2 rounded-md"
-          onClick={() => handleApproveClick(job)}
+          onClick={() => handleOpenClick(job)}
         >
-          {job.status === 'reject' ? 'Open':'closed' ? 'Open' : 'Reopen'}
+          {job.status === 'reject' ? 'Open' : 'open'}
         </button>
       );
     }
   };
+  
 
   return (
     <OwnerDashboardLayout>

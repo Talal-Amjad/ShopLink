@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from '../../axios';
 import { jwtDecode } from 'jwt-decode';
 import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
@@ -12,12 +12,75 @@ function AddSale() {
   const username = decodedToken.username;
 
   const [products, setProducts] = useState([{ productName: '', productCategory: '', unitPrice: '', quantity: '' }]);
+  const [scannedBarcode, setScannedBarcode] = useState('');
+
+
+  useEffect(() => {
+    let timeoutId;
+    const fetchProductDetails = async () => {
+      try {
+        let barcodeParam;
+        // Check if scannedBarcode is numeric or a string
+        if (!isNaN(scannedBarcode)) {
+          // If numeric, parse it to a number
+          barcodeParam = parseInt(scannedBarcode);
+        } else {
+          // If string, use it directly
+          barcodeParam = scannedBarcode;
+        }
+    
+        const response = await axios.get('/product-details', {
+          params: {
+            barcode: barcodeParam 
+          }
+        });
+    
+        const productDetails = response.data;
+    
+        const updatedProducts = [...products];
+        updatedProducts[products.length - 1] = {
+          productName: productDetails.productName,
+          productCategory: productDetails.category,
+          unitPrice: productDetails.unitPrice.toString(),
+          quantity: ''
+        };
+        setProducts(updatedProducts);
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Product Not Found',
+          text: 'No Product Found.'
+        });
+      }
+    };
+    
+
+  
+    clearTimeout(timeoutId);
+
+    if (scannedBarcode !== '') {
+    
+      timeoutId = setTimeout(() => {
+        fetchProductDetails();
+        setScannedBarcode('');
+      }, 500);
+    }
+
+    return () => clearTimeout(timeoutId); 
+  }, [scannedBarcode, products]);
 
   const handleProductChange = (e, index, field) => {
     const updatedProducts = [...products];
-    updatedProducts[index][field] = e.target.value;
+    if (field === 'barcode') {
+      updatedProducts[index][field] = e.target.value;
+      setScannedBarcode(e.target.value); // Set scanned barcode for immediate use
+    } else {
+      updatedProducts[index][field] = e.target.value;
+    }
     setProducts(updatedProducts);
   };
+  
 
   const handleAddProduct = () => {
     setProducts([...products, { productName: '', productCategory: '', unitPrice: '', quantity: '' }]);
@@ -31,51 +94,44 @@ function AddSale() {
 
   const handleSubmit = async () => {
     try {
-      // Check if any field is empty
-      if (customerName.trim() === '' || customerPhone.trim() === '' || products.some(product => product.productName.trim() === '' || product.productCategory.trim() === '' || product.unitPrice.trim() === '' || product.quantity.trim() === '')) {
-        throw new Error('All fields are required.');
+      if (customerName.trim() === '' || customerPhone.trim() === '' || products.length === 0 || products.some(product => product.productName.trim() === '' || product.productCategory.trim() === '' || product.unitPrice.trim() === '' || product.quantity.trim() === '')) {
+        throw new Error('All fields are required and at least one product must be added.');
       }
-  
-      // Validate customer phone number
+
       if (!/^03\d{9}$/.test(customerPhone)) {
         throw new Error('Customer phone number must start with 03 and be 11 digits long.');
       }
-  
-      // Check if price or quantity is negative
+
       if (products.some(product => parseFloat(product.unitPrice) < 0 || parseInt(product.quantity) < 0)) {
         throw new Error('Price and quantity cannot be negative.');
       }
-  
-      // Check if product is available in stock and quantity is sufficient
+
       for (const product of products) {
         const existingProduct = await axios.get(`/check-stock?productName=${product.productName}&productCategory=${product.productCategory}`);
         if (!existingProduct) {
           throw new Error(`Product "${product.productName}" in category "${product.productCategory}" is not available in stock.`);
         }
-        
+
         if (existingProduct.data.quantity < product.quantity) {
           throw new Error(`Not enough quantity available for product "${product.productName}" in category "${product.productCategory}".`);
         }
       }
-  
+
       const payload = {
-        customerId: 1, // Assuming you have a customerId
+        customerId: 1,
         customerName,
         customerPhone,
         products,
       };
-  
-      // Make API call to add sale
+
       const response = await axios.post('/add', payload, {
         params: { username }
       });
-  
-      // Reset form
+
       setCustomerName('');
       setCustomerPhone('');
       setProducts([{ productName: '', productCategory: '', unitPrice: '', quantity: '' }]);
-  
-      // Show success message
+
       Swal.fire({
         icon: 'success',
         title: 'Sale added successfully!',
@@ -84,11 +140,9 @@ function AddSale() {
       });
     } catch (error) {
       console.error('Error adding sale:', error.response ? error.response.data : error.message);
-  
-      // Extract the message from the response data if available
+
       const errorMessage = error.response ? error.response.data.message : error.message;
-  
-      // Show error message
+
       Swal.fire({
         icon: 'error',
         title: 'Error',
@@ -96,8 +150,7 @@ function AddSale() {
       });
     }
   };
-  
-  
+
   return (
     <ManagerDashboardLayout>
       <div className="bg-white container mx-auto p-10 mt-10 w-1/2">
@@ -113,6 +166,16 @@ function AddSale() {
         {products.map((product, index) => (
           <div key={index} className="mb-4 border p-4 rounded-md">
             <h3 className="text-lg font-bold mb-2">Product {index + 1}</h3>
+            <div className="mb-2">
+              <label htmlFor={`barcode${index}`} className="block">Barcode:</label>
+              <input
+                type="text"
+                id={`barcode${index}`}
+                value={product.barcode}
+                onChange={(e) => handleProductChange(e, index, 'barcode')}
+                className="w-full px-3 py-2 border rounded-md"/>
+
+            </div>
             <div className="mb-2">
               <label htmlFor={`productName${index}`} className="block">Product Name:</label>
               <input type="text" id={`productName${index}`} value={product.productName} onChange={(e) => handleProductChange(e, index, 'productName')} className="w-full px-3 py-2 border rounded-md" />
@@ -131,12 +194,12 @@ function AddSale() {
             </div>
             <button onClick={() => handleRemoveProduct(index)} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md">Remove Product</button>
           </div>
-              ))}
-    <button onClick={handleAddProduct} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mr-4">Add Product</button>
-    <button onClick={handleSubmit} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">Add Sale</button>
-  </div>
-</ManagerDashboardLayout>
-);
+        ))}
+        <button onClick={handleAddProduct} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md mr-4">Add Product</button>
+        <button onClick={handleSubmit} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">Add Sale</button>
+      </div>
+    </ManagerDashboardLayout>
+  );
 }
 
 export default AddSale;

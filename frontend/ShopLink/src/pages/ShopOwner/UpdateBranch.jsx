@@ -72,7 +72,7 @@ function UpdateBranch({ onClose, isOpen, branch }) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Error updating branch. Please try again.',
+        text: 'Manager Already Appionted on another Branch.',
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'OK'
       });

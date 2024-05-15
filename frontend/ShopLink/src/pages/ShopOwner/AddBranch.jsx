@@ -10,6 +10,19 @@ function AddBranch({ onClose, isOpen }) {
   const [notification, setNotification] = useState('');
   const [managerUsernames, setManagerUsernames] = useState([]);
 
+  useEffect(() => {
+    const fetchManagerUsernames = async () => {
+      try {
+        const response = await axios.get('/managersusername');
+        setManagerUsernames(response.data);
+      } catch (error) {
+        console.error('Error fetching manager usernames:', error);
+      }
+    };
+    fetchManagerUsernames();
+  }, []);
+
+
 
 
   const validationSchema = Yup.object().shape({
@@ -76,7 +89,6 @@ function AddBranch({ onClose, isOpen }) {
             <h1 className="font-manrope font-semibold mx-0 text-l leading-[32.78px] text-[#191D23] mb-2 dark:text-gray-400">
               Manager Username
             </h1>
-            {/* Dropdown for manager usernames */}
             <Field
               name="managerusername"
               as="select"

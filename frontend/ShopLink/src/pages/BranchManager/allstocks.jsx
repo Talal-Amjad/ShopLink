@@ -26,20 +26,28 @@ const AllStocks = () => {
 
 
   useEffect(() => {
-    // Fetch data from the server using Axios
     axios.get('/allstock', {
       params: { username, status: selectedStatus }
     })
       .then(response => {
         console.log('Data fetched successfully:', response.data);
         setAllStocks(response.data);
+        response.data.forEach(stock => {
+          if (stock.quantity < 10) {
+            Swal.fire({
+              title: "Low Stock Alert",
+              html: `Product Name: ${stock.productName}<br/>Branch ID: ${stock.branchId}<br/>Quantity: ${stock.quantity}`,
+              icon: "warning",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+            });
+          }
+        });
       })
       .catch(error => {
         console.error('Error fetching data:', error);
-        // Handle error as needed
       });
   }, [selectedStatus]);
-
 
 
  

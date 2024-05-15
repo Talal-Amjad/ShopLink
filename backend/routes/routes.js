@@ -24,8 +24,15 @@ const allStockController = require('../controllers/allStocksController');
 const manageStock =require('../controllers/managestock');
 const postedJobs = require('../controllers/postedJobController');
 const employees=require('../controllers/employeesController');
+const createProduct  = require('../controllers/stockController');
 const router = express.Router();
+const {addStockItem} = require('../controllers/stockController');
+const {getAllStockItems}  = require('../controllers/stockController');
+// Route to add a new stock item
+router.post('/ad', addStockItem);
 
+// Route to get all stock items
+router.get('/all', getAllStockItems);
 router.post('/signup', authController.signUp);
 router.post('/verify', authController.verifyUser)
 router.post('/signin', authController.signIn);
@@ -75,8 +82,16 @@ router.get('/check-stock', saleController.checkStock);
 router.post('/add', saleController.addSale2);
 router.get('/getsalesforallbranches',saleController.getallbranchessales);
 router.get('/stockforallbranches',allStockController.getallstocksforowner);
+router.get('/product-details', saleController.getProductDetails);
 router.get('/protected', authenticateToken, (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });
 
 module.exports = router;
+
+
+
+
+
+
+

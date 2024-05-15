@@ -38,7 +38,7 @@ const markNotificationsAsRead = async (req, res) => {
         if (role === 'owner') {
             await Notifications.update(
                 { status: 'read' },
-                { where: { receiver: 'owner', status: 'unread' } }
+                { where: { status: 'unread' } }
             );
         } else if (role === 'manager') {
             const managerBranch = await BranchDetails.findOne({

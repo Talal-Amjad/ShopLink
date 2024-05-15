@@ -149,7 +149,8 @@ const addSale2 = async (req, res) => {
       const existingProduct = await stock.findOne({ 
         where: { 
           productName: productName,
-          category: productCategory
+          category: productCategory,
+          branchId:managerBranch.branchId
         } 
       });
 
@@ -215,11 +216,39 @@ async function getallbranchessales(req, res) {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+const getProductDetails = (req, res) => {
+  try {
+    const { barcode } = req.query;
+    stock.findOne({ where: { barcode } })
+      .then(product => {
+        if (!product) {
+          return res.status(404).json({ message: 'Product not found.' });
+        }
+        res.status(200).json({
+          productName: product.productName,
+          category: product.category,
+          unitPrice: product.unitPrice,
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching product details:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+      });
+  } catch (error) {
+    console.error('Error fetching product details:', error);
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+
+
 module.exports = {
     addSale,
     getallbranchsales,
     deleteSale,
     checkStock,
     addSale2,
-    getallbranchessales
+    getallbranchessales,
+    getProductDetails,
 };
