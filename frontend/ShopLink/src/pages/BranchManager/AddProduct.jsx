@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import axios from '../../axios';
@@ -7,6 +7,9 @@ import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 
 export default function AddProduct() {
+    const [productBarcode, setProductBarcode] = useState('');
+    const [barcodeScanned, setBarcodeScanned] = useState(false);
+
     const validationSchema = Yup.object().shape({
         productName: Yup.string().required('Product Name is required'),
         category: Yup.string().required('Category is required'),
@@ -20,45 +23,69 @@ export default function AddProduct() {
         expiryDate: Yup.date()
             .min(new Date(new Date().setDate(new Date().getDate() + 10)), 'Expiry Date must be at least 10 days in the future')
             .required('Expiry Date is required'),
-        description: Yup.string()
+        description: Yup.string(),
+        barcode: Yup.string()
     });
     
     const token = localStorage.getItem('token');
     const decodedToken = jwtDecode(token);
-    const role = decodedToken.role;
     const username = decodedToken.username;
 
     const initialValues = {
-        brandName: '',
+        productName: '',
         category: '',
         dosage: '',
         price: '',
+        brandName: '',
         quantity: '',
         manufactureDate: '',
         expiryDate: '',
-        description: ''
+        description: '',
+        barcode:'',
     };
 
     const onSubmit = async (values, { setSubmitting, resetForm }) => {
         try {
-            const response = await axios.post('/addproducts', values, {
+            const formData = { ...values, barcode: productBarcode };
+            const response = await axios.post('/addproducts', formData, {
                 params: { username }
             });
             console.log(response.data);
-            // Show success message
             Swal.fire({
                 icon: 'success',
                 title: 'Product Added Successfully',
                 text: 'The product has been added successfully.',
                 confirmButtonColor: '#4682B4'
             });
-            // Reset form values
             resetForm();
+            setProductBarcode('');
+            setBarcodeScanned(false);
         } catch (error) {
             console.error('Error submitting form:', error);
-            setSubmitting(false);
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed to Add Product',
+                text: 'There was an error while adding the product. Please try again later.',
+                confirmButtonColor: '#4682B4'
+            });
+            setSubmitting(false); // Ensure the form is not stuck in a submitting state
         }
     };
+
+    useEffect(() => {
+        const handleBarcodeScan = (e) => {
+            setProductBarcode(e.data);
+            setBarcodeScanned(true);
+        };
+
+        // Add event listener for barcode scan
+        window.addEventListener('barcodeScanned', handleBarcodeScan);
+
+        return () => {
+            // Cleanup the event listener when component unmounts
+            window.removeEventListener('barcodeScanned', handleBarcodeScan);
+        };
+    }, []);
 
     return (
         <ManagerDashboardLayout>
@@ -77,7 +104,7 @@ export default function AddProduct() {
                                 <div className="grid grid-cols-6 gap-6">
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="productName" className="text-sm font-medium text-gray-900 block mb-2">Product Name</label>
-                                        <Field type="text" name="productName" id="productName" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Apple Imac 27”" />
+                                        <Field type="text" name="productName" id="productName" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Product Name" />
                                         <ErrorMessage name="productName" component="div" className="text-red-500 text-sm" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
@@ -94,17 +121,17 @@ export default function AddProduct() {
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="dosage" className="text-sm font-medium text-gray-900 block mb-2">Dosage</label>
-                                        <Field type="number" name="dosage" id="dosage" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="10 ml"/>
+                                        <Field type="number" name="dosage" id="dosage" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Dosage" />
                                         <ErrorMessage name="dosage" component="div" className="text-red-500 text-sm" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="price" className="text-sm font-medium text-gray-900 block mb-2">Price</label>
-                                        <Field type="number" name="price" id="price" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="2300"/>
+                                        <Field type="number" name="price" id="price" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Price" />
                                         <ErrorMessage name="price" component="div" className="text-red-500 text-sm" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="brandName" className="text-sm font-medium text-gray-900 block mb-2">Brand Name</label>
-                                        <Field type="text" name="brandName" id="brandName" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="e.g. Pfizer"/>
+                                        <Field type="text" name="brandName" id="brandName" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" placeholder="Brand Name" />
                                         <ErrorMessage name="brandName" component="div" className="text-red-500 text-sm" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
@@ -114,21 +141,25 @@ export default function AddProduct() {
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="manufactureDate" className="text-sm font-medium text-gray-900 block mb-2">Manufactured Date</label>
-                                        <Field type="date" name="manufactureDate" id="manufactureDate" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"/>
+                                        <Field type="date" name="manufactureDate" id="manufactureDate" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" />
                                         <ErrorMessage name="manufactureDate" component="div" className="text-red-500 text-sm" />
                                     </div>
                                     <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="expiryDate" className="text-sm font-medium text-gray-900 block mb-2">Expiry Date</label>
-                                        <Field type="date" name="expiryDate" id="expiryDate" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5"/>
+                                        <Field type="date" name="expiryDate" id="expiryDate" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5" />
                                         <ErrorMessage name="expiryDate" component="div" className="text-red-500 text-sm" />
                                     </div>
-                                    <div className="col-span-full">
+                                    <div className="col-span-6 sm:col-span-3">
                                         <label htmlFor="description" className="text-sm font-medium text-gray-900 block mb-2">Description</label>
-                                        <Field as="textarea" name="description" id="description" rows="6" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-4" placeholder="Description"/>
+                                        <Field as="textarea" name="description" id="description" rows="6" className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-4" placeholder="Description" />
                                         <ErrorMessage name="description" component="div" className="text-red-500 text-sm" />
                                     </div>
+                                    <div className="col-span-6 sm:col-span-3">
+                                        <label htmlFor="barcode" className="text-sm font-medium text-gray-900 block mb-2">Barcode</label>
+                                        <Field type="text" name="barcode" id="barcode" className={`shadow-sm bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-cyan-600 focus:border-cyan-600 block w-full p-2.5 ${barcodeScanned ? 'bg-gray-200' : ''}`} value={productBarcode} onChange={(e) => setProductBarcode(e.target.value)} readOnly={barcodeScanned} />
+                                    </div>
                                 </div>
-                                <button className="text-white bg-primary hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center" type="submit">Save all</button>
+                                <button className="text-white bg-primary hover:bg-cyan-700 focus:ring-4 focus:ring-cyan-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center mt-6" type="submit">Save all</button>
                             </Form>
                         )}
                     </Formik>

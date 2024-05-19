@@ -1,5 +1,6 @@
 const  {JobVacancy} = require('../models/JobVacancy.model');
 const { sequelize } = require('../config/dbConfig');
+const jobApplication=require('../models/jobApplication.model');
 
 exports.getAllJobs = async (req, res) => {
   try {
@@ -22,3 +23,5 @@ exports.getAllJobs = async (req, res) => {
     }
   }
 };
+
+

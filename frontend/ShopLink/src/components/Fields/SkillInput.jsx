@@ -22,8 +22,8 @@ const SkillInput = ({ label, skills, setSkills }) => {
 
   return (
     <div className="mb-3">
-      <label className="text-sm text-center dark:text-gray-400">{label}</label>
-      <div className="flex flex-wrap rounded">
+      <label className="text-[18px] text-center dark:text-gray-400">{label}</label>
+      <div className="flex flex-wrap rounded mt-2">
         <div className="flex flex-wrap">
           {skills.map((skill, index) => (
             <div

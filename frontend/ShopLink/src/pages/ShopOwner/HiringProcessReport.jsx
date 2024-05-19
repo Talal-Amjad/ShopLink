@@ -4,8 +4,23 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from '../../axios';
 import Swal from 'sweetalert2';
 import OwnerDashboardLayout from '../../components/layouts/ShopOwner/ownerDashboardLayout';
+import NoDataFound from '../NoDataFound';
+
 
 export default function HiringProcessReport() {
+
+    const [branches, setBranches] = useState([]); 
+  const [selectedBranch, setSelectedBranch] = useState('');
+  useEffect(() => {
+    axios.get('/allbranchesids')
+      .then(response => setBranches(response.data))
+      .catch(error => console.error('Error fetching branches:', error));
+  }, []);
+
+  const handleBranchChange = (event) => {
+    setSelectedBranch(event.target.value);
+  };
+
     const [reportData, setReportData] = useState({
         totalApplications: 0,
         selectedCandidates: 0,
@@ -16,7 +31,9 @@ export default function HiringProcessReport() {
     useEffect(() => {
         async function fetchData() {
             try {
-                const response = await axios.get('/hiringreport');
+                const response = await axios.get('/hiringreport', {
+                    params: { branchId: selectedBranch }
+                });
                 setReportData(response.data);
             } catch (error) {
                 console.error('Error fetching hiring report:', error);
@@ -25,10 +42,27 @@ export default function HiringProcessReport() {
         }
 
         fetchData();
-    }, []);
+    }, [selectedBranch]);
 
     return (
         <OwnerDashboardLayout>
+             <div className="flex justify-between items-center my-2 mt-8">
+        <p className="font-semibold text-2xl dark:text-gray-400">Sales</p>
+        <div className="flex items-center">
+          <h3 className='text-xl font-semibold m-3'>Branch Code : </h3>
+          <select
+            value={selectedBranch}
+            onChange={handleBranchChange}
+            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+          >
+            <option value="">Select Branch</option>
+            <option value="All">All</option>
+            {branches.map(branch => (
+              <option key={branch.branchId} value={branch.branchId}>{branch.branchId}</option>
+            ))}
+          </select>
+        </div>
+      </div>
             <div className="container mx-auto p-8">
                 <h1 className="text-3xl font-bold mb-8">Hiring Process Report</h1>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">

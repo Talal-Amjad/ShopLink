@@ -58,21 +58,31 @@ module.exports = {
 
 const updateJobStatus = async (req, res) => {
   try {
-    const { jobVacancyID, status } = req.body;
+    const { jobVacancyID, status, lastDate } = req.body; // Destructure lastDate from req.body
 
-    
+    let updateFields = { status }; // Initialize update fields with status
 
-    // Update status in the database
-    const updatedJob = await JobVacancy.update(
-      { status },
+    if (status === 'open') {
+      // If status is 'open', add lastDate to updateFields
+      updateFields.lastDate = lastDate;
+    }
+
+    // Update status and lastDate in the database
+    const [updatedRowsCount] = await JobVacancy.update(
+      updateFields, // Use updateFields object
       { where: { jobVacancyID } }
     );
 
-    res.json({ message: 'Job status updated successfully', updatedJob });
+    if (updatedRowsCount === 0) {
+      return res.status(404).json({ error: 'Job not found' });
+    }
+
+    res.json({ message: 'Job status and date updated successfully' });
   } catch (error) {
     console.error('Error updating job status:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 
 module.exports = { getPendingJobApplications, updateJobStatus };

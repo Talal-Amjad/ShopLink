@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from '../../axios';
 import Swal from 'sweetalert2';
 import OwnerDashboardLayout from '../../components/layouts/ShopOwner/ownerDashboardLayout';
+import NoDataFound from '../NoDataFound';
 
 const ApproveJobs = () => {
   const [pendingJobs, setPendingJobs] = useState([]);
@@ -23,7 +24,11 @@ const ApproveJobs = () => {
 
   const fetchPendingJobs = () => {
     axios.get('/pendingjobs', { params: { branchId: selectedBranch, status: selectedStatus } })
-      .then(response => setPendingJobs(response.data))
+      .then(response => {
+        // Filter out jobs with status 'expired'
+        const filteredJobs = response.data.filter(job => job.status !== 'expired');
+        setPendingJobs(filteredJobs);
+      })
       .catch(error => console.error('Error fetching pending job applications:', error));
   };
 
@@ -35,11 +40,40 @@ const ApproveJobs = () => {
     setSelectedStatus(event.target.value);
   };
 
-  const updateJobStatus = (jobVacancyID, status) => {
-    axios.post('updatejobstatus', { jobVacancyID, status })
+  const handleOpenClick = (job) => {
+    Swal.fire({
+      title: "Set Last Date to Apply",
+      html: '<input id="swal-input1" class="swal2-input" type="date" min="' + new Date().toISOString().split('T')[0] + '">',
+      focusConfirm: false,
+      preConfirm: () => {
+        const lastDate = document.getElementById('swal-input1').value;
+        if (lastDate <= new Date().toISOString().split('T')[0]) {
+          Swal.showValidationMessage('Last date must be in the future');
+          return false;
+        }
+        return lastDate;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        updateJobStatus(job.jobVacancyID, 'open', result.value); // Pass the selected date as the third argument
+      }
+    });
+  };
+  
+  const updateJobStatus = (jobVacancyID, status, lastDate) => { // Add 'lastDate' parameter
+    let requestBody = { jobVacancyID, status };
+  
+    if (status === 'open') {
+      // Add last date to the request body if status is 'open'
+      requestBody.lastDate = lastDate;
+    }
+  
+    axios.post('updatejobstatus', requestBody)
       .then(() => fetchPendingJobs())
       .catch(error => console.error('Error updating job status:', error));
   };
+  
+  
 
   const handleApproveClick = (job) => {
     Swal.fire({
@@ -109,6 +143,8 @@ const ApproveJobs = () => {
     });
   };
 
+ 
+  
   const renderButton = (job) => {
     if (job.status === 'pending') {
       return (
@@ -127,7 +163,7 @@ const ApproveJobs = () => {
           </button>
         </>
       );
-    } else if (job.status === 'approve') {
+    } else if (job.status === 'approve' || job.status === 'open') {
       return (
         <button
           className="bg-red-500 text-white px-4 py-2 rounded-md"
@@ -140,45 +176,62 @@ const ApproveJobs = () => {
       return (
         <button
           className="bg-green-500 text-white px-4 py-2 rounded-md"
-          onClick={() => handleApproveClick(job)}
+          onClick={() => handleOpenClick(job)}
         >
-          {job.status === 'reject' ? 'Open':'closed' ? 'Open' : 'Reopen'}
+          {job.status === 'reject' ? 'Open' : 'open'}
         </button>
       );
     }
   };
+  
 
   return (
     <OwnerDashboardLayout>
       <div className="container mx-auto p-8">
-        <div className="flex justify-between items-center my-2 mt-8">
-          <p className="font-semibold text-2xl dark:text-gray-400">
-            {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}{selectedStatus === 'reject' ? 'ed' : selectedStatus === 'approve' ? 'd' : ''} Jobs
-          </p>
-          <select
-            value={selectedBranch}
-            onChange={handleBranchChange}
-            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
-          >
-            <option value="">Select Branch</option>
-            <option value="All">All</option>
-            {branches.map(branch => (
-              <option key={branch.branchId} value={branch.branchId}>{branch.branchId}</option>
-            ))}
-          </select>
-          <select
-            value={selectedStatus}
-            onChange={handleStatusChange}
-            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
-          >
-            <option value="" disabled>Select Status</option>
-            <option value="All">All</option>
-            <option value="pending">Pending</option>
-            <option value="approve">Approved</option>
-            <option value="reject">Rejected</option>
-            <option value="expired">Expired</option>
-          </select>
-        </div>
+      <div className="flex justify-between items-center my-2 mt-8">
+  <div className="flex items-center"> {/* Flex container for Jobs text */}
+    <p className="font-semibold text-2xl dark:text-gray-400">Jobs</p>
+  </div>
+  <div className="flex items-center"> {/* Flex container for select fields and button */}
+    <div className="flex items-center"> {/* Flex container for select fields */}
+      <h3 className='text-xl font-semibold m-3'>Branch Code : </h3>
+      <select
+        value={selectedBranch}
+        onChange={handleBranchChange}
+        className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+      >
+        <option value="">Select Branch</option>
+        <option value="All">All</option>
+        {branches.map(branch => (
+          <option key={branch.branchId} value={branch.branchId}>{branch.branchId}</option>
+        ))}
+      </select>
+      <h3 className='text-xl font-semibold m-3'>Status : </h3>
+      <select
+        value={selectedStatus}
+        onChange={handleStatusChange}
+        className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
+      >
+        <option value="" disabled>Select Status</option>
+        <option value="All">All</option>
+        <option value="pending">Pending</option>
+        <option value="approve">Approved</option>
+        <option value="reject">Rejected</option>
+        <option value="expired">Expired</option>
+        <option value="close">Closed</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+         {/* Conditionally render NoDataFound component or pending jobs */}
+         {pendingJobs.length === 0 ? (
+          <NoDataFound />
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mx-6">
           {pendingJobs.map((job) => (
             <div key={job.jobVacancyID} className="bg-white p-6 shadow-md rounded-md w-full dark:bg-gray-700 dark:text-white">
@@ -206,9 +259,11 @@ const ApproveJobs = () => {
               <div className="flex justify-between">
                 {renderButton(job)}
               </div>
+          
             </div>
           ))}
         </div>
+        )}
       </div>
       <ToastContainer />
     </OwnerDashboardLayout>

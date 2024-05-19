@@ -2,17 +2,45 @@ const JobApplication  = require('../models/jobApplication.model');
 
 async function hiringreport(req, res) {
     try {
-        // Total number of applications
-        const totalApplications = await JobApplication.count();
+
+        const { branchId } = req.query;
+        let totalApplications ;
 
         // Selected Candidates
-        const selectedCandidates = await JobApplication.count({ where: { status: 'selected' } });
+        let selectedCandidates ;
+        // Rejected Candidates
+        let rejectedCandidates ;
+        // Pending Applications
+        let pendingApplications ;  
+  
+    if ((req.query.branchId && req.query.branchId !== 'All')) {
+        // Total number of applications
+         totalApplications = await JobApplication.count({ where: { branchId: branchId } });
+
+        // Selected Candidates
+         selectedCandidates = await JobApplication.count({ where: { status: 'selected'  , branchId: branchId  }});
 
         // Rejected Candidates
-        const rejectedCandidates = await JobApplication.count({ where: { status: 'rejected' } });
+         rejectedCandidates = await JobApplication.count({ where: { status: 'rejected' , branchId: branchId  }});
 
         // Pending Applications
-        const pendingApplications = await JobApplication.count({ where: { status: 'pending' } });
+         pendingApplications = await JobApplication.count({ where: { status: 'pending' , branchId: branchId  }});
+    }
+    else{
+
+        // Total number of applications
+        totalApplications = await JobApplication.count();
+
+        // Selected Candidates
+         selectedCandidates = await JobApplication.count({ where: { status: 'selected' } });
+
+        // Rejected Candidates
+         rejectedCandidates = await JobApplication.count({ where: { status: 'rejected' } });
+
+        // Pending Applications
+         pendingApplications = await JobApplication.count({ where: { status: 'pending' } });
+
+    }
 
         res.json({
             totalApplications,

@@ -21,8 +21,15 @@ import ShowAllBranches from "./pages/ShopOwner/ShowAllBranches";
 import AllStocks from "./pages/BranchManager/allstocks";
 import SalesInsights from "./pages/BranchManager/SalesInsights";
 import PostedJob from "./pages/BranchManager/PostedJobs";
+import Employee from "./pages/BranchManager/Employee";
+import NoDataFound from "./pages/NoDataFound";
+import AllBranchesEmployee from "./pages/ShopOwner/AllBranchesEmployee";
+import OwnerSalesInsights from "./pages/ShopOwner/SalesInsights";
+import StockforAllBranches from "./pages/ShopOwner/StockforAllBranches";
+import SalesReport from "./pages/ShopOwner/SalesReport";
+import GraphicalSkillReport from "./pages/BranchManager/GraphicalSkillReport";
 import Protected from "../Protected";
-
+import BarcodeScanner from "./components/Barcode Scanner/BarcodeScanner";
 function App() {
   return (
     <>
@@ -31,12 +38,28 @@ function App() {
         <Route path="/" element={<LandingPage/>} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/signin" element={<SignInPage/>} />
+        <Route path="/graphical-report" element={<GraphicalSkillReport />} />
+
         {/*Testing Routes*/}
-        <Route path="/updatebranch" element={<UpdateBranch/>} />
+
         <Route path="/allbranches" element={<ShowAllBranches/>} />
-        <Route path="/stock" element={<AllStocks/>} />
-        <Route path="/insights" element={<SalesInsights/>} />
-        <Route path="/postedjobs" element={<PostedJob/>} />
+      
+      
+       
+       
+        <Route path="/nodatafound" element={<NoDataFound/>} />
+       {/*<Route path="/allemployees" element={<AllBranchesEmployee/>} />*/} 
+      
+
+
+       <Route path="/updatebranch" element={<Protected component={<UpdateBranch/>} allowableuser="manager"/>} />
+        <Route path="/stock" element={<Protected component={<AllStocks/>} allowableuser="manager"/>} />
+        <Route path="/insights" element={<Protected component={<SalesInsights/>} allowableuser="manager"/>} />
+        <Route path="/ownerinsights" element={<Protected component={<OwnerSalesInsights/>} allowableuser="owner"/>} />
+        <Route path="/postedjobs" element={<Protected component={<PostedJob/>} allowableuser="manager"/>} />
+        <Route path="/employees" element={<Protected component={<Employee/>} allowableuser="manager"/>} />
+        <Route path="/allemployees" element={<Protected component={<AllBranchesEmployee/>} allowableuser="owner"/>} />
+        <Route path="/stockforallaranches" element={<Protected component={<StockforAllBranches/>} allowableuser="owner"/>} />
 
         {/*Testing Routes*/}
         <Route path="/applyforjob" element={<Protected component={<ApplyfoJob/>} allowableuser="user"/>} />
@@ -46,6 +69,7 @@ function App() {
         <Route path="/emailverification" element={<EmailVerification/>}/>
         <Route path="/manager" element={<Protected component={<ManagerDashboardLayout/>}  allowableuser="manager"/>}/>
         <Route path="/owner" element={<Protected component={<OwnerDashboardLayout/>}  allowableuser="owner"/>}/>
+        <Route path="/salesreport" element={<Protected component={<SalesReport/>}  allowableuser="owner"/>}/>
         <Route path="/hiringreport" element={<Protected component={<HiringProcessReport/>}  allowableuser="owner"/>}/>
         <Route path="/viewallapplicants" element={<Protected component={<ViewAllApplicants/>}  allowableuser="manager"/>}/>
         <Route path="/skillsreport" element={<Protected component={<ApplicantsSkillReport/>}  allowableuser="manager"/>}/>

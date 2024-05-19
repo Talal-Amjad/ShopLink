@@ -7,11 +7,13 @@ import Button from '../../components/Buttons/Button';
 import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
 import SkillInput from '../../components/Fields/SkillInput';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
 
 const PostJob = () => {
   const [skills, setSkills] = useState([]);
   const [notification, setNotification] = useState(null);
   const [notificationType, setNotificationType] = useState(null);
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({
     jobTitle: Yup.string()
@@ -46,12 +48,12 @@ const PostJob = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
-       const token = localStorage.getItem('token');
-    const decodedToken = jwtDecode(token);
-    const role = decodedToken.role;
-    const username = decodedToken.username;
+      const token = localStorage.getItem('token');
+      const decodedToken = jwtDecode(token);
+      const role = decodedToken.role;
+      const username = decodedToken.username;
 
-      const value= {
+      const value = {
         jobTitle: values.jobTitle,
         expectedSalary: values.salary,
         jobDescription: values.description,
@@ -60,7 +62,7 @@ const PostJob = () => {
         skills,
       };
       try {
-        await axios.post('/postjob',value,{
+        await axios.post('/postjob', value, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -70,20 +72,21 @@ const PostJob = () => {
         setNotificationType('success');
         formik.resetForm();
         setSkills([]);
+        navigate(-1);
 
-        axios.post('/savepostjobnotification', {
-          jobTitle: values.jobTitle,
-          title : 'New job Posted',
-          username:username,
-          status: 'unread'
-        })
-        .then(response => {
-          // Existing code remains the same
-        })
-        .catch(error => console.error('Error updating job status:', error));
-
-
-
+        axios
+          .post('/savepostjobnotification', {
+            jobTitle: values.jobTitle,
+            title: 'New job Posted',
+            username: username,
+            status: 'unread',
+          })
+          .then((response) => {
+            // Existing code remains the same
+          })
+          .catch((error) =>
+            console.error('Error updating job status:', error)
+          );
       } catch (error) {
         setNotification(`Error in Job Post request: ${error.message}`);
         setNotificationType('error');
@@ -101,11 +104,13 @@ const PostJob = () => {
   return (
     <ManagerDashboardLayout>
       <div className="bg-gray-100 min-h-screen flex justify-center items-center dark:bg-gray-700">
-        <div className="max-w-6xl w-full bg-white p-8 relative m-10 shadow-md dark:bg-gray-900 border border-4 rounded-lg">
+        <div className="max-w-6xl w-full bg-white p-8 relative m-10 shadow-md dark:bg-gray-900 border-4 rounded-lg">
           <form onSubmit={formik.handleSubmit}>
-            <h1 className="text-lg font-bold dark:text-gray-400 mb-4">Post Job Details</h1>
+            <h1 className="text-2xl font-bold dark:text-gray-400 mb-4">
+              Job Details Form
+            </h1>
             <hr className="border-gray-200 w-full mt-4 mb-4" />
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Fields
                 label="Job Title"
                 type="text"
@@ -145,12 +150,14 @@ const PostJob = () => {
                 handleChange={formik.handleChange}
                 error={formik.touched.date && formik.errors.date}
               />
-               
             </div>
-              <div className='w-1/2'>
-            <SkillInput label="Skills" skills={skills} setSkills={setSkills} />
+            <div className="md:w-1/2">
+              <SkillInput
+                label="Skills"
+                skills={skills}
+                setSkills={setSkills}
+              />
             </div>
-
             <Fields
               label="Job Description"
               type="textarea"
@@ -161,13 +168,11 @@ const PostJob = () => {
               handleChange={formik.handleChange}
               error={formik.touched.description && formik.errors.description}
             />
-          
             <div className="mt-4">
               <hr className="border-gray-200 w-full mt-4 mb-4" />
-              <div className='w-44'>
-              <Button text="Post Job" type="submit" />
+              <div className="w-44">
+                <Button text="Post Job" type="submit" />
               </div>
-              
             </div>
           </form>
           {notification && (
@@ -177,7 +182,10 @@ const PostJob = () => {
               } text-white flex justify-between items-center`}
             >
               <span>{notification}</span>
-              <button className="text-white" onClick={() => setNotification(null)}>
+              <button
+                className="text-white"
+                onClick={() => setNotification(null)}
+              >
                 X
               </button>
             </div>

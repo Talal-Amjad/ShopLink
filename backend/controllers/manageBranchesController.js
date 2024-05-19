@@ -80,8 +80,51 @@ const addBranch = async (req, res) => {
     }
   };
 
+  // Update Branch Controller
+  const updateBranch = async (req, res) => {
+    const { branchId } = req.params;
+    const { managerusername, city } = req.body;
+    
+    try {
+      // Check if manager is already appointed to another branch
+      const alreadyAppointed = await BranchDetails.findOne({ where: { managerUsername: managerusername, branchId: { [Op.ne]: branchId } } });
+  
+      if (alreadyAppointed) {
+        return res.status(400).json({ success: false, alreadyAppointed: true, message: 'Manager is already appointed to another branch.' });
+      }
+  
+      // Update the branch details
+      const updatedBranch = await BranchDetails.update(
+        { city, managerusername },
+        { where: { branchId } }
+      );
+  
+      res.status(200).json({ success: true, alreadyAppointed: false, data: updatedBranch });
+    } catch (error) {
+      console.error('Error updating branch:', error);
+      res.status(500).json({ success: false, alreadyAppointed: false, error: 'Error updating branch' });
+    }
+  };
+  
+
+// Delete Branch Controller
+const deleteBranch = async (req, res) => {
+  const { branchId } = req.params;
+
+  try {
+    await BranchDetails.destroy({ where: { branchId } });
+    res.status(200).json({ success: true, message: 'Branch deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting branch:', error);
+    res.status(500).json({ success: false, error: 'Error deleting branch' });
+  }
+};
+
+
 
 module.exports = { getManagerUsernames,
    addBranch,
-   showAllBraches 
+   showAllBraches,
+   updateBranch,
+   deleteBranch
   };

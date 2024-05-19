@@ -7,29 +7,10 @@ import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import Button from '../../components/Buttons/Button';
+import NoDataFound from '../NoDataFound'; 
+import useModal from "../../hooks/useModal";
+import EditProduct from './EditProduct';
 
-const Actions = ({ menuItems, onCancel }) => {
-  const handleMenuItemClick = (item) => {
-    item.onClick(); // Execute the onClick function of the selected menu item
-    if (item.label === "Cancel") {
-      onCancel(); // Close the menu if the clicked item is 'Cancel'
-    }
-  };
-
-  return (
-    <div className="absolute w-[126px] bg-white rounded text-sm right-0 mt-2 max-w-xs transition-all duration-[400ms] dark:bg-gray-900 dark:text-gray-400">
-      {menuItems.map((item, index) => (
-        <button
-          key={index}
-          className="block w-full p-1 hover:bg-primary hover:text-white"
-          onClick={() => handleMenuItemClick(item)} // Call handleMenuItemClick with the clicked item
-        >
-          {item.label}
-        </button>
-      ))}
-    </div>
-  );
-};
 
 const AllStocks = () => {
   const navigate = useNavigate();
@@ -40,32 +21,44 @@ const AllStocks = () => {
   const role = decodedToken.role;
   const username = decodedToken.username;
   const [selectedStatus, setSelectedStatus] = useState('');
+  const [isOpen, toggleModal] = useModal();
+  const [selectedProID, setSelectedProID] = useState(null); 
+
 
   useEffect(() => {
-    // Fetch data from the server using Axios
     axios.get('/allstock', {
       params: { username, status: selectedStatus }
     })
       .then(response => {
         console.log('Data fetched successfully:', response.data);
         setAllStocks(response.data);
+        response.data.forEach(stock => {
+          if (stock.quantity < 10) {
+            Swal.fire({
+              title: "Low Stock Alert",
+              html: `Product Name: ${stock.productName}<br/>Branch ID: ${stock.branchId}<br/>Quantity: ${stock.quantity}`,
+              icon: "warning",
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+            });
+          }
+        });
       })
       .catch(error => {
         console.error('Error fetching data:', error);
-        // Handle error as needed
       });
   }, [selectedStatus]);
 
-  const handleMenuClick = (index) => {
-    setSelectedMenuIndex(index);
-  };
 
-  const handleCancel = () => {
-    setSelectedMenuIndex(null); // Toggle off the menu
-  };
+ 
 
   const handleStatusChange = (event) => {
     setSelectedStatus(event.target.value);
+  };
+
+  const handleEditClick = (proID) => {
+    setSelectedProID(proID); // Set the selected product ID
+    toggleModal(); // Open the modal
   };
 
   const handleDelete = (productId) => {
@@ -92,11 +85,6 @@ const AllStocks = () => {
     });
   };
 
-  const actionMenuItems = [
-    { label: "Delete", onClick: handleDelete },
-    { label: "Update" },
-    { label: "Cancel" },
-  ];
 
   const handleAddProduct = () => {
     navigate('/addproduct');
@@ -108,7 +96,7 @@ const AllStocks = () => {
     return date.toLocaleDateString('en-US');
   };
 
-  const headerData = ['Product Name', 'Category', 'Dosage', 'Unit Price', 'Brand Name', 'Manufacture Date', 'Expiry Date', 'Status', 'Actions'];
+  const headerData = ['Product Name', 'Category', 'Dosage','Quantity' ,'Unit Price', 'Brand Name', 'Expiry Date', 'Status', 'Actions'];
 
   return (
     <ManagerDashboardLayout>
@@ -130,40 +118,36 @@ const AllStocks = () => {
           <Button text="+ Add Product" type="button" roundedFull={true} onClick={handleAddProduct} />
         </div>
       </div>
-      <Table
-        headerData={headerData}
-        tableData={allStocks.map((stock, index) => ([
-          <div className="flex items-center">
+      {allStocks.length === 0 ? ( // Conditionally render NoDataFound if allStocks array is empty
+        <NoDataFound />
+      ) : (
+        <Table
+          headerData={headerData}
+          tableData={allStocks.map((stock, index) => ([
+            <div className="flex items-center">
+              <div>
+                <div>{stock.productName}</div>
+              </div>
+            </div>,
+            stock.category,
+            stock.dosage,
+            stock.quantity,
+            stock.unitPrice,
+            stock.brandName,
+            formatDate(stock.expiryDate), // Format expiry date
+            <span className={`p-2 inline-flex text-l leading-5 rounded-full ${stock.status === 'valid' ? 'bg-green-100 text-green-800' : stock.status === 'expired' ? 'bg-red-100 text-red-800' : ''}`}>
+              {stock.status}
+            </span>,
             <div>
-              <div>{stock.productName}</div>
+            <button className="ml-2 px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:shadow-outline-blue active:bg-blue-600 transition duration-150 ease-in-out" onClick={() => handleEditClick(stock.proID)}>Edit</button>
+            <button className="ml-2 px-4 py-2 font-medium text-white bg-red-600 rounded-md hover:bg-red-500 focus:outline-none focus:shadow-outline-red active:bg-red-600 transition duration-150 ease-in-out" 
+              onClick={() => handleDelete(stock.proID)}>Delete</button>
             </div>
-          </div>,
-          stock.category,
-          stock.dosage,
-          stock.unitPrice,
-          stock.brandName,
-          formatDate(stock.manufactureDate), // Format manufacture date
-          formatDate(stock.expiryDate), // Format expiry date
-          <span className={`p-2 inline-flex text-l leading-5 rounded-full ${stock.status === 'valid' ? 'bg-green-100 text-green-800' : stock.status === 'expired' ? 'bg-red-100 text-red-800' : ''}`}>
-            {stock.status}
-          </span>,
-          <>
-            <div
-              className="flex justify-center cursor-pointer"
-              onClick={() => handleMenuClick(index)}
-            >
-              <FiMoreVertical />
-            </div>
-            {selectedMenuIndex === index && (
-              <Actions
-                key={index}
-                menuItems={actionMenuItems}
-                onCancel={handleCancel} // Pass onCancel function to Actions component
-              />
-            )}
-          </>
-        ]))}
-      />
+          ]))}
+        />
+      )}
+       
+      {isOpen && <EditProduct isOpen={isOpen} onClose={toggleModal} proID={selectedProID}  />}
     </ManagerDashboardLayout>
   );
 };

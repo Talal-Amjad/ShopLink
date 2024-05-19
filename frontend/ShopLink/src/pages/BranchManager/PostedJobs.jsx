@@ -4,14 +4,15 @@ import 'react-toastify/dist/ReactToastify.css';
 import axios from '../../axios';
 import Swal from 'sweetalert2';
 import ManagerDashboardLayout from '../../components/layouts/BranchManager/managerDashboardLayout';
-import {jwtDecode} from 'jwt-decode'; 
+import { jwtDecode } from 'jwt-decode';
 import Button from '../../components/Buttons/Button';
-import { useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import NoDataFound from '../NoDataFound';
 
 const PostedJob = () => {
   const [pendingJobs, setPendingJobs] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState('');
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const token = localStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const username = decodedToken.username;
@@ -21,12 +22,16 @@ const PostedJob = () => {
   }, [selectedStatus]);
 
   const fetchPendingJobs = () => {
-    axios.get('/postedjobs', { params: { username, status: selectedStatus } })
-      .then(response => setPendingJobs(response.data))
+    axios.get('/postedjobs', { params: { username: username, status: selectedStatus } })
+      .then(response => {
+        // Filter out jobs with status 'expired'
+        const filteredJobs = response.data.filter(job => job.status !== 'expired');
+        setPendingJobs(filteredJobs);
+      })
       .catch(error => console.error('Error fetching posted job applications:', error));
   };
 
-  const handlePostJob=()=>{
+  const handlePostJob = () => {
     navigate('/postjob')
   }
 
@@ -122,7 +127,7 @@ const PostedJob = () => {
   const renderButton = (job) => {
     if (job.status === 'pending') {
       return <p className="text-gray-600 dark:text-[#F2F4F4]">Job is pending</p>;
-    } else if (job.status === 'approve') {
+    } else if (job.status === 'approve' || job.status==='open') {
       return (
         <button
           className={`${
@@ -136,7 +141,7 @@ const PostedJob = () => {
           Close
         </button>
       );
-    } else if (job.status === 'reject') {
+    } else if (job.status === 'reject' || job.status === 'closed') { // Modified line
       return (
         <button
           className={`${
@@ -145,7 +150,7 @@ const PostedJob = () => {
               : 'bg-green-500'
           } text-white px-4 py-2 rounded-md`}
           disabled={isDatePassed(job.lastDate) || !shouldShowJob(job)}
-          onClick={() => handleApproveClick(job)}
+          onClick={() => handleApproveClick(job)} // Modified line
         >
           Open
         </button>
@@ -153,68 +158,76 @@ const PostedJob = () => {
     }
   };
   
+  
 
   return (
     <ManagerDashboardLayout>
       <div className="container mx-auto p-8">
-        <div className="flex justify-between items-center my-2 mt-8">
-        <p className="font-semibold text-2xl dark:text-gray-400">
-  {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}{selectedStatus === 'reject' ? 'ed' : selectedStatus === 'approve' ? 'd' : ''} Jobs
-</p>
+      <div className="flex justify-between items-center my-2 mt-8">
+  <div className="flex items-center"> {/* Flex container for text */}
+    <p className="font-semibold text-2xl dark:text-gray-400">
+      {selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)}{selectedStatus === 'reject' ? 'ed' : selectedStatus === 'approve' ? 'd' : ''} Jobs
+    </p>
+  </div>
+  <div className="flex items-center ml-auto ">
+  <h3 className='text-xl font-semibold m-3'>Status : </h3>
+    <select
+      value={selectedStatus}
+      onChange={handleStatusChange}
+      className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400 m-4"
+    >
+      <option value="" disabled>Select Status</option>
+      <option value="All">All</option>
+      <option value="pending">Pending</option>
+      <option value="approve">Approved</option>
+      <option value="reject">Rejected</option>
+      <option value="expired">Expired</option>
+    </select>
+    <div>
+      <Button text="+ Post New Job" type="button" roundedFull={true} onClick={handlePostJob} />
+    </div>
+  </div>
+</div>
 
-          <select
-            value={selectedStatus}
-            onChange={handleStatusChange}
-            className="border-gray-300 border p-2 rounded-l-md focus:outline-none focus:border-primary dark:bg-gray-900 dark:text-gray-400"
-          >
-            <option value="" disabled>Select Status</option>
-            <option value="All">All</option>
-            <option value="pending">Pending</option>
-            <option value="approve">Approved</option>
-            <option value="reject">Rejected</option>
-            <option value="expired">Expired</option>
-          </select>
-          <div>
-          <Button text="+ Post New Job" type="button" roundedFull={true} onClick={handlePostJob} />
-        </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mx-6">
-          {pendingJobs.map((job) => (
-            shouldShowJob(job) && (
-              <div key={job.jobVacancyID} className="bg-white p-6 shadow-md rounded-md w-full dark:bg-gray-700 dark:text-white">
-                <h2 className="text-xl font-bold mb-4 text-center">{job.jobTitle}</h2>
-                <h2 className="text-xl font-bold mb-4">Job Description</h2>
-                <p className="mb-4">{job.jobDiscription}</p>
-                <div className='flex'>
-                  <h2 className="text-xl font-bold mb-4">Expected Salary:</h2>
-                  <p className="mb-4">&nbsp;{`${job.expectedSalary.toLocaleString()}`}</p>
+        {pendingJobs.length === 0 ? (
+          <NoDataFound />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mx-6">
+            {pendingJobs.map((job) => (
+              shouldShowJob(job) && (
+                <div key={job.jobVacancyID} className="bg-white p-6 shadow-md rounded-md w-full dark:bg-gray-700 dark:text-white">
+                  <h2 className="text-xl font-bold mb-4 text-center">{job.jobTitle}</h2>
+                  <h2 className="text-xl font-bold mb-4">Job Description</h2>
+                  <p className="mb-4">{job.jobDiscription}</p>
+                  <div className='flex'>
+                    <h2 className="text-xl font-bold mb-4">Expected Salary:</h2>
+                    <p className="mb-4">&nbsp;{`${job.expectedSalary.toLocaleString()}`}</p>
+                  </div>
+                  <div className='flex'>
+                    <h2 className="text-xl font-bold mb-4">Required Experience:</h2>
+                    <p className="mb-4">&nbsp;{`${job.experience.toLocaleString()}`}</p>
+                  </div>
+                  <div className='flex'>
+                    <h2 className="text-xl font-bold mb-4">Status:</h2>
+                    <p className="mb-4">&nbsp;{`${job.status}`}</p>
+                  </div>
+                  <div className="mb-4 text-lg">
+                    {JSON.parse(job.skills).map((skill, index) => (
+                      <p key={index}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; {skill}</p>
+                    ))}
+                  </div>
+                  <p className="text-gray-600 dark:text-[#F2F4F4] mb-4">Last Date to Apply: {job.lastDate.substring(0, 10)}</p>
+                  <div className="flex justify-between">
+                    {renderButton(job)}
+                  </div>
                 </div>
-                <div className='flex'>
-                  <h2 className="text-xl font-bold mb-4">Required Experience:</h2>
-                  <p className="mb-4">&nbsp;{`${job.experience.toLocaleString()}`}</p>
-                </div>
-                <div className='flex'>
-                  <h2 className="text-xl font-bold mb-4">Status:</h2>
-                  <p className="mb-4">&nbsp;{`${job.status}`}</p>
-                </div>
-                <div className="mb-4 text-lg">
-                  {JSON.parse(job.skills).map((skill, index) => (
-                    <p key={index}>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp; {skill}</p>
-                  ))}
-                </div>
-                <p className="text-gray-600 dark:text-[#F2F4F4] mb-4">Last Date to Apply: {job.lastDate.substring(0, 10)}</p>
-                <div className="flex justify-between">
-                  {renderButton(job)}
-                </div>
-              </div>
-            )
-          ))}
-        </div>
+              )
+            ))}
+          </div>
+        )}
       </div>
       <ToastContainer />
     </ManagerDashboardLayout>
   );
 };
-
 export default PostedJob;
-

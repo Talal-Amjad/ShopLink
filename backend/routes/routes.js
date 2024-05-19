@@ -23,8 +23,16 @@ const saleController = require('../controllers/saleController');
 const allStockController = require('../controllers/allStocksController');
 const manageStock =require('../controllers/managestock');
 const postedJobs = require('../controllers/postedJobController');
+const employees=require('../controllers/employeesController');
+const createProduct  = require('../controllers/stockController');
 const router = express.Router();
+const {addStockItem} = require('../controllers/stockController');
+const {getAllStockItems}  = require('../controllers/stockController');
+// Route to add a new stock item
+router.post('/ad', addStockItem);
 
+// Route to get all stock items
+router.get('/all', getAllStockItems);
 router.post('/signup', authController.signUp);
 router.post('/verify', authController.verifyUser)
 router.post('/signin', authController.signIn);
@@ -32,9 +40,9 @@ router.post('/upload', fileUploadController.uploadFile);
 router.post('/apply', applyForJobController.applyForJob);
 router.post('/apply2', jobApplicationController.applyForJob);
 router.post('/postjob',postJobController.postJobControllers);
-router.post('/verif_foretpass_email', forgetpass.verify_forget_Password_email)
-router.post('/verify_email_encoded_pass', forgetpass.verify_forgetpass)
-router.post('/changepass', forgetpass.change_password)
+router.post('/verif_foretpass_email', forgetpass.verify_forget_Password_email);
+router.post('/verify_email_encoded_pass', forgetpass.verify_forgetpass);
+router.post('/changepass', forgetpass.change_password);
 router.get('/alljobs',showJobsController.getAllJobs);
 router.get('/applicants',viewAllApplicantsController.getAllApplicants);
 router.get('/allapplicants',viewAllApplicantsController.getAllApplicantsforowner);
@@ -60,11 +68,30 @@ router.get('/branchsales',saleController.getallbranchsales);
 router.get('/allstock',allStockController.getallstocks);
 router.delete('/deleteproduct/:productId',manageStock.deleteProduct);
 router.delete('/deletesale/:saleId',saleController.deleteSale);
-router.get('/postedjobs',postedJobs.getPostedJobs)
-
-
+router.get('/postedjobs',postedJobs.getPostedJobs);
+router.get('/employee',employees.getEmployees);
+router.get('/getProductById/:proID', manageStock.getProductById);
+router.put('/updatebranches/:branchId', manageBranchesController.updateBranch);
+router.delete('/deletebranches/:branchId', manageBranchesController.deleteBranch);
+router.put('/updateProduct/:proID', manageStock.updateProduct);
+router.get('/allemployee',employees.getEmployeesForOwner);
+router.delete('/deleteemployee/:employeeID', employees.deleteEmployee);
+router.get('/getemployee/:employeeId', employees.getEmployeeById);
+router.put('/updateemployee/:employeeId', employees.updateEmployee);
+router.get('/check-stock', saleController.checkStock); 
+router.post('/add', saleController.addSale2);
+router.get('/getsalesforallbranches',saleController.getallbranchessales);
+router.get('/stockforallbranches',allStockController.getallstocksforowner);
+router.get('/product-details', saleController.getProductDetails);
 router.get('/protected', authenticateToken, (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });
 
 module.exports = router;
+
+
+
+
+
+
+

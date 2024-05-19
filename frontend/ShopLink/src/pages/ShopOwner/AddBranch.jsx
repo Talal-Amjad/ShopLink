@@ -11,7 +11,6 @@ function AddBranch({ onClose, isOpen }) {
   const [managerUsernames, setManagerUsernames] = useState([]);
 
   useEffect(() => {
-    // Fetch manager usernames when component mounts
     const fetchManagerUsernames = async () => {
       try {
         const response = await axios.get('/managersusername');
@@ -22,6 +21,9 @@ function AddBranch({ onClose, isOpen }) {
     };
     fetchManagerUsernames();
   }, []);
+
+
+
 
   const validationSchema = Yup.object().shape({
     branchcode: Yup.number().min(1001, 'Branch code must be greater than 1000').required('Branch code is required'),
@@ -87,7 +89,6 @@ function AddBranch({ onClose, isOpen }) {
             <h1 className="font-manrope font-semibold mx-0 text-l leading-[32.78px] text-[#191D23] mb-2 dark:text-gray-400">
               Manager Username
             </h1>
-            {/* Dropdown for manager usernames */}
             <Field
               name="managerusername"
               as="select"

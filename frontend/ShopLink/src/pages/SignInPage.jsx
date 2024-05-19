@@ -35,9 +35,9 @@ const SignInPage = () => {
           if (role === "user") {
             navigate("/jobs");
           } else if (role === "manager") {
-            navigate("/manager");
+            navigate("/postedjobs");
           } else if (role === "owner") {
-            navigate("/owner");
+            navigate("/approvejob");
           }
         }
       } catch (error) {

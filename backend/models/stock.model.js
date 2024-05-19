@@ -10,7 +10,6 @@ const stock = sequelize.define("stock", {
           const uuid = require('uuid').v4;
           return 'P-' + uuid();
         }
-      
     },
     productName: {
         type: DataTypes.STRING,
@@ -57,6 +56,10 @@ const stock = sequelize.define("stock", {
         allowNull: false,
         defaultValue: 'valid',
     },
+    barcode: {
+        type: DataTypes.STRING, // Adjust the data type as needed
+        allowNull: true, // Change to false if barcode is required
+    }
 });
 
 sequelize.sync().then(() => {
